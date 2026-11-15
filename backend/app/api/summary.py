@@ -6,6 +6,7 @@ from sqlalchemy.orm import selectinload
 
 from app.api.common import DB, conflict_out, conflict_query, events_out
 from app.models import AuditEvent, Conflict, ConflictStatus, Page, Sku
+from app.services.competitors import compare_brands
 from app.services.scoring import UNRESOLVED, Tally, sku_tallies
 from app.services.trends import mean_days_to_fix, weekly_trends
 
@@ -82,6 +83,12 @@ def summary(session: DB, brand_id: int | None = None) -> dict[str, Any]:
         "top": [conflict_out(c).model_dump(mode="json") for c in top],
         "activity": [e.model_dump(mode="json") for e in events_out(session, list(activity))],
     }
+
+
+@router.get("/competitors")
+def competitors(session: DB) -> dict[str, Any]:
+    """Side-by-side brand comparison. Always covers every brand (the brand filter does not apply)."""
+    return compare_brands(session)
 
 
 @router.get("/trends")
