@@ -82,6 +82,9 @@ class Sku(Base):
     gtin: Mapped[str | None] = mapped_column(String(14))
     name: Mapped[str] = mapped_column(String(300))
     line: Mapped[str | None] = mapped_column(String(200))
+    last_checked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+    brand: Mapped["Brand"] = relationship()
 
 
 class Variant(Base):
@@ -171,3 +174,28 @@ class Conflict(Base):
         server_default=ConflictStatus.open.value,
     )
     detected_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    status_changed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    owner: Mapped[str | None] = mapped_column(String(200))
+    due_date: Mapped[date | None] = mapped_column(Date)
+    dismiss_reason: Mapped[str | None] = mapped_column(Text)
+
+    sku: Mapped[Sku] = relationship()
+    page: Mapped[Page] = relationship()
+
+
+class AuditEvent(Base):
+    """Who did what, when. Notes are events with action='note'."""
+
+    __tablename__ = "audit_event"
+    __table_args__ = (Index("ix_audit_event_org_at", "organisation_id", "at"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id", index=False)
+    sku_id: Mapped[int] = _fk("sku.id")
+    conflict_id: Mapped[int | None] = mapped_column(
+        ForeignKey("conflict.id", ondelete="CASCADE"), index=True, nullable=True
+    )
+    actor: Mapped[str] = mapped_column(String(200))
+    action: Mapped[str] = mapped_column(String(40))
+    detail: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}")
+    at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

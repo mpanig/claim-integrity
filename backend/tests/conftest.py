@@ -38,3 +38,36 @@ def db_engine():
 
     yield engine
     engine.dispose()
+
+
+@pytest.fixture
+def session(db_engine):
+    from app.db import SessionLocal
+
+    with SessionLocal() as s:
+        yield s
+
+
+@pytest.fixture
+def client(db_engine):
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+
+    return TestClient(app)
+
+
+@pytest.fixture
+def seeded(session):
+    """Fresh pilot data with no checks run yet. Returns {"CeraVe": sku_id, "Aveeno": sku_id}."""
+    from app.seed import seed
+
+    return seed(session, run_checks=False)["sku_ids"]
+
+
+@pytest.fixture
+def checked(seeded, client):
+    """Pilot data with a check run on every SKU."""
+    for sku_id in seeded.values():
+        assert client.post(f"/skus/{sku_id}/run").status_code == 200
+    return seeded

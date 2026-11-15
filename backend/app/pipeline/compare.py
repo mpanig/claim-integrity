@@ -50,6 +50,7 @@ SEAL_ALIASES = {
 
 _FREE_FROM_STOPWORDS = {"free", "of", "from", "added", "no", "without"}
 LIST_FIELDS = ("free_from", "claims", "seals")
+COMPARED_FIELDS = ("name", "ingredients", *LIST_FIELDS)
 
 
 @dataclass(frozen=True)
@@ -156,8 +157,8 @@ def free_from_contradictions(free_from: list[str], ingredients: list[str]) -> li
 def compare(truth: dict[str, Any], page: dict[str, Any]) -> list[Finding]:
     findings: list[Finding] = []
 
-    for field in ("name", "ingredients", *LIST_FIELDS):
-        if field in truth and _is_empty(page.get(field)):
+    for field in COMPARED_FIELDS:
+        if not _is_empty(truth.get(field)) and _is_empty(page.get(field)):
             findings.append(Finding(field, Verdict.missing, None, truth[field]))
 
     if not _is_empty(page.get("name")) and "name" in truth:

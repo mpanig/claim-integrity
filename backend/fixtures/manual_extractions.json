@@ -6,26 +6,132 @@
     },
     "ingredients": {
       "value": [
-        "Purified Water", "Glycerin", "Cetearyl Alcohol", "Behentrimonium Methosulfate",
-        "Ceramide 3", "Ceramide 6-II", "Ceramide 1", "Hyaluronic Acid", "Cholesterol",
-        "PEG-40 Stearate", "Glyceryl Stearate", "Stearyl Alcohol", "Polysorbate 20",
-        "Potassium Phosphate", "Dipotassium Phosphate", "Sodium Lauroyl Lactylate",
-        "Cetyl Alcohol", "Disodium EDTA", "Phytosphingosine", "Methylparaben",
-        "Propylparaben", "Carbomer", "Xanthan Gum"
+        "Purified Water",
+        "Glycerin",
+        "Cetearyl Alcohol",
+        "Behentrimonium Methosulfate",
+        "Ceramide 3",
+        "Ceramide 6-II",
+        "Ceramide 1",
+        "Hyaluronic Acid",
+        "Cholesterol",
+        "PEG-40 Stearate",
+        "Glyceryl Stearate",
+        "Stearyl Alcohol",
+        "Polysorbate 20",
+        "Potassium Phosphate",
+        "Dipotassium Phosphate",
+        "Sodium Lauroyl Lactylate",
+        "Cetyl Alcohol",
+        "Disodium EDTA",
+        "Phytosphingosine",
+        "Methylparaben",
+        "Propylparaben",
+        "Carbomer",
+        "Xanthan Gum"
       ],
       "quote": "Purified Water, Glycerin, Cetearyl Alcohol, Behentrimonium Methosulfate, Ceramide 3, Ceramide 6-II, Ceramide 1, Hyaluronic Acid, Cholesterol, PEG-40 Stearate, Glyceryl Stearate, Stearyl Alcohol, Polysorbate 20, Potassium Phosphate, Dipotassium Phosphate, Sodium Lauroyl Lactylate, Cetyl Alcohol, Disodium EDTA, Phytosphingosine, Methylparaben, Propylparaben, Carbomer, Xanthan Gum"
     },
     "free_from": {
-      "value": ["Fragrance Free"],
+      "value": [
+        "Fragrance Free"
+      ],
       "quote": "Fragrance Free"
     },
     "claims": {
-      "value": ["Non-comedogenic"],
+      "value": [
+        "Non-comedogenic"
+      ],
       "quote": "Non-comedogenic"
     },
     "seals": {
-      "value": ["NEA Seal of Acceptance"],
+      "value": [
+        "NEA Seal of Acceptance"
+      ],
       "quote": "Accepted by the National Eczema Association (NEA Seal of Acceptance)"
+    }
+  },
+  "https://www.hannaford.com/product/aveeno-calm-restore-nourishing-oat-cleanser": {
+    "name": {
+      "value": "Aveeno Calm + Restore Fragrance Free Nourishing Oat Cleanser",
+      "quote": "Aveeno Calm + Restore Fragrance Free Nourishing Oat Cleanser"
+    },
+    "ingredients": {
+      "value": [
+        "Water",
+        "Glycerin",
+        "Butylene Glycol",
+        "Avena Sativa (Oat) Kernel Flour",
+        "Polysorbate 20",
+        "Poloxamer 188",
+        "Zea Mays (Corn) Starch",
+        "Acrylates/C10-30 Alkyl Acrylate Crosspolymer",
+        "Caprylyl Glycol",
+        "Phenoxyethanol",
+        "Disodium EDTA",
+        "Ethylhexylglycerin",
+        "Sodium Polyacrylate",
+        "Sodium Hydroxide",
+        "Chrysanthemum Parthenium (Feverfew) Flower/Leaf/Stem Juice",
+        "Sodium Hyaluronate"
+      ],
+      "quote": "Water, Glycerin, Butylene Glycol, Avena Sativa (Oat) Kernel Flour, Polysorbate 20, Poloxamer 188, Zea Mays (Corn) Starch, Acrylates/C10-30 Alkyl Acrylate Crosspolymer, Caprylyl Glycol, Phenoxyethanol, Disodium EDTA, Ethylhexylglycerin, Sodium Polyacrylate, Sodium Hydroxide, Chrysanthemum Parthenium (Feverfew) Flower/Leaf/Stem Juice, Sodium Hyaluronate"
+    },
+    "free_from": {
+      "value": [
+        "Fragrance Free",
+        "Paraben Free",
+        "Phthalate Free",
+        "Dye Free",
+        "Alcohol Free"
+      ],
+      "quote": "Fragrance free, paraben free, phthalate free, dye free and alcohol free"
+    },
+    "claims": {
+      "value": [
+        "Tested on sensitive skin"
+      ],
+      "quote": "Tested on sensitive skin"
+    }
+  },
+  "https://www.kenvuepro.com/aveeno/calm-restore-nourishing-oat-cleanser": {
+    "name": {
+      "value": "Aveeno Calm + Restore Nourishing Oat Cleanser",
+      "quote": "Aveeno Calm + Restore Nourishing Oat Cleanser"
+    },
+    "ingredients": {
+      "value": [
+        "Water",
+        "Glycerin",
+        "Butylene Glycol",
+        "Avena Sativa (Oat) Kernel Flour",
+        "Polysorbate 20",
+        "Poloxamer 188",
+        "Zea Mays (Corn) Starch",
+        "Acrylates/C10-30 Alkyl Acrylate Crosspolymer",
+        "Caprylyl Glycol",
+        "Phenoxyethanol",
+        "Disodium EDTA",
+        "Ethylhexylglycerin",
+        "Sodium Polyacrylate",
+        "Sodium Hydroxide",
+        "Chrysanthemum Parthenium (Feverfew) Flower/Leaf/Stem Juice",
+        "Sodium Hyaluronate"
+      ],
+      "quote": "Water, Glycerin, Butylene Glycol, Avena Sativa (Oat) Kernel Flour, Polysorbate 20, Poloxamer 188, Zea Mays (Corn) Starch, Acrylates/C10-30 Alkyl Acrylate Crosspolymer, Caprylyl Glycol, Phenoxyethanol, Disodium EDTA, Ethylhexylglycerin, Sodium Polyacrylate, Sodium Hydroxide, Chrysanthemum Parthenium (Feverfew) Flower/Leaf/Stem Juice, Sodium Hyaluronate"
+    },
+    "free_from": {
+      "value": [
+        "Sulfate-free"
+      ],
+      "quote": "A hypoallergenic, sulfate-free cleanser with colloidal oatmeal, a skin protectant."
+    },
+    "claims": {
+      "value": [
+        "Hypoallergenic",
+        "Colloidal oatmeal skin protectant"
+      ],
+      "quote": "A hypoallergenic, sulfate-free cleanser with colloidal oatmeal, a skin protectant."
     }
   }
 }
