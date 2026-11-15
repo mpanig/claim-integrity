@@ -3,7 +3,7 @@ import { CarryLink, ConflictLink, DemoBadge } from "@/components/common";
 import { CreateTaskDialog } from "@/components/create-task-dialog";
 import { SeverityBadge, Pill } from "@/components/status";
 import { buttonVariants } from "@/components/ui/button";
-import { easeLabel, type Recommendation } from "@/lib/recommendations";
+import { easeLabel, OWNER_TYPE_ROLE, type Recommendation } from "@/lib/recommendations";
 
 export function RecommendationCard({ r, rank }: { r: Recommendation; rank: number }) {
   return (
@@ -47,7 +47,12 @@ export function RecommendationCard({ r, rank }: { r: Recommendation; rank: numbe
             Open <ArrowUpRight />
           </CarryLink>
         ) : r.state === "todo" ? (
-          <CreateTaskDialog title={r.title} conflictIds={r.conflict_ids} ownerHint={r.owner_label} />
+          <CreateTaskDialog
+            title={r.title}
+            conflictIds={r.conflict_ids}
+            ownerHint={r.owner_label}
+            suggestRole={OWNER_TYPE_ROLE[r.owner_type]}
+          />
         ) : null}
         {r.conflict_ids.length > 0 && (
           <ConflictLink id={r.conflict_ids[0]} className="text-xs text-muted-foreground underline-offset-4 hover:underline">

@@ -263,6 +263,20 @@ class Alert(Base):
     sku: Mapped[Sku] = relationship()
 
 
+class TeamMember(Base):
+    """A person who can own issues. No sign-in yet (TODO(auth)); roles are labels only."""
+
+    __tablename__ = "team_member"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    name: Mapped[str] = mapped_column(String(200))
+    email: Mapped[str | None] = mapped_column(String(320))
+    role: Mapped[str] = mapped_column(String(30))  # see app.services.team.ROLES
+    brand_id: Mapped[int | None] = mapped_column(ForeignKey("brand.id", ondelete="SET NULL"), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
 class AuditEvent(Base):
     """Who did what, when. Notes are events with action='note'."""
 

@@ -24,6 +24,14 @@ export interface Recommendations {
   items: Recommendation[];
 }
 
+/** Mirrors backend app/api/team.py OWNER_TYPE_ROLE. */
+export const OWNER_TYPE_ROLE = {
+  brand_web: "brand_manager",
+  ecommerce: "ecommerce",
+  pr_editorial: "agency",
+  regulatory: "regulatory",
+} as const;
+
 export function easeLabel(ease: number): string {
   if (ease >= 0.85) return "Quick win";
   if (ease >= 0.65) return "Moderate effort";

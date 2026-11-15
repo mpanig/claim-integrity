@@ -18,15 +18,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api";
+import type { Role } from "@/lib/team";
 
 export function CreateTaskDialog({
   title,
   conflictIds,
   ownerHint,
+  suggestRole,
 }: {
   title: string;
   conflictIds: number[];
   ownerHint: string;
+  suggestRole?: Role;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -50,7 +53,7 @@ export function CreateTaskDialog({
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
             <Label>Owner</Label>
-            <OwnerPicker value={owner} onChange={setOwner} />
+            <OwnerPicker value={owner} onChange={setOwner} suggestRole={suggestRole} />
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="task-due">Due date</Label>

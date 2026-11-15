@@ -17,7 +17,7 @@ from sqlalchemy import delete
 from sqlalchemy.orm import Session
 
 from app.config import BACKEND_DIR
-from app.models import ApprovedClaim, Brand, Organisation, Page, Sku, Variant
+from app.models import ApprovedClaim, Brand, Organisation, Page, Sku, TeamMember, Variant
 from app.pipeline.extract import ManualExtractor, save_extraction
 from app.pipeline.fetch import store_snapshot
 from app.pipeline.run import run_for_sku
@@ -93,6 +93,16 @@ AVEENO: dict[str, Any] = {
 }
 
 PRODUCTS = [CERAVE, AVEENO]
+
+# Sample team so owner dropdowns have people in them. Fictional names.
+SAMPLE_TEAM = [
+    ("Demo CMO", "cmo", None),
+    ("Sam (CeraVe brand manager)", "brand_manager", "CeraVe"),
+    ("Alex (Aveeno brand manager)", "brand_manager", "Aveeno"),
+    ("Priya (E-commerce)", "ecommerce", None),
+    ("Jordan (Regulatory)", "regulatory", None),
+    ("Agency team", "agency", None),
+]
 TRUTH = CERAVE["truth"]  # kept for the compare tests
 
 
@@ -150,6 +160,15 @@ def seed(
 
     extractor = ManualExtractor.from_file(extractions_path)
     skus = {p["brand"]: _seed_product(session, org, p, extractor) for p in PRODUCTS}
+    for name, role, brand in SAMPLE_TEAM:
+        session.add(
+            TeamMember(
+                organisation_id=org.id,
+                name=name,
+                role=role,
+                brand_id=skus[brand].brand_id if brand else None,
+            )
+        )
     session.commit()
 
     if run_checks:
