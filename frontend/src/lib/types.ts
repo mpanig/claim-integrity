@@ -1,0 +1,117 @@
+export type Verdict = "contradiction" | "risky" | "outdated" | "weaker" | "missing" | "drift";
+export type Status = "open" | "accepted" | "fixed" | "verified" | "dismissed";
+export type Field = "name" | "ingredients" | "free_from" | "claims" | "seals";
+
+export interface Brand {
+  id: number;
+  name: string;
+}
+
+export interface Sku {
+  id: number;
+  organisation_id: number;
+  brand_id: number;
+  brand_name: string;
+  gtin: string | null;
+  name: string;
+  line: string | null;
+  last_checked_at: string | null;
+  score: number | null;
+  unresolved: number;
+  by_verdict: Record<Verdict, number>;
+  pages: number;
+}
+
+export interface Conflict {
+  id: number;
+  sku_id: number;
+  sku_name: string;
+  brand_id: number;
+  brand_name: string;
+  page_id: number;
+  page_url: string;
+  page_label: string;
+  source_type: string;
+  field: Field;
+  page_value: unknown;
+  truth_value: unknown;
+  verdict: Verdict;
+  severity: number;
+  status: Status;
+  owner: string | null;
+  due_date: string | null;
+  dismiss_reason: string | null;
+  detected_at: string;
+  status_changed_at: string | null;
+}
+
+export interface ConflictDetail extends Conflict {
+  quote: string | null;
+  truth_evidence_url: string | null;
+  page_fetched_at: string | null;
+  allowed_transitions: Status[];
+}
+
+export interface AuditEvent {
+  id: number;
+  sku_id: number;
+  sku_name: string;
+  conflict_id: number | null;
+  actor: string;
+  action: string;
+  detail: Record<string, unknown>;
+  at: string;
+}
+
+export interface Claim {
+  field: Field;
+  value: string | string[];
+  evidence_url: string | null;
+  approved_by: string | null;
+  created_at: string;
+}
+
+export interface Summary {
+  overall: {
+    score: number | null;
+    unresolved: number;
+    by_verdict: Record<Verdict, number>;
+    by_status: Record<Status, number>;
+    skus: number;
+    pages: number;
+  };
+  brands: { id: number; name: string; score: number | null; unresolved: number; skus: number }[];
+  top: Conflict[];
+  activity: AuditEvent[];
+}
+
+export interface MatrixCell {
+  value: unknown;
+  quote: string | null;
+  state: "match" | "warn" | "bad" | "na";
+  conflicts: { id: number; verdict: Verdict; severity: number; status: Status }[];
+}
+
+export interface Matrix {
+  sku: Sku;
+  fields: Field[];
+  list_fields: Field[];
+  truth: { label: string; url: string | null; values: Record<Field, unknown> };
+  sources: {
+    page_id: number;
+    label: string;
+    url: string;
+    source_type: string;
+    weight: number;
+    fetched_at: string;
+    cells: Record<Field, MatrixCell>;
+  }[];
+}
+
+export interface RunResult {
+  new: number;
+  reopened: number;
+  resolved: number;
+  unresolved: number;
+  score: number | null;
+}
