@@ -9,17 +9,19 @@ export function BarListChart({
   valueName,
   height,
   color = "var(--series-1)",
-  format,
+  unit = "",
   labelWidth = 170,
 }: {
   data: { label: string; value: number }[];
   valueName: string;
   height?: number;
   color?: string;
-  format?: (v: number | string) => string;
+  /** Appended to values in the tooltip, e.g. "%". */
+  unit?: string;
   labelWidth?: number;
 }) {
   const h = height ?? Math.max(120, data.length * 36 + 32);
+  const format = (v: number | string) => `${v}${unit}`;
   return (
     <div style={{ height: h }} role="img" aria-label={`${valueName}: ${data.map((d) => `${d.label} ${d.value}`).join(", ")}`}>
       <ResponsiveContainer width="100%" height="100%">

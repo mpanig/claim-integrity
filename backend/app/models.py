@@ -207,6 +207,41 @@ class ScoreSnapshot(Base):
     is_demo: Mapped[bool] = mapped_column(default=False, server_default="false")
 
 
+class AiPrompt(Base):
+    """A question to ask AI assistants about a product or category."""
+
+    __tablename__ = "ai_prompt"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    brand_id: Mapped[int | None] = mapped_column(ForeignKey("brand.id", ondelete="CASCADE"), index=True)
+    sku_id: Mapped[int | None] = mapped_column(ForeignKey("sku.id", ondelete="CASCADE"), index=True)
+    text: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class AiAnswer(Base):
+    """What one assistant answered to a prompt, with the product facts it stated.
+
+    stated_facts uses the compare fields plus "contains" (ingredients the answer says are in it).
+    """
+
+    __tablename__ = "ai_answer"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    prompt_id: Mapped[int] = _fk("ai_prompt.id")
+    sku_id: Mapped[int | None] = mapped_column(ForeignKey("sku.id", ondelete="CASCADE"), index=True)
+    assistant: Mapped[str] = mapped_column(String(100))
+    answer: Mapped[str] = mapped_column(Text)
+    stated_facts: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}")
+    mentioned_brands: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
+    asked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    is_demo: Mapped[bool] = mapped_column(default=False, server_default="false")
+
+    prompt: Mapped[AiPrompt] = relationship()
+
+
 class AuditEvent(Base):
     """Who did what, when. Notes are events with action='note'."""
 

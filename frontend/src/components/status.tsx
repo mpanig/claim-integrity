@@ -49,11 +49,11 @@ export function Pill({
   );
 }
 
-export function VerdictBadge({ verdict, className }: { verdict: Verdict; className?: string }) {
+export function VerdictBadge({ verdict, className, label }: { verdict: Verdict; className?: string; label?: string }) {
   const tone = VERDICT_TONE[verdict];
   return (
     <Pill tone={tone} icon={tone === "critical" ? OctagonAlert : TriangleAlert} className={className}>
-      {VERDICT_LABEL[verdict]}
+      {label ?? VERDICT_LABEL[verdict]}
     </Pill>
   );
 }

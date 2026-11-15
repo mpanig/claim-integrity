@@ -21,6 +21,7 @@ from app.models import ApprovedClaim, Brand, Organisation, Page, Sku, Variant
 from app.pipeline.extract import ManualExtractor, save_extraction
 from app.pipeline.fetch import store_snapshot
 from app.pipeline.run import run_for_sku
+from app.services.ai_visibility import generate_demo_answers
 from app.services.trends import generate_demo_history
 
 FIXTURES = BACKEND_DIR / "fixtures"
@@ -165,10 +166,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--demo-history",
         action="store_true",
-        help="also generate 12 weeks of score history, marked as demo data in the UI",
+        help="also generate 12 weeks of score history and sample AI answers, marked as demo data in the UI",
     )
     args = parser.parse_args()
     with SessionLocal() as s:
         print(seed(s, run_checks=not args.no_run))
         if args.demo_history:
             print(f"demo history: {generate_demo_history(s)} snapshots (labelled 'Demo data' in the UI)")
+            print(f"demo AI answers: {generate_demo_answers(s)} (labelled 'Demo data' in the UI)")
