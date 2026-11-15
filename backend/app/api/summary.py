@@ -1,12 +1,13 @@
 from typing import Any
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 
 from app.api.common import DB, conflict_out, conflict_query, events_out
 from app.models import AuditEvent, Conflict, ConflictStatus, Page, Sku
-from app.services.scoring import Tally, sku_tallies
+from app.services.scoring import UNRESOLVED, Tally, sku_tallies
+from app.services.trends import mean_days_to_fix, weekly_trends
 
 router = APIRouter()
 
@@ -53,6 +54,14 @@ def summary(session: DB, brand_id: int | None = None) -> dict[str, Any]:
         .limit(15)
     ).all()
 
+    by_source = session.execute(
+        select(Page.id, Page.retailer, Page.url, func.count())
+        .join(Conflict, Conflict.page_id == Page.id)
+        .where(Conflict.sku_id.in_(sku_ids), Conflict.status.in_(UNRESOLVED))
+        .group_by(Page.id)
+        .order_by(func.count().desc())
+    ).all()
+
     return {
         "overall": {
             "score": overall.score,
@@ -61,7 +70,11 @@ def summary(session: DB, brand_id: int | None = None) -> dict[str, Any]:
             "by_status": by_status,
             "skus": len(skus),
             "pages": overall.pages,
+            "mean_days_to_fix": mean_days_to_fix(session, sku_ids),
         },
+        "by_source": [
+            {"page_id": pid, "label": retailer or url, "unresolved": n} for pid, retailer, url, n in by_source
+        ],
         "brands": [
             {"id": b["id"], "name": b["name"], "score": b["tally"].score, "unresolved": b["tally"].unresolved, "skus": b["skus"]}
             for b in sorted(brands.values(), key=lambda b: b["name"])
@@ -69,4 +82,13 @@ def summary(session: DB, brand_id: int | None = None) -> dict[str, Any]:
         "top": [conflict_out(c).model_dump(mode="json") for c in top],
         "activity": [e.model_dump(mode="json") for e in events_out(session, list(activity))],
     }
+
+
+@router.get("/trends")
+def trends(session: DB, brand_id: int | None = None, weeks: int = Query(12, ge=1, le=104)) -> dict[str, Any]:
+    """Weekly score, open and fixed counts. `demo` is true if any generated history was used."""
+    stmt = select(Sku).options(selectinload(Sku.brand))
+    if brand_id is not None:
+        stmt = stmt.where(Sku.brand_id == brand_id)
+    return weekly_trends(session, list(session.scalars(stmt)), weeks)
 

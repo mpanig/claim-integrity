@@ -2,14 +2,16 @@ import { ArrowRight, CircleCheck } from "lucide-react";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { BarListChart } from "@/components/charts/bar-list-chart";
-import { CarryLink, ConflictLink, EmptyState, LoadingBlock, TimeAgo } from "@/components/common";
+import { OpenVsFixedChart, ScoreTrendChart } from "@/components/charts/trend-charts";
+import { brandColorMap } from "@/lib/chart-colors";
+import { CarryLink, ConflictLink, DemoBadge, EmptyState, LoadingBlock, TimeAgo } from "@/components/common";
 import { PageHeader } from "@/components/page-header";
 import { ScoreBadge, ScoreHero, SeverityBadge, VerdictBadge } from "@/components/status";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { serverGet } from "@/lib/api";
 import { describeEvent, FIELD_LABEL, snippet, VERDICT_LABEL, VERDICT_ORDER } from "@/lib/labels";
-import { brandParam, type SP } from "@/lib/params";
-import type { Summary } from "@/lib/types";
+import { brandParam, rangeWeeks, type SP } from "@/lib/params";
+import type { Brand, Summary, Trends } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Overview" };
 
@@ -29,8 +31,15 @@ export default function OverviewPage({ searchParams }: PageProps<"/">) {
 
 async function Overview({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
-  const s = await serverGet<Summary>("/summary", { brand_id: brandParam(sp) });
+  const brand_id = brandParam(sp);
+  const weeks = rangeWeeks(sp);
+  const [s, t, allBrands] = await Promise.all([
+    serverGet<Summary>("/summary", { brand_id }),
+    serverGet<Trends>("/trends", { brand_id, weeks }),
+    serverGet<Brand[]>("/brands"),
+  ]);
   const o = s.overall;
+  const brandColors = brandColorMap(allBrands);
 
   if (o.skus === 0) {
     return (
@@ -66,6 +75,35 @@ async function Overview({ searchParams }: { searchParams: Promise<SP> }) {
         <Kpi label="Being fixed" value={inProgress} sub={`${o.by_status.accepted} accepted · ${o.by_status.fixed} awaiting check`} />
         <Kpi label="Coverage" value={o.skus} sub={`products monitored on ${o.pages} pages`} />
       </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex flex-wrap items-center gap-2">Score over time {t.demo && <DemoBadge />}</CardTitle>
+            <CardDescription>
+              Weekly consistency score{t.brands.length > 1 ? " by brand" : ""}, last {weeks} weeks.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ScoreTrendChart trends={t} brandColors={brandColors} />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex flex-wrap items-center gap-2">Open issues vs fixes {t.demo && <DemoBadge />}</CardTitle>
+            <CardDescription>Are issues being fixed faster than new ones appear?</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <OpenVsFixedChart trends={t} />
+          </CardContent>
+        </Card>
+      </div>
+      {!t.demo && t.weeks.filter((w) => w.score !== null).length < 2 && (
+        <p className="-mt-2 text-xs text-muted-foreground">
+          Trends fill in as checks run each week. For a preview, seed with <code>--demo-history</code> (shown with a
+          “Demo data” badge).
+        </p>
+      )}
 
       {s.brands.length > 1 && (
         <section className="flex flex-col gap-3">
@@ -140,6 +178,48 @@ async function Overview({ searchParams }: { searchParams: Promise<SP> }) {
               <BarListChart data={byType} valueName="Open issues" labelWidth={160} />
             ) : (
               <EmptyState title="No open issues" icon={CircleCheck} />
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-5">
+        <Card className="lg:col-span-3">
+          <CardHeader>
+            <CardTitle>Open issues by source</CardTitle>
+            <CardDescription>Which retailers and sites need the most attention.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {s.by_source.length ? (
+              <BarListChart
+                data={s.by_source.map((x) => ({ label: x.label, value: x.unresolved }))}
+                valueName="Open issues"
+                labelWidth={120}
+              />
+            ) : (
+              <EmptyState title="No open issues on any page" icon={CircleCheck} />
+            )}
+          </CardContent>
+        </Card>
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardDescription>Mean time to fix</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-1">
+            {o.mean_days_to_fix === null ? (
+              <>
+                <span className="text-4xl font-semibold tracking-tight">–</span>
+                <span className="text-xs text-muted-foreground">
+                  No fixes verified yet. This shows the average days from an issue being found to its fix being verified.
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="text-4xl font-semibold tracking-tight">
+                  {o.mean_days_to_fix} <span className="text-base font-normal text-muted-foreground">days</span>
+                </span>
+                <span className="text-xs text-muted-foreground">From an issue being found to its fix being verified.</span>
+              </>
             )}
           </CardContent>
         </Card>

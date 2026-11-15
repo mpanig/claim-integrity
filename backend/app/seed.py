@@ -6,7 +6,7 @@
 All retailer pages are hand-written stand-ins in fixtures/, not scraped copies.
 Re-running deletes and recreates the pilot organisation (and everything under it).
 
-Run: uv run python -m app.seed [--no-run]
+Run: uv run python -m app.seed [--no-run] [--demo-history]
 """
 
 import argparse
@@ -21,6 +21,7 @@ from app.models import ApprovedClaim, Brand, Organisation, Page, Sku, Variant
 from app.pipeline.extract import ManualExtractor, save_extraction
 from app.pipeline.fetch import store_snapshot
 from app.pipeline.run import run_for_sku
+from app.services.trends import generate_demo_history
 
 FIXTURES = BACKEND_DIR / "fixtures"
 PILOT_ORG = "Pilot"
@@ -161,6 +162,13 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--no-run", action="store_true", help="do not run checks after seeding")
+    parser.add_argument(
+        "--demo-history",
+        action="store_true",
+        help="also generate 12 weeks of score history, marked as demo data in the UI",
+    )
     args = parser.parse_args()
     with SessionLocal() as s:
         print(seed(s, run_checks=not args.no_run))
+        if args.demo_history:
+            print(f"demo history: {generate_demo_history(s)} snapshots (labelled 'Demo data' in the UI)")

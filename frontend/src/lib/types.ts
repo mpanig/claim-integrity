@@ -71,6 +71,20 @@ export interface Claim {
   created_at: string;
 }
 
+export interface Trends {
+  demo: boolean;
+  weeks: {
+    week: string;
+    score: number | null;
+    unresolved: number | null;
+    verified: number | null;
+    fixed: number | null;
+    mean_days_to_fix: number | null;
+    brands: Record<string, number | null>;
+  }[];
+  brands: Brand[];
+}
+
 export interface Summary {
   overall: {
     score: number | null;
@@ -79,7 +93,9 @@ export interface Summary {
     by_status: Record<Status, number>;
     skus: number;
     pages: number;
+    mean_days_to_fix: number | null;
   };
+  by_source: { page_id: number; label: string; unresolved: number }[];
   brands: { id: number; name: string; score: number | null; unresolved: number; skus: number }[];
   top: Conflict[];
   activity: AuditEvent[];

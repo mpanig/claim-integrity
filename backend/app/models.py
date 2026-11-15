@@ -183,6 +183,30 @@ class Conflict(Base):
     page: Mapped[Page] = relationship()
 
 
+class ScoreSnapshot(Base):
+    """Consistency of one SKU at the end of a check run. Feeds the trend charts.
+
+    is_demo marks generated history (seed --demo-history); the UI must label it.
+    """
+
+    __tablename__ = "score_snapshot"
+    __table_args__ = (Index("ix_score_snapshot_sku_taken", "sku_id", "taken_at"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    brand_id: Mapped[int] = _fk("brand.id")
+    sku_id: Mapped[int] = _fk("sku.id", index=False)
+    taken_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    score: Mapped[int | None] = mapped_column(Integer)
+    weighted_severity: Mapped[float] = mapped_column(Float)
+    page_weight: Mapped[float] = mapped_column(Float)
+    unresolved: Mapped[int] = mapped_column(Integer)
+    by_verdict: Mapped[dict[str, int]] = mapped_column(JSONB)
+    by_status: Mapped[dict[str, int]] = mapped_column(JSONB)
+    mean_days_to_fix: Mapped[float | None] = mapped_column(Float)
+    is_demo: Mapped[bool] = mapped_column(default=False, server_default="false")
+
+
 class AuditEvent(Base):
     """Who did what, when. Notes are events with action='note'."""
 
