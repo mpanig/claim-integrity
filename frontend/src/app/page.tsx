@@ -118,7 +118,7 @@ async function Overview({ searchParams }: { searchParams: Promise<SP> }) {
                           {FIELD_LABEL[c.field]} on {c.page_label}
                         </span>
                         <span className="block truncate text-xs text-muted-foreground">
-                          {c.sku_name} · {c.brand_name}
+                          {snippet(c)} · {c.sku_name}
                         </span>
                       </span>
                       <SeverityBadge severity={c.severity} />

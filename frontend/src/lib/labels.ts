@@ -156,14 +156,14 @@ export function snippet(c: Pick<Conflict, "verdict" | "field" | "page_value" | "
       return `${pv.not_in_truth?.length ?? 0} extra, ${pv.not_on_page?.length ?? 0} missing ingredients`;
     }
     case "contradiction":
-      return `“${(c.page_value as { claim?: string })?.claim ?? ""}”`;
+      return `â€œ${(c.page_value as { claim?: string })?.claim ?? ""}â€`;
     case "risky":
-      return `“${show(c.page_value)}”`;
+      return `â€œ${show(c.page_value)}â€`;
     case "weaker":
-      return `Missing “${show(c.truth_value)}”`;
+      return `Missing â€œ${show(c.truth_value)}â€`;
     case "missing":
       return "Nothing shown";
     case "drift":
-      return c.field === "ingredients" ? "Older names or order" : `“${show(c.page_value)}” vs “${show(c.truth_value)}”`;
+      return c.field === "ingredients" ? "Older names or order" : `â€œ${show(c.page_value)}â€ vs â€œ${show(c.truth_value)}â€`;
   }
 }

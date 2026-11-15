@@ -111,6 +111,7 @@ export function FixBoard({ conflicts }: { conflicts: Conflict[] }) {
                 >
                   {FIELD_LABEL[c.field]} on {c.page_label}
                 </button>
+                <p className="text-xs">{snippet(c)}</p>
                 <p className="text-xs text-muted-foreground">
                   {c.sku_name} · {c.brand_name}
                 </p>
