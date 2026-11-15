@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useUrlState } from "@/hooks/use-url-state";
 import { cn } from "@/lib/utils";
+import { AlertsBell } from "./alerts-bell";
 import { NAV } from "./nav";
 
 function isActive(pathname: string, href: string) {
@@ -113,6 +114,7 @@ export function AppShell({
             <Menu className="size-4" />
           </Button>
           <div className="flex min-w-0 flex-1 items-center gap-2">{topbar}</div>
+          <AlertsBell />
           <ThemeToggle />
           {/* TODO(auth): show the signed-in user. */}
           <span

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
-from app.api import ai, conflicts, recommendations, skus, summary
+from app.api import ai, alerts, conflicts, recommendations, skus, summary
 from app.api.common import DB
 from app.config import settings
 
@@ -27,3 +27,4 @@ app.include_router(skus.router)
 app.include_router(conflicts.router)
 app.include_router(ai.router)
 app.include_router(recommendations.router)
+app.include_router(alerts.router)

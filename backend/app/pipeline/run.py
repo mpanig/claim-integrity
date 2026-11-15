@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from app.config import SYSTEM_USER
 from app.models import ApprovedClaim, Conflict, ConflictStatus, Extraction, Sku, Snapshot
 from app.pipeline.compare import Finding, compare
+from app.services.alerts import alerts_for_run
 from app.services.trends import take_snapshot
 from app.services.workflow import log, log_conflict, set_status
 
@@ -111,7 +112,9 @@ def run_for_sku(session: Session, sku: Sku, actor: str = SYSTEM_USER) -> RunResu
         result.new.append(conflict)
 
     sku.last_checked_at = datetime.now(UTC)
-    take_snapshot(session, sku)
+    snapshot = take_snapshot(session, sku)
+    session.flush()
+    alerts_for_run(session, sku, result.new, snapshot)
     log(
         session,
         organisation_id=sku.organisation_id,

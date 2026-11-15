@@ -242,6 +242,27 @@ class AiAnswer(Base):
     prompt: Mapped[AiPrompt] = relationship()
 
 
+class Alert(Base):
+    """In-app alert: a new high-risk conflict or a score drop. read_at is null while unread."""
+
+    __tablename__ = "alert"
+    __table_args__ = (Index("ix_alert_org_created", "organisation_id", "created_at"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id", index=False)
+    sku_id: Mapped[int] = _fk("sku.id")
+    conflict_id: Mapped[int | None] = mapped_column(
+        ForeignKey("conflict.id", ondelete="CASCADE"), index=True, nullable=True
+    )
+    kind: Mapped[str] = mapped_column(String(30))  # high_risk | score_drop
+    title: Mapped[str] = mapped_column(String(300))
+    body: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+    sku: Mapped[Sku] = relationship()
+
+
 class AuditEvent(Base):
     """Who did what, when. Notes are events with action='note'."""
 
