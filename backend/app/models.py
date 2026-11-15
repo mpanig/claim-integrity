@@ -1,0 +1,173 @@
+import enum
+from datetime import date, datetime
+from typing import Any
+
+from sqlalchemy import (
+    Date,
+    DateTime,
+    Enum,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+    func,
+)
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+
+
+class Base(DeclarativeBase):
+    pass
+
+
+class Verdict(str, enum.Enum):
+    contradiction = "contradiction"
+    risky = "risky"
+    outdated = "outdated"
+    weaker = "weaker"
+    missing = "missing"
+    drift = "drift"
+
+
+SEVERITY: dict[Verdict, int] = {
+    Verdict.contradiction: 10,
+    Verdict.risky: 9,
+    Verdict.outdated: 6,
+    Verdict.weaker: 4,
+    Verdict.missing: 3,
+    Verdict.drift: 1,
+}
+
+
+class ConflictStatus(str, enum.Enum):
+    open = "open"
+    accepted = "accepted"
+    fixed = "fixed"
+    verified = "verified"
+    dismissed = "dismissed"
+
+
+def _pg_enum(cls: type[enum.Enum], name: str) -> Enum:
+    return Enum(cls, name=name, values_callable=lambda e: [m.value for m in e])
+
+
+def _fk(target: str, index: bool = True) -> Any:
+    return mapped_column(ForeignKey(target, ondelete="CASCADE"), index=index)
+
+
+class Organisation(Base):
+    __tablename__ = "organisation"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(200), unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Brand(Base):
+    __tablename__ = "brand"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    name: Mapped[str] = mapped_column(String(200))
+
+
+class Sku(Base):
+    __tablename__ = "sku"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    brand_id: Mapped[int] = _fk("brand.id")
+    gtin: Mapped[str | None] = mapped_column(String(14))
+    name: Mapped[str] = mapped_column(String(300))
+    line: Mapped[str | None] = mapped_column(String(200))
+
+
+class Variant(Base):
+    __tablename__ = "variant"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    sku_id: Mapped[int] = _fk("sku.id")
+    market: Mapped[str] = mapped_column(String(8))
+    size: Mapped[str | None] = mapped_column(String(50))
+    formula_version: Mapped[str | None] = mapped_column(String(50))
+    valid_from: Mapped[date | None] = mapped_column(Date)
+    valid_to: Mapped[date | None] = mapped_column(Date)
+
+
+class ApprovedClaim(Base):
+    """One approved 'source of truth' value for one field of a SKU."""
+
+    __tablename__ = "approved_claim"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    sku_id: Mapped[int] = _fk("sku.id")
+    field: Mapped[str] = mapped_column(String(50))
+    value: Mapped[Any] = mapped_column(JSONB)
+    evidence_url: Mapped[str | None] = mapped_column(Text)
+    approved_by: Mapped[str | None] = mapped_column(String(200))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Page(Base):
+    __tablename__ = "page"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    url: Mapped[str] = mapped_column(Text, unique=True)
+    source_type: Mapped[str] = mapped_column(String(30))  # e.g. brand, retailer
+    retailer: Mapped[str | None] = mapped_column(String(100))
+    country: Mapped[str | None] = mapped_column(String(2))
+    weight: Mapped[float] = mapped_column(Float, default=1.0, server_default="1.0")
+
+
+class Snapshot(Base):
+    __tablename__ = "snapshot"
+    __table_args__ = (Index("ix_snapshot_page_fetched", "page_id", "fetched_at"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    page_id: Mapped[int] = _fk("page.id", index=False)
+    fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    content_hash: Mapped[str] = mapped_column(String(64))
+    html: Mapped[str] = mapped_column(Text)
+
+    page: Mapped[Page] = relationship()
+
+
+class Extraction(Base):
+    """Fields read off one snapshot for one SKU: {field: {"value": ..., "quote": "..."}}."""
+
+    __tablename__ = "extraction"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    snapshot_id: Mapped[int] = _fk("snapshot.id")
+    sku_id: Mapped[int] = _fk("sku.id")
+    fields: Mapped[dict[str, Any]] = mapped_column(JSONB)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    snapshot: Mapped[Snapshot] = relationship()
+
+
+class Conflict(Base):
+    __tablename__ = "conflict"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    sku_id: Mapped[int] = _fk("sku.id")
+    page_id: Mapped[int] = _fk("page.id")
+    field: Mapped[str] = mapped_column(String(50))
+    page_value: Mapped[Any] = mapped_column(JSONB, nullable=True)
+    truth_value: Mapped[Any] = mapped_column(JSONB, nullable=True)
+    verdict: Mapped[Verdict] = mapped_column(_pg_enum(Verdict, "verdict"))
+    severity: Mapped[int] = mapped_column(Integer)
+    status: Mapped[ConflictStatus] = mapped_column(
+        _pg_enum(ConflictStatus, "conflict_status"),
+        default=ConflictStatus.open,
+        server_default=ConflictStatus.open.value,
+    )
+    detected_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
