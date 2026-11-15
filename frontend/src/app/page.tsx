@@ -1,4 +1,4 @@
-import { ArrowRight, CircleCheck } from "lucide-react";
+import { ArrowRight, CircleCheck, Lightbulb } from "lucide-react";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { BarListChart } from "@/components/charts/bar-list-chart";
@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { serverGet } from "@/lib/api";
 import { describeEvent, FIELD_LABEL, snippet, VERDICT_LABEL, VERDICT_ORDER } from "@/lib/labels";
 import { brandParam, rangeWeeks, type SP } from "@/lib/params";
+import type { Recommendations } from "@/lib/recommendations";
 import type { Brand, Summary, Trends } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Overview" };
@@ -33,11 +34,13 @@ async function Overview({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
   const brand_id = brandParam(sp);
   const weeks = rangeWeeks(sp);
-  const [s, t, allBrands] = await Promise.all([
+  const [s, t, allBrands, recs] = await Promise.all([
     serverGet<Summary>("/summary", { brand_id }),
     serverGet<Trends>("/trends", { brand_id, weeks }),
     serverGet<Brand[]>("/brands"),
+    serverGet<Recommendations>("/recommendations", { brand_id }),
   ]);
+  const nextActions = recs.items.filter((r) => r.state === "todo").slice(0, 3);
   const o = s.overall;
   const brandColors = brandColorMap(allBrands);
 
@@ -75,6 +78,34 @@ async function Overview({ searchParams }: { searchParams: Promise<SP> }) {
         <Kpi label="Being fixed" value={inProgress} sub={`${o.by_status.accepted} accepted · ${o.by_status.fixed} awaiting check`} />
         <Kpi label="Coverage" value={o.skus} sub={`products monitored on ${o.pages} pages`} />
       </div>
+
+      {nextActions.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Lightbulb className="size-4 text-muted-foreground" /> Next best actions
+            </CardTitle>
+            <CardDescription>The highest-impact things to do this week.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ol className="grid gap-3 md:grid-cols-3">
+              {nextActions.map((r, i) => (
+                <li key={r.key} className="flex flex-col gap-1 rounded-lg border p-3">
+                  <span className="text-xs text-muted-foreground">
+                    {i + 1}. {r.owner_label}
+                    {r.impact_points > 0 && ` · +${r.impact_points} pts`}
+                  </span>
+                  <span className="text-sm font-medium">{r.title}</span>
+                  {r.is_demo && <DemoBadge className="mt-1 w-fit" />}
+                </li>
+              ))}
+            </ol>
+            <CarryLink href="/recommendations" className="mt-3 inline-flex items-center gap-1 text-sm underline-offset-4 hover:underline">
+              See all {recs.items.length} recommendations <ArrowRight className="size-3.5" />
+            </CarryLink>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
