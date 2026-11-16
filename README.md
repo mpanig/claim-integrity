@@ -3,10 +3,180 @@
 Checks that what retailers, professional sites and AI assistants say about a CPG
 product (ingredients, free-from claims, other claims, seals, name) matches what the
 brand has approved. Every mismatch becomes a conflict with a verdict, a severity
-and a workflow, and the web app turns this into a suite for a marketing team:
-scores, trends, competitor comparison, recommendations, alerts and reports.
+and a workflow. The web app turns this into a suite for a marketing team: scores,
+trends, competitor comparison, recommendations, alerts and reports.
 
-## Layout
+- [Set up on a fresh machine](#set-up-on-a-fresh-machine)
+- [Run it](#run-it)
+- [Tests](#tests)
+- [Project structure](#project-structure)
+- [Screens](#screens) · [Rules](#rules) · [Pilot data](#pilot-data) · [What is demo data](#what-is-demo-data) · [Not built yet](#not-built-yet-todo)
+- [Troubleshooting](#troubleshooting)
+
+## Set up on a fresh machine
+
+### 1. Prerequisites
+
+| Tool | Version used | Notes |
+|---|---|---|
+| OS | Ubuntu 22.04 on WSL2 (Windows), any Linux, or macOS | Windows: run everything inside WSL |
+| [uv](https://docs.astral.sh/uv/getting-started/installation/) | 0.13 | installs Python 3.12 for you (`requires-python >=3.12,<3.13`) |
+| Node.js | 24 (20 or newer works) | e.g. via [nvm](https://github.com/nvm-sh/nvm): `nvm install --lts` |
+| PostgreSQL | 15 (13 or newer) | reachable on `localhost:5432` |
+| git | any recent | |
+| Chromium for Playwright | optional | only for the end-to-end check |
+
+Install uv and Node if you don't have them:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+nvm install --lts
+```
+
+Install PostgreSQL (Ubuntu / WSL):
+
+```bash
+sudo apt update && sudo apt install -y postgresql postgresql-client
+sudo service postgresql start
+```
+
+macOS: `brew install postgresql@15 && brew services start postgresql@15`.
+
+### 2. Get the code
+
+```bash
+git clone <repository-url> claim-integrity
+cd claim-integrity
+```
+
+### 3. Create the databases
+
+You need two databases: `claim_integrity` for the app and `claim_integrity_test` for the tests
+(the test suite drops and recreates it on every run).
+
+**Option A: psql.** Create a login role and both databases (pick your own password):
+
+```bash
+sudo -u postgres psql -c "CREATE ROLE claim_app LOGIN PASSWORD 'choose-a-password';"
+sudo -u postgres psql -c "CREATE DATABASE claim_integrity OWNER claim_app;"
+sudo -u postgres psql -c "ALTER ROLE claim_app CREATEDB;"   # lets the tests recreate claim_integrity_test
+```
+
+The test database is created by the tests themselves. To create it up front anyway:
+`sudo -u postgres psql -c "CREATE DATABASE claim_integrity_test OWNER claim_app;"`
+
+**Option B: the included script.** If you already have a Postgres user that may create
+databases (for example `postgres`), fill in `.env` (next step) and run:
+
+```bash
+cd backend
+uv run python -m scripts.create_db     # creates the database named in DATABASE_URL if missing
+```
+
+### 4. Configure `backend/.env`
+
+```bash
+cd backend
+cp .env.example .env
+```
+
+Edit `backend/.env`. It is git-ignored; never commit it.
+
+| Variable | Required | What it is |
+|---|---|---|
+| `DATABASE_URL` | yes | `postgresql+psycopg://USER:PASSWORD@localhost:5432/claim_integrity` |
+| `TEST_DATABASE_URL` | for tests | same server, database name must end in `_test`: `.../claim_integrity_test` |
+| `CORS_ORIGINS` | no | JSON list of browser origins allowed to call the API directly; default `["http://localhost:3000","http://127.0.0.1:3000"]` |
+
+The collector agent (being built, not on `main` yet) adds optional keys. Every connector
+that needs a missing key is skipped with a logged reason; the rest still run.
+
+| Variable | Unlocks |
+|---|---|
+| `ANTHROPIC_API_KEY` | Claude reads pages into claim fields, checks borderline "is this our product?" matches, and plans search queries |
+| `BRAVE_API_KEY` | Brave Search: find retailer pages, reviews and "best X" articles |
+| `EXA_API_KEY` | Exa search: same purpose as Brave, alongside or instead of it |
+| `JINA_API_KEY` | Jina Reader at a higher rate (it also works without a key, slowly) for JavaScript-heavy pages |
+| `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET` | Reddit posts mentioning the product (official API) |
+| `YOUTUBE_API_KEY` | YouTube videos and descriptions (YouTube Data API) |
+| `KEEPA_API_KEY` or `RAINFOREST_API_KEY` | Amazon listings through a licensed data provider (amazon.com is never scraped) |
+
+### 5. Install, migrate, seed
+
+```bash
+cd backend
+uv sync                                       # creates .venv with Python 3.12 and all packages
+uv run alembic upgrade head                   # creates all tables
+uv run python -m app.seed --demo-history      # pilot data + sample history (see below)
+```
+
+- `uv run python -m app.seed` loads the pilot products, retailer pages and a sample team, and runs a check.
+  Re-running it resets the pilot organisation.
+- `--demo-history` also adds 12 weeks of score history and six sample AI-assistant answers.
+  These rows are flagged as demo in the database and every chart or card that uses them
+  shows a **Demo data** badge. Leave the flag out to see only real results.
+- `--no-run` seeds without running the first check.
+
+### 6. Install the frontend
+
+```bash
+cd frontend
+npm install
+```
+
+Frontend environment (optional, e.g. in `frontend/.env.local`):
+
+| Variable | Default | What it is |
+|---|---|---|
+| `API_URL` | `http://127.0.0.1:8000` | where the Next server finds the FastAPI backend; the browser calls `/api/*` on the Next server, which forwards there |
+
+## Run it
+
+Two terminals:
+
+```bash
+# terminal 1: API on http://localhost:8000 (docs at /docs)
+cd backend
+uv run uvicorn app.main:app --reload
+```
+
+```bash
+# terminal 2: web app on http://localhost:3000
+cd frontend
+npm run dev
+```
+
+Open <http://localhost:3000>. For a production build: `npm run build && npm start`.
+
+## Tests
+
+Backend (needs `TEST_DATABASE_URL`):
+
+```bash
+cd backend
+uv run pytest
+```
+
+Frontend type check and lint:
+
+```bash
+cd frontend
+npx tsc --noEmit
+npx eslint src
+```
+
+End-to-end check (both apps running, seeded with `--demo-history`). It opens every screen,
+fails on any console error, runs Accept → Mark fixed on a conflict, and writes screenshots
+to `docs/screenshots/`:
+
+```bash
+cd frontend
+npx playwright install chromium        # once; or set BROWSER_CHANNEL=chrome to use an installed Chrome
+node e2e/verify.mjs
+```
+
+## Project structure
 
 ```
 backend/                 FastAPI + SQLAlchemy 2 + Alembic (Python 3.12, uv)
@@ -17,58 +187,15 @@ backend/                 FastAPI + SQLAlchemy 2 + Alembic (Python 3.12, uv)
                          ai_visibility, alerts, reports
     api/                 one router per area
     seed.py              pilot data (CeraVe + Aveeno)
-  alembic/versions/      0001 core ... 0006 team_member
+  alembic/versions/      database migrations
   fixtures/              hand-written stand-in retailer pages + their extractions
+  scripts/               create_db.py, smoke.sh
   tests/                 pytest (rules + API against a real test database)
 frontend/                Next.js 16 (App Router), Tailwind 4, shadcn/ui (Base UI), Recharts
   src/app/               one folder per screen
   src/components/        shell, conflict panel, charts, tables, forms
   e2e/verify.mjs         Playwright check of every screen + screenshots
-docs/screenshots/        screenshots from the last verify run
-```
-
-## Run it (WSL / Linux)
-
-Needs [uv](https://docs.astral.sh/uv/), Node 20+ and Postgres 13+ on localhost:5432.
-
-Backend (terminal 1):
-
-```bash
-cd backend
-cp .env.example .env            # put your Postgres user/password in .env
-uv sync
-uv run python -m scripts.create_db
-uv run alembic upgrade head
-uv run python -m app.seed --demo-history   # omit --demo-history for real data only
-uv run uvicorn app.main:app --reload       # http://localhost:8000
-```
-
-Frontend (terminal 2):
-
-```bash
-cd frontend
-npm install
-npm run dev                      # http://localhost:3000
-```
-
-The browser calls `/api/*` on the Next server, which forwards to the backend
-(`API_URL`, default `http://127.0.0.1:8000`). CORS also allows `localhost:3000`.
-For a production build: `npm run build && npm start`.
-
-## Tests
-
-```bash
-cd backend && uv run pytest      # drops and recreates TEST_DATABASE_URL (must end in _test)
-cd frontend && npx tsc --noEmit && npx eslint src
-```
-
-End-to-end (both apps running, seeded with `--demo-history`):
-
-```bash
-cd frontend
-npx playwright install chromium  # or set BROWSER_CHANNEL=chrome to use installed Chrome
-node e2e/verify.mjs              # loads every screen, fails on console errors,
-                                 # does Accept -> Mark fixed, writes docs/screenshots/
+docs/screenshots/        screenshots from the last end-to-end run
 ```
 
 ## Screens
@@ -143,6 +270,38 @@ from the seeded pages.
 ## Not built yet (TODO)
 
 - Sign-in, per-organisation access and real users (everyone acts as "Demo CMO")
-- LLM extraction of pages and live AI-assistant queries (needs API keys)
-- Scheduled fetching of real retailer pages
+- Live AI-assistant queries (needs API keys)
+- The collector agent that finds and reads real public pages (in progress)
 - Email / Slack delivery of alerts and per-user notification settings
+
+## Troubleshooting
+
+**Port already in use** (`address already in use` for 8000 or 3000). Find and stop the process,
+or run on another port:
+
+```bash
+lsof -i :8000                                   # or :3000
+uv run uvicorn app.main:app --reload --port 8001
+API_URL=http://127.0.0.1:8001 npm run dev -- -p 3001
+```
+
+**Database authentication failed** (`password authentication failed for user`). Check the user,
+password and database in `backend/.env`. Test them directly:
+`psql "postgresql://USER:PASSWORD@localhost:5432/claim_integrity" -c "select 1"`. If Postgres
+runs on Windows while the code runs in WSL, make sure it listens on localhost and that WSL
+can reach it.
+
+**Database does not exist.** Run `uv run python -m scripts.create_db` or create it with psql (step 3),
+then `uv run alembic upgrade head`.
+
+**The web app says it can't reach the service.** The backend isn't running, or `API_URL` points
+to the wrong place. Start the backend and check <http://localhost:8000/health>.
+
+**Tests refuse to run** (`TEST_DATABASE_URL must name a database ending in _test`). That guard stops
+the tests from wiping your real database; point `TEST_DATABASE_URL` at a `_test` database.
+
+**Playwright can't find a browser** (`Executable doesn't exist`). Run `npx playwright install chromium`
+in `frontend/` (on Linux also `npx playwright install-deps chromium`, which needs sudo), or use an
+installed Chrome: `BROWSER_CHANNEL=chrome node e2e/verify.mjs`.
+
+**Charts show "Demo data".** You seeded with `--demo-history`. Re-seed without it for real data only.
