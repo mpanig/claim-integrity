@@ -10,6 +10,8 @@ from app.ai.brief import build_brief
 from app.ai.crawlers import analytics, ingest
 from app.ai.llms_txt import brand_hosts, check_host, generate, latest_checks
 from app.ai.readiness import grade_url, latest_grades
+from app.ai.referrals import ingest as referral_ingest
+from app.ai.referrals import referrals
 from app.api.common import DB, get_or_404
 from app.models import AuditUrl, Brand, LogUpload
 
@@ -98,6 +100,33 @@ async def crawler_upload(request: Request, session: DB, filename: str = Query(de
 
 @router.delete("/crawlers/uploads/{upload_id}", status_code=204)
 def crawler_delete(upload_id: int, session: DB) -> Response:
+    up = get_or_404(session, LogUpload, upload_id, "Upload")
+    session.delete(up)
+    session.commit()
+    return Response(status_code=204)
+
+
+@router.get("/referrals")
+def referral_analytics(session: DB, days: int = Query(default=56, ge=7, le=365)) -> dict[str, Any]:
+    """Sessions from AI assistants, from imported analytics CSVs (demo until the first import)."""
+    return referrals(session, days)
+
+
+@router.post("/referrals/upload", status_code=201)
+async def referral_upload(request: Request, session: DB, filename: str = Query(default="traffic.csv", max_length=300)) -> dict[str, Any]:
+    """Import an analytics CSV as the raw request body (date, source, sessions; optional conversions, landing page)."""
+    data = await request.body()
+    if not data:
+        raise HTTPException(422, "Empty file")
+    try:
+        up = referral_ingest(session, filename, data)
+    except ValueError as e:
+        raise HTTPException(422, str(e)) from e
+    return {"id": up.id, "lines": up.lines, "matched": up.matched, "skipped": up.skipped}
+
+
+@router.delete("/referrals/uploads/{upload_id}", status_code=204)
+def referral_delete(upload_id: int, session: DB) -> Response:
     up = get_or_404(session, LogUpload, upload_id, "Upload")
     session.delete(up)
     session.commit()

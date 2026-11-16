@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { CrawlerActivity, type CrawlerData } from "@/components/aeo/crawler-activity";
+import { type ReferralData, ReferralTraffic } from "@/components/aeo/referral-traffic";
 import { RunButton } from "@/components/audit/audit-actions";
 import { type Audit, PageAuditList } from "@/components/audit/page-audits";
 import { LoadingBlock } from "@/components/common";
@@ -16,7 +17,7 @@ export default function CrawlersPage() {
     <>
       <PageHeader
         title="Crawlers & traffic"
-        description="Which AI bots read your site, and whether they may. From your own server logs and robots.txt; we never pretend to be an AI bot."
+        description="Which AI bots read your site, whether they may, and how many visitors AI assistants send you. From your own logs, analytics and robots.txt; we never pretend to be an AI bot."
         actions={<RunButton path="/audit/run" label="Check pages now" ok="Pages checked" />}
       />
       <Suspense fallback={<LoadingBlock rows={4} />}>
@@ -27,8 +28,9 @@ export default function CrawlersPage() {
 }
 
 async function Crawlers() {
-  const [crawl, audits, brands, skus] = await Promise.all([
+  const [crawl, refs, audits, brands, skus] = await Promise.all([
     serverGet<CrawlerData>("/aeo/crawlers"),
+    serverGet<ReferralData>("/aeo/referrals"),
     serverGet<Audit[]>("/audit"),
     serverGet<Brand[]>("/brands"),
     serverGet<Sku[]>("/skus"),
@@ -36,6 +38,7 @@ async function Crawlers() {
   return (
     <div className="flex flex-col gap-6">
       <CrawlerActivity data={crawl} />
+      <ReferralTraffic data={refs} />
       <Card id="crawlability">
         <CardHeader>
           <CardTitle>Crawlability</CardTitle>

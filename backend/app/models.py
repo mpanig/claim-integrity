@@ -593,3 +593,18 @@ class CrawlerHit(Base):
     path: Mapped[str] = mapped_column(Text)
     status: Mapped[int] = mapped_column(Integer)
     hits: Mapped[int] = mapped_column(Integer)
+
+
+class ReferralVisit(Base):
+    """Sessions referred by AI assistants, from an imported analytics CSV, per day, source and landing page.
+    source is an AI engine label, or "Other" for all non-AI traffic (kept only as a total)."""
+
+    __tablename__ = "referral_visit"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    upload_id: Mapped[int] = _fk("log_upload.id")
+    day: Mapped[date] = mapped_column(Date, index=True)
+    source: Mapped[str] = mapped_column(String(50), index=True)
+    landing: Mapped[str] = mapped_column(Text, default="", server_default="")
+    sessions: Mapped[int] = mapped_column(Integer)
+    conversions: Mapped[float] = mapped_column(Float, default=0, server_default="0")

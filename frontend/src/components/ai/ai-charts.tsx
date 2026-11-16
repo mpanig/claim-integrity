@@ -99,7 +99,16 @@ export function DailyLines({ data, keys, unit = "hits" }: { data: Record<string,
           <Tooltip content={<ChartTooltip />} />
           <Legend formatter={legendText} iconType="plainline" />
           {keys.map((k, i) => (
-            <Line key={k} type="monotone" dataKey={k} name={k} stroke={k === "Other" ? "var(--muted-foreground)" : colors[i % colors.length]} strokeWidth={2} strokeDasharray={k === "Other" ? "4 4" : undefined} dot={false} />
+            <Line
+              key={k}
+              type="monotone"
+              dataKey={k}
+              name={k}
+              stroke={k.startsWith("Other") ? "var(--muted-foreground)" : colors[i % colors.length]}
+              strokeWidth={2}
+              strokeDasharray={k.startsWith("Other") ? "4 4" : undefined}
+              dot={false}
+            />
           ))}
         </LineChart>
       </ResponsiveContainer>
