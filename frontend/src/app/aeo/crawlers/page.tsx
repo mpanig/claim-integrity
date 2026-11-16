@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { CrawlerActivity, type CrawlerData } from "@/components/aeo/crawler-activity";
 import { RunButton } from "@/components/audit/audit-actions";
 import { type Audit, PageAuditList } from "@/components/audit/page-audits";
 import { LoadingBlock } from "@/components/common";
@@ -15,27 +16,35 @@ export default function CrawlersPage() {
     <>
       <PageHeader
         title="Crawlers & traffic"
-        description="Whether AI crawlers may read your pages. Read from robots.txt rules and page tags; we never pretend to be an AI bot."
+        description="Which AI bots read your site, and whether they may. From your own server logs and robots.txt; we never pretend to be an AI bot."
         actions={<RunButton path="/audit/run" label="Check pages now" ok="Pages checked" />}
       />
-      <Suspense fallback={<LoadingBlock rows={3} />}>
-        <Crawlability />
+      <Suspense fallback={<LoadingBlock rows={4} />}>
+        <Crawlers />
       </Suspense>
     </>
   );
 }
 
-async function Crawlability() {
-  const [audits, brands, skus] = await Promise.all([serverGet<Audit[]>("/audit"), serverGet<Brand[]>("/brands"), serverGet<Sku[]>("/skus")]);
+async function Crawlers() {
+  const [crawl, audits, brands, skus] = await Promise.all([
+    serverGet<CrawlerData>("/aeo/crawlers"),
+    serverGet<Audit[]>("/audit"),
+    serverGet<Brand[]>("/brands"),
+    serverGet<Sku[]>("/skus"),
+  ]);
   return (
-    <Card id="crawlability">
-      <CardHeader>
-        <CardTitle>Crawlability</CardTitle>
-        <CardDescription>Which AI crawlers each page allows. Blocking search crawlers keeps you out of AI answers that cite sources.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <PageAuditList audits={audits} brands={brands} skus={skus} show={["crawl"]} />
-      </CardContent>
-    </Card>
+    <div className="flex flex-col gap-6">
+      <CrawlerActivity data={crawl} />
+      <Card id="crawlability">
+        <CardHeader>
+          <CardTitle>Crawlability</CardTitle>
+          <CardDescription>Which AI crawlers each page allows. Blocking search crawlers keeps you out of AI answers that cite sources.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <PageAuditList audits={audits} brands={brands} skus={skus} show={["crawl"]} />
+        </CardContent>
+      </Card>
+    </div>
   );
 }

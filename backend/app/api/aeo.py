@@ -2,15 +2,16 @@
 
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query, Request, Response
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 
 from app.ai.brief import build_brief
+from app.ai.crawlers import analytics, ingest
 from app.ai.llms_txt import brand_hosts, check_host, generate, latest_checks
 from app.ai.readiness import grade_url, latest_grades
 from app.api.common import DB, get_or_404
-from app.models import AuditUrl, Brand
+from app.models import AuditUrl, Brand, LogUpload
 
 router = APIRouter(prefix="/aeo")
 
@@ -74,3 +75,30 @@ def llms_check_all(session: DB) -> dict[str, Any]:
 def llms_generate(brand_id: int, session: DB) -> dict[str, str]:
     """A draft llms.txt for the brand, from its products, approved facts and positioning."""
     return {"text": generate(session, get_or_404(session, Brand, brand_id, "Brand"))}
+
+
+@router.get("/crawlers")
+def crawler_analytics(session: DB, days: int = Query(default=28, ge=1, le=365)) -> dict[str, Any]:
+    """AI crawler hits from uploaded logs (demo until the first real upload)."""
+    return analytics(session, days)
+
+
+@router.post("/crawlers/upload", status_code=201)
+async def crawler_upload(request: Request, session: DB, filename: str = Query(default="access.log", max_length=300)) -> dict[str, Any]:
+    """Upload a log as the raw request body (combined log format or CSV). Only AI-bot counts are kept."""
+    data = await request.body()
+    if not data:
+        raise HTTPException(422, "Empty file")
+    try:
+        up = ingest(session, filename, data)
+    except ValueError as e:
+        raise HTTPException(422, str(e)) from e
+    return {"id": up.id, "lines": up.lines, "matched": up.matched, "skipped": up.skipped}
+
+
+@router.delete("/crawlers/uploads/{upload_id}", status_code=204)
+def crawler_delete(upload_id: int, session: DB) -> Response:
+    up = get_or_404(session, LogUpload, upload_id, "Upload")
+    session.delete(up)
+    session.commit()
+    return Response(status_code=204)

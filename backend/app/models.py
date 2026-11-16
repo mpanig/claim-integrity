@@ -560,3 +560,36 @@ class LlmsCheck(Base):
     score: Mapped[int | None] = mapped_column(Integer)
     result: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}")
     is_demo: Mapped[bool] = mapped_column(default=False, server_default="false")
+
+
+class LogUpload(Base):
+    """An uploaded web server log (AI crawler analytics) or AI referral export. Only aggregates
+    are kept (no IPs, no raw lines). is_demo uploads are hidden once a real one of the same kind exists."""
+
+    __tablename__ = "log_upload"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    kind: Mapped[str] = mapped_column(String(20), default="crawler", server_default="crawler")  # crawler | referral
+    filename: Mapped[str] = mapped_column(String(300))
+    uploaded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    lines: Mapped[int] = mapped_column(Integer, default=0)
+    matched: Mapped[int] = mapped_column(Integer, default=0)
+    skipped: Mapped[int] = mapped_column(Integer, default=0)
+    first_day: Mapped[date | None] = mapped_column(Date)
+    last_day: Mapped[date | None] = mapped_column(Date)
+    is_demo: Mapped[bool] = mapped_column(default=False, server_default="false")
+
+
+class CrawlerHit(Base):
+    """AI crawler requests from an uploaded log, aggregated per day, bot, path and status."""
+
+    __tablename__ = "crawler_hit"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    upload_id: Mapped[int] = _fk("log_upload.id")
+    day: Mapped[date] = mapped_column(Date, index=True)
+    bot: Mapped[str] = mapped_column(String(50), index=True)
+    path: Mapped[str] = mapped_column(Text)
+    status: Mapped[int] = mapped_column(Integer)
+    hits: Mapped[int] = mapped_column(Integer)

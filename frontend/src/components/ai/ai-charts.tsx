@@ -84,3 +84,25 @@ export function ScoreTrend({ trend, brands, colors, rivals = [] }: { trend: Reco
     </div>
   );
 }
+
+/** Daily counts per series (e.g. AI crawler hits per bot). Up to four series plus a neutral "Other". */
+export function DailyLines({ data, keys, unit = "hits" }: { data: Record<string, string | number>[]; keys: string[]; unit?: string }) {
+  const colors = ["var(--series-1)", "var(--series-2)", "var(--series-3)", "var(--series-4)"];
+  const rows = data.map((d) => ({ ...d, label: new Date(`${d.day}T00:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" }) }));
+  return (
+    <div className="h-64" role="img" aria-label={`Daily ${unit} for ${keys.join(", ")}`}>
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={rows} margin={{ top: 8, right: 16, bottom: 0, left: -12 }}>
+          <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
+          <XAxis dataKey="label" {...AXIS} minTickGap={16} />
+          <YAxis allowDecimals={false} {...AXIS} axisLine={false} />
+          <Tooltip content={<ChartTooltip />} />
+          <Legend formatter={legendText} iconType="plainline" />
+          {keys.map((k, i) => (
+            <Line key={k} type="monotone" dataKey={k} name={k} stroke={k === "Other" ? "var(--muted-foreground)" : colors[i % colors.length]} strokeWidth={2} strokeDasharray={k === "Other" ? "4 4" : undefined} dot={false} />
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}

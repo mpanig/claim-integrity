@@ -22,6 +22,7 @@ from app.pipeline.extract import ManualExtractor, save_extraction
 from app.pipeline.fetch import store_snapshot
 from app.pipeline.run import run_for_sku
 from app.ai.demo import generate_demo_answers
+from app.ai.crawlers import generate_demo_crawls
 from app.ai.llms_txt import generate_demo_checks
 from app.ai.readiness import generate_demo_grades
 from app.ai.library import seed_library
@@ -209,6 +210,7 @@ if __name__ == "__main__":
             print(f"demo AI answers: {generate_demo_answers(s)} (labelled 'Demo data' in the UI)")
             print(f"demo page grades: {generate_demo_grades(s)} (labelled 'Demo data' in the UI)")
             print(f"demo llms.txt checks: {generate_demo_checks(s)} (labelled 'Demo data' in the UI)")
+            print(f"demo AI crawler hits: {generate_demo_crawls(s)} (labelled 'Demo data' in the UI)")
             raise SystemExit(0)
         print(seed(s, run_checks=not args.no_run))
         if args.demo_history:
@@ -216,3 +218,4 @@ if __name__ == "__main__":
             print(f"demo AI answers: {generate_demo_answers(s)} (labelled 'Demo data' in the UI)")
             print(f"demo page grades: {generate_demo_grades(s)} (labelled 'Demo data' in the UI)")
             print(f"demo llms.txt checks: {generate_demo_checks(s)} (labelled 'Demo data' in the UI)")
+            print(f"demo AI crawler hits: {generate_demo_crawls(s)} (labelled 'Demo data' in the UI)")
