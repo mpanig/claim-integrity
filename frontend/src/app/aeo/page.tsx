@@ -3,11 +3,9 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { AiFilters } from "@/components/ai/ai-filters";
 import { MentionTrend, RankChart } from "@/components/ai/ai-charts";
-import { AiTabs } from "@/components/ai/ai-tabs";
 import { AwaitingEngines } from "@/components/ai/awaiting-engines";
 import { EngineStrip } from "@/components/ai/engine-strip";
 import { HeatmapControls } from "@/components/ai/heatmap-controls";
-import { BarListChart } from "@/components/charts/bar-list-chart";
 import { ConflictLink, DemoBadge, EmptyState, LoadingBlock } from "@/components/common";
 import { PageHeader } from "@/components/page-header";
 import { Pill, VerdictBadge } from "@/components/status";
@@ -21,16 +19,15 @@ import { displayValue } from "@/lib/format";
 import { first, type SP } from "@/lib/params";
 import type { Verdict } from "@/lib/types";
 
-export const metadata: Metadata = { title: "AI visibility" };
+export const metadata: Metadata = { title: "AEO / GEO overview" };
 
-export default function AiVisibilityPage({ searchParams }: PageProps<"/ai-visibility">) {
+export default function AeoOverviewPage({ searchParams }: PageProps<"/aeo">) {
   return (
     <>
       <PageHeader
-        title="AI visibility"
-        description="How AI assistants answer shopper questions about your category and products: who they mention and recommend, in what order, and whether the facts they state are right."
+        title="AEO / GEO"
+        description="Answer and generative engine optimisation: how AI assistants answer shopper questions about your category and products, who they mention and recommend, in what order, and whether the facts they state are right."
       />
-      <AiTabs />
       <Suspense fallback={<LoadingBlock rows={4} />}>
         <Overview searchParams={searchParams} />
       </Suspense>
@@ -209,33 +206,6 @@ async function Overview({ searchParams }: { searchParams: Promise<SP> }) {
             </CardContent>
           </Card>
 
-          <div className="grid gap-4 lg:grid-cols-5">
-            <Card className="lg:col-span-3">
-              <CardHeader>
-                <CardTitle className="flex flex-wrap items-center gap-2">Most cited sources {ins.demo && <DemoBadge />}</CardTitle>
-                <CardDescription>The sites AI answers link to. Getting these right improves what the AI says.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {ins.citations.domains.length ? (
-                  <BarListChart data={ins.citations.domains.map((d) => ({ label: d.domain, value: d.count }))} valueName="Citations" labelWidth={160} />
-                ) : (
-                  <p className="text-sm text-muted-foreground">No citations. Engines only cite sources with web search on.</p>
-                )}
-              </CardContent>
-            </Card>
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>By type of source</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <BarListChart
-                  data={Object.entries(ins.citations.by_type).sort((a, b) => b[1] - a[1]).map(([k, v]) => ({ label: k, value: v }))}
-                  valueName="Citations"
-                  labelWidth={90}
-                />
-              </CardContent>
-            </Card>
-          </div>
         </>
       )}
     </div>

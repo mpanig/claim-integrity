@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import { AiFilters } from "@/components/ai/ai-filters";
 import { AnswerLink, ViewToggle } from "@/components/ai/answer-link";
 import { AnswerSheet } from "@/components/ai/answer-sheet";
-import { AiTabs } from "@/components/ai/ai-tabs";
 import { AwaitingEngines } from "@/components/ai/awaiting-engines";
 import { EngineStrip } from "@/components/ai/engine-strip";
 import { DemoBadge, EmptyState, LoadingBlock, TimeAgo } from "@/components/common";
@@ -13,13 +12,12 @@ import { aiFilterParams, type AnswerBrief, COUNTRY_LABEL, type EngineMode, type 
 import { serverGet } from "@/lib/api";
 import { first, type SP } from "@/lib/params";
 
-export const metadata: Metadata = { title: "AI answers" };
+export const metadata: Metadata = { title: "AEO answers" };
 
-export default function AnswersPage({ searchParams }: PageProps<"/ai-visibility/answers">) {
+export default function AnswersPage({ searchParams }: PageProps<"/aeo/answers">) {
   return (
     <>
-      <PageHeader title="AI visibility" description="Read the answers themselves, or compare one question across engines and regions." />
-      <AiTabs />
+      <PageHeader title="Answers" description="Read the AI answers themselves, or compare one question across engines and regions." />
       <Suspense fallback={<LoadingBlock rows={3} />}>
         <Answers searchParams={searchParams} />
       </Suspense>

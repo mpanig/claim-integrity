@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { AiTabs } from "@/components/ai/ai-tabs";
+import { PromptTabs } from "@/components/aeo/prompt-tabs";
 import { PlanBuilder } from "@/components/ai/plan-builder";
 import { LoadingBlock, TimeAgo } from "@/components/common";
 import { PageHeader } from "@/components/page-header";
@@ -9,13 +9,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import type { AiRunRow, EngineStatus, Library, PlanConfig } from "@/lib/ai";
 import { serverGet } from "@/lib/api";
 
-export const metadata: Metadata = { title: "AI test plan" };
+export const metadata: Metadata = { title: "AEO test plans & runs" };
 
 export default function PlanPage() {
   return (
     <>
-      <PageHeader title="AI visibility" description="Choose what to ask, of which AI engines, as whom and from where; see the cost; then run it once or on a schedule." />
-      <AiTabs />
+      <PageHeader title="Prompts" description="Choose what to ask, of which AI engines, as whom and from where; see the cost; then run it once or on a schedule." />
+      <PromptTabs />
       <Suspense fallback={<LoadingBlock rows={4} />}>
         <Plan />
       </Suspense>

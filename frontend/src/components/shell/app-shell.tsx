@@ -1,19 +1,108 @@
 "use client";
 
-import { Menu, Moon, ShieldCheck, Sun } from "lucide-react";
+import { ChevronRight, Menu, Moon, ShieldCheck, Sun } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useUrlState } from "@/hooks/use-url-state";
 import { cn } from "@/lib/utils";
 import { AlertsBell } from "./alerts-bell";
-import { NAV } from "./nav";
+import { NAV, type NavItem } from "./nav";
 
 function isActive(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+}
+
+const OPEN_KEY = "nav-open:";
+
+function readOpen(href: string): boolean | null {
+  try {
+    const v = localStorage.getItem(OPEN_KEY + href);
+    return v === null ? null : v === "1";
+  } catch {
+    return null;
+  }
+}
+
+/** A sidebar entry with subsections: expanded while one of them is active, otherwise as the user left it. */
+function NavGroup({ item, pathname, carry, onNavigate }: { item: NavItem; pathname: string; carry: (href: string) => string; onNavigate?: () => void }) {
+  const { href, label, icon: Icon, children = [] } = item;
+  const inside = isActive(pathname, href);
+  // null = follow the route; true/false = the user's choice (remembered).
+  const [choice, setChoice] = useState<boolean | null>(null);
+  // Server render has no storage; read it after mount so hydration matches.
+  const [stored, setStored] = useState<boolean | null>(null);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one read of browser storage after hydration
+    setStored(readOpen(href));
+  }, [href]);
+  const [lastPath, setLastPath] = useState(pathname);
+  if (lastPath !== pathname) {
+    // Entering the group from elsewhere always opens it.
+    setLastPath(pathname);
+    if (inside && !isActive(lastPath, href)) setChoice(null);
+  }
+  const open = choice ?? (inside || (stored ?? false));
+  const id = `nav-${href.replaceAll("/", "")}`;
+  const toggle = () => {
+    const next = !open;
+    setChoice(next);
+    try {
+      localStorage.setItem(OPEN_KEY + href, next ? "1" : "0");
+    } catch {
+      /* storage unavailable: still toggles for this visit */
+    }
+  };
+  const childActive = (c: string) => (c === href ? pathname === href : isActive(pathname, c));
+  return (
+    <div className="flex flex-col gap-0.5">
+      <div className={cn("flex h-8 items-center rounded-lg text-sm text-sidebar-foreground/80", inside && "font-medium text-sidebar-foreground")}>
+        <Link
+          href={carry(href)}
+          onClick={onNavigate}
+          className="flex h-full flex-1 items-center gap-2.5 rounded-lg px-2 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+        >
+          <Icon className="size-4 shrink-0" />
+          <span>{label}</span>
+        </Link>
+        <button
+          type="button"
+          onClick={toggle}
+          aria-expanded={open}
+          aria-controls={id}
+          aria-label={`${open ? "Collapse" : "Expand"} ${label}`}
+          className="flex size-8 items-center justify-center rounded-lg hover:bg-sidebar-accent"
+        >
+          <ChevronRight className={cn("size-4 transition-transform", open && "rotate-90")} />
+        </button>
+      </div>
+      {open && (
+        <ul id={id} className="ml-4 flex flex-col gap-0.5 border-l pl-2">
+          {children.map((c) => {
+            const active = childActive(c.href);
+            return (
+              <li key={c.href}>
+                <Link
+                  href={carry(c.href)}
+                  onClick={onNavigate}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "flex h-7 items-center rounded-md px-2 text-[13px] text-sidebar-foreground/75 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground",
+                    active && "bg-sidebar-accent font-medium text-sidebar-foreground",
+                  )}
+                >
+                  {c.label}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
 }
 
 function NavList({ compact, onNavigate }: { compact?: boolean; onNavigate?: () => void }) {
@@ -25,8 +114,11 @@ function NavList({ compact, onNavigate }: { compact?: boolean; onNavigate?: () =
           <p className={cn("px-2 pb-1 text-[11px] font-medium tracking-wide text-muted-foreground uppercase", compact && "sr-only")}>
             {group.section}
           </p>
-          {group.items.map(({ href, label, icon: Icon }) => {
+          {group.items.map((item) => {
+            const { href, label, icon: Icon } = item;
             const active = isActive(pathname, href);
+            if (item.children && !compact)
+              return <NavGroup key={href} item={item} pathname={pathname} carry={carry} onNavigate={onNavigate} />;
             const link = (
               <Link
                 key={href}

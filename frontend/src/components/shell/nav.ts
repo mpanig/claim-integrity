@@ -2,7 +2,6 @@ import {
   Bell,
   Bot,
   FileText,
-  Globe,
   LayoutDashboard,
   Lightbulb,
   ListChecks,
@@ -11,9 +10,18 @@ import {
   Settings,
   ShieldCheck,
   SquareKanban,
+  type LucideIcon,
 } from "lucide-react";
 
-export const NAV = [
+export interface NavItem {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  /** Subsections, shown as a collapsible group. */
+  children?: { href: string; label: string }[];
+}
+
+export const NAV: { section: string; items: NavItem[] }[] = [
   {
     section: "Monitor",
     items: [
@@ -27,8 +35,20 @@ export const NAV = [
     section: "Insights",
     items: [
       { href: "/competitors", label: "Competitors", icon: Scale },
-      { href: "/ai-visibility", label: "AI visibility", icon: Bot },
-      { href: "/audit", label: "Site & entity audit", icon: Globe },
+      {
+        href: "/aeo",
+        label: "AEO / GEO",
+        icon: Bot,
+        children: [
+          { href: "/aeo", label: "Overview" },
+          { href: "/aeo/prompts", label: "Prompts" },
+          { href: "/aeo/answers", label: "Answers" },
+          { href: "/aeo/citations", label: "Citations & sources" },
+          { href: "/aeo/content", label: "Content & pages" },
+          { href: "/aeo/crawlers", label: "Crawlers & traffic" },
+          { href: "/aeo/coverage", label: "Coverage" },
+        ],
+      },
       { href: "/recommendations", label: "Recommendations", icon: Lightbulb },
       { href: "/alerts", label: "Alerts", icon: Bell },
       { href: "/reports", label: "Reports", icon: FileText },
@@ -41,7 +61,7 @@ export const NAV = [
       { href: "/settings", label: "Settings", icon: Settings },
     ],
   },
-] as const;
+];
 
 export const RANGES = [
   { value: "4w", label: "Last 4 weeks" },

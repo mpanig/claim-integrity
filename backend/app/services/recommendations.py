@@ -172,7 +172,7 @@ def build(session: Session, brand_id: int | None = None) -> list[dict[str, Any]]
         r = rec(f"ai:{sku_id}", rule="correct_ai_answers", sku=sku, owner_type="pr_editorial", ease=0.5,
                 title=f"Correct what AI assistants say about {sku.name}",
                 why=f"{len(wrong)} AI answer{'s' if len(wrong) != 1 else ''} state outdated or unapproved facts. Publish clear, current product information (brand site FAQ, PR, editorial) that assistants can pick up, and fix the retail pages they repeat.",
-                link="/ai-visibility")
+                link="/aeo")
         r.weighted = 6.0 * len(wrong)
         r.severity = 6
         r.is_demo = all(a.is_demo for a in wrong)

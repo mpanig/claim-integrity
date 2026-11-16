@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { AiTabs } from "@/components/ai/ai-tabs";
+import { PromptTabs } from "@/components/aeo/prompt-tabs";
 import { LibraryEditor } from "@/components/ai/library-editor";
 import { LoadingBlock } from "@/components/common";
 import { PageHeader } from "@/components/page-header";
 import type { Library } from "@/lib/ai";
 import { serverGet } from "@/lib/api";
 
-export const metadata: Metadata = { title: "AI prompt library" };
+export const metadata: Metadata = { title: "AEO prompts" };
 
 export default function LibraryPage() {
   return (
     <>
-      <PageHeader title="AI visibility" description="The questions, wordings, personas and brand names the AI tests use." />
-      <AiTabs />
+      <PageHeader title="Prompts" description="The questions, wordings, personas and brand names the AI tests use." />
+      <PromptTabs />
       <Suspense fallback={<LoadingBlock rows={3} />}>
         <LibraryLoader />
       </Suspense>

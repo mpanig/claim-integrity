@@ -228,11 +228,10 @@ docs/screenshots/        screenshots from the last end-to-end run
 | Conflicts | All issues with status / type / owner filters in the URL; bulk accept, dismiss, assign |
 | Fix board | To review → Accepted → Fixed → Verified, drag or buttons, owner and due date on cards |
 | Competitors | Brand cards, score and issues-per-product charts, claim-type × brand heatmap, claims coverage (approved vs unapproved), insights |
-| AI visibility | Overview: mention, recommendation and top-3 rates with 95% ranges, share of voice, sentiment, heatmap by engine × region × persona, rank distribution, fact accuracy and echoed page issues, cited sources, weekly trend. Answers: explorer and side-by-side compare. Test plan: builder with cost estimate, budget cap, save and schedule. Library: prompts, wording variants (any language), personas, competitors, aliases |
+| AEO / GEO | A sidebar group (formerly AI visibility and Site & entity audit). **Overview**: mention, recommendation and top-3 rates with 95% ranges, share of voice, sentiment, heatmap by engine × region × persona, rank distribution, fact accuracy and echoed page issues, weekly trend. **Prompts**: library (prompts, wording variants in any language, personas, competitors, aliases) and test plans & runs (builder with cost estimate, budget cap, save and schedule). **Answers**: explorer and side-by-side compare. **Citations & sources**: most cited sites, source types, gap sites. **Content & pages**: structured data, freshness, brand entity clarity. **Crawlers & traffic**: AI crawler access per page. **Coverage**: shopper situations where competitors win. Old `/ai-visibility/*` and `/audit` links redirect. |
 | Recommendations | Ranked actions (risk × page weight × ease) with why, impact, owner team, Create task |
 | Alerts | New high-risk issues and score drops (5+ points), read / unread, bell in the top bar |
 | Reports | Weekly per brand: score change, new issues, fixes verified, top issues, products; CSV export; white-label PDF download (logo, colours, title, footer set in Settings › Report branding); print |
-| Site & entity audit | Pages you enter: schema.org product data, AI crawler access, freshness; brand completeness on Wikidata / Wikipedia |
 | Truth sheets | Approved claims per product; edit them or add a product |
 | Settings | Team members and roles (owner menus use them), connection status |
 | Search | Products, pages and issues (Ctrl/Cmd+K) |
@@ -283,7 +282,7 @@ plan sets that context explicitly (persona, region, language).
 Run a saved plan on its schedule from cron (e.g. hourly): `uv run python -m app.ai.schedule`.
 Nothing scrapes consumer chat apps.
 
-## Site & entity audit
+## Page and entity checks (AEO / GEO › Content & pages, Crawlers & traffic)
 
 `backend/app/audit/` checks pages a user enters (the seed adds each product's brand page from its
 truth sheet). Each page is fetched once with an honest User-Agent after reading robots.txt; if
@@ -297,8 +296,9 @@ fetched. Nothing impersonates an AI crawler.
   ingredient list the page shows
 - Entity clarity: each brand's Wikidata entry and Wikipedia article (public APIs), scored on the facts AI models use
 
-AI visibility › Coverage uses AI answers: use cases (question type × persona) where a competitor
-is mentioned more than us, and third-party sites the answers cite. The worker re-audits weekly.
+AEO / GEO › Coverage uses AI answers: use cases (question type × persona) where a competitor
+is mentioned more than us. AEO / GEO › Citations & sources lists the third-party sites the answers
+cite. The worker re-audits weekly.
 
 ## Pilot data
 
@@ -316,9 +316,9 @@ the GTINs are empty. The sample team in Settings uses fictional names.
 `--demo-history` adds, all flagged `is_demo` in the database and shown with a **Demo data** badge:
 
 - 12 weeks of score history (Overview trend charts, last-week score in Reports)
-- 480 template-generated AI answers across all four engines, US and India, every persona
-  (AI visibility, and the "Correct what AI assistants say" recommendation). For each engine they
-  are shown only until that engine has real answers.
+- About 8,700 template-generated AI answers across all four engines (2 models each), US, India
+  (English and Hindi) and UK, every persona, 12 weekly runs (AEO / GEO, and the "Correct what AI
+  assistants say" recommendation). For each engine they are hidden as soon as its API key is set.
 
 The prompt library, personas, competitors and aliases that the seed adds are real configuration,
 not demo data.

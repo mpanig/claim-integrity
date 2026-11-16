@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { AwaitingEngines } from "@/components/ai/awaiting-engines";
 import { Suspense } from "react";
 import { AiFilters } from "@/components/ai/ai-filters";
-import { AiTabs } from "@/components/ai/ai-tabs";
 import { DemoBadge, EmptyState, LoadingBlock } from "@/components/common";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,21 +10,19 @@ import { aiFilterParams, type EngineMode, type Library, pct, type Rate, rateRang
 import { serverGet } from "@/lib/api";
 import type { SP } from "@/lib/params";
 
-export const metadata: Metadata = { title: "AI coverage" };
+export const metadata: Metadata = { title: "AEO coverage" };
 
 interface Coverage {
   answers: number;
   demo: boolean;
   engines: EngineMode[];
-  third_party: { domain: string; page_type: string; citations: number; with_our_brand: number; gap: number }[];
   use_cases: { use_case: string; persona: string; answers: number; our_brand: string | null; ours: Rate; top_competitor: string | null; competitor: Rate; gap: number }[];
 }
 
-export default function CoveragePage({ searchParams }: PageProps<"/ai-visibility/coverage">) {
+export default function CoveragePage({ searchParams }: PageProps<"/aeo/coverage">) {
   return (
     <>
-      <PageHeader title="AI visibility" description="Which situations AI assistants recommend competitors in instead of you, and which outside sites shape those answers." />
-      <AiTabs />
+      <PageHeader title="Coverage" description="Shopper situations where AI assistants recommend a competitor instead of you." />
       <Suspense fallback={<LoadingBlock rows={3} />}>
         <CoverageView searchParams={searchParams} />
       </Suspense>
@@ -73,38 +70,6 @@ async function CoverageView({ searchParams }: { searchParams: Promise<SP> }) {
                   </TableCell>
                   <TableCell className="tabular-nums">{u.top_competitor ? `${u.top_competitor} · ${rateRange(u.competitor)}` : "–"}</TableCell>
                   <TableCell className="text-right tabular-nums">{u.gap > 0 ? `+${pct(u.gap)} to them` : u.gap < 0 ? `${pct(-u.gap)} ahead` : "even"}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex flex-wrap items-center gap-2">Third-party sites in AI answers {cov.demo && <DemoBadge />}</CardTitle>
-          <CardDescription>
-            Outside sites the answers cite. “Gap” counts citations in answers that recommend a competitor and don&apos;t mention us; those sites are worth outreach.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Site</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead className="text-right">Citations</TableHead>
-                <TableHead className="text-right">With our brand</TableHead>
-                <TableHead className="text-right">Gap</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {cov.third_party.map((d) => (
-                <TableRow key={d.domain}>
-                  <TableCell className="font-medium">{d.domain}</TableCell>
-                  <TableCell className="text-muted-foreground">{d.page_type}</TableCell>
-                  <TableCell className="text-right tabular-nums">{d.citations}</TableCell>
-                  <TableCell className="text-right tabular-nums">{d.with_our_brand}</TableCell>
-                  <TableCell className="text-right tabular-nums">{d.gap}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
