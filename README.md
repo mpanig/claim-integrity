@@ -150,6 +150,16 @@ npm run dev
 
 Open <http://localhost:3000>. For a production build: `npm run build && npm start`.
 
+Optional third terminal: the background worker keeps trend history real. It re-checks each
+product every `CHECK_INTERVAL_HOURS` (default 24; each check adds a score snapshot) and runs
+saved AI plans that are due. Settings shows when each job last ran.
+
+```bash
+cd backend
+uv run python -m app.worker            # loop, every 5 minutes
+uv run python -m app.worker --once     # one pass, e.g. from cron
+```
+
 ## Tests
 
 Backend (needs `TEST_DATABASE_URL`):

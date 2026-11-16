@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
-from app.api import ai, alerts, conflicts, recommendations, reports, search, skus, summary, team
+from app.api import ai, alerts, conflicts, jobs, recommendations, reports, search, skus, summary, team
 from app.api.common import DB
 from app.config import settings
 
@@ -31,3 +31,4 @@ app.include_router(recommendations.router)
 app.include_router(alerts.router)
 app.include_router(reports.router)
 app.include_router(team.router)
+app.include_router(jobs.router)

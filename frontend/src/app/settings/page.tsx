@@ -1,7 +1,7 @@
 import { Bot, KeyRound, Mail, Server } from "lucide-react";
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { CarryLink, LoadingBlock } from "@/components/common";
+import { CarryLink, LoadingBlock, TimeAgo } from "@/components/common";
 import { PageHeader } from "@/components/page-header";
 import { Pill } from "@/components/status";
 import { TeamManager } from "@/components/team-manager";
@@ -57,8 +57,56 @@ export default function SettingsPage() {
             </p>
           </CardContent>
         </Card>
+        <Suspense fallback={<LoadingBlock rows={1} />}>
+          <JobsCard />
+        </Suspense>
       </div>
     </>
+  );
+}
+
+interface Jobs {
+  check_interval_hours: number;
+  jobs: { name: string; label: string; last_started_at: string | null; last_status: string | null; last_detail: Record<string, unknown> | null }[];
+  scheduled_plans: { id: number; name: string; schedule: string; last_run_at: string | null }[];
+}
+
+async function JobsCard() {
+  const j = await serverGet<Jobs>("/jobs");
+  const never = j.jobs.every((x) => !x.last_started_at);
+  return (
+    <Card className="h-fit">
+      <CardHeader>
+        <CardTitle>Background jobs</CardTitle>
+        <CardDescription>
+          Products are re-checked every {j.check_interval_hours} hours; each check adds a point to the score trend. Saved AI plans run on their schedule.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3 text-sm">
+        {j.jobs.map((job) => (
+          <div key={job.name} className="flex items-center gap-2">
+            <span className="flex-1">{job.label}</span>
+            {job.last_status ? (
+              <Pill tone={job.last_status === "done" ? "good" : job.last_status === "failed" ? "critical" : "warning"}>
+                {job.last_status} · <TimeAgo iso={job.last_started_at} />
+              </Pill>
+            ) : (
+              <Pill tone="neutral">Never run</Pill>
+            )}
+          </div>
+        ))}
+        {j.scheduled_plans.length > 0 && (
+          <p className="text-xs text-muted-foreground">
+            Scheduled AI plans: {j.scheduled_plans.map((p) => `${p.name} (${p.schedule})`).join(", ")}
+          </p>
+        )}
+        {never && (
+          <p className="text-xs text-muted-foreground">
+            Start the worker next to the API with <code>uv run python -m app.worker</code>, or run one pass from cron with <code>--once</code>.
+          </p>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 

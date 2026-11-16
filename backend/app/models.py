@@ -423,6 +423,20 @@ class TeamMember(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
+class JobRun(Base):
+    """One pass of a background job (the worker), so the app can show when jobs last ran."""
+
+    __tablename__ = "job_run"
+    __table_args__ = (Index("ix_job_run_name_started", "name", "started_at"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(40))  # product_checks | ai_plans
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    status: Mapped[str] = mapped_column(String(20), default="running", server_default="running")  # running|done|failed
+    detail: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}")
+
+
 class AuditEvent(Base):
     """Who did what, when. Notes are events with action='note'."""
 
