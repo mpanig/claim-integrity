@@ -21,8 +21,10 @@ export interface Rate {
 export interface EngineMode {
   engine: EngineName;
   label: string;
-  mode: "live" | "demo" | "none";
+  /** awaiting = key found, no real answers yet (demo hidden). */
+  mode: "live" | "demo" | "none" | "awaiting";
   answers: number;
+  key?: boolean;
 }
 
 export interface Insights {

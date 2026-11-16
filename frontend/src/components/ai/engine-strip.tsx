@@ -9,15 +9,21 @@ export function EngineStrip({ modes, statuses }: { modes: EngineMode[]; statuses
     <ul className="flex flex-wrap gap-2" aria-label="Engines">
       {modes.map((m) => {
         const s = status[m.engine];
-        const tone = m.mode === "live" ? "good" : m.mode === "demo" ? "serious" : "neutral";
+        const tone = m.mode === "live" ? "good" : m.mode === "demo" ? "serious" : m.mode === "awaiting" ? "warning" : "neutral";
         const Icon = m.mode === "live" ? Radio : m.mode === "demo" ? FlaskConical : KeyRound;
+        const text = {
+          live: `live · ${m.answers}`,
+          demo: `demo · ${m.answers}`,
+          awaiting: "key found, no real answers yet",
+          none: "no answers",
+        }[m.mode];
         return (
           <li key={m.engine}>
             <Pill tone={tone} icon={Icon} title={s ? `${s.env_key}: ${s.status}` : undefined}>
               {m.label}
               <span className="text-muted-foreground">
-                {m.mode === "live" ? `live · ${m.answers}` : m.mode === "demo" ? `demo · ${m.answers}` : "no answers"}
-                {s?.status === "key missing" && " · key missing"}
+                {text}
+                {s?.status === "key missing" && m.mode !== "awaiting" && " · key missing"}
               </span>
             </Pill>
           </li>

@@ -89,7 +89,7 @@ def test_create_task_accepts_conflicts(checked, client):
 def test_ai_recommendation_is_flagged_demo(checked, client, session):
     from app.ai.demo import generate_demo_answers
 
-    generate_demo_answers(session)
+    generate_demo_answers(session, weeks=1, samples=1, density=0.1)
     ai = by_rule(recs(client))["correct_ai_answers"]
     assert {r["owner_type"] for r in ai} == {"pr_editorial"}
     assert all(r["is_demo"] for r in ai)

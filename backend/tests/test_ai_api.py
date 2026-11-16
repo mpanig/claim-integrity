@@ -84,7 +84,7 @@ def test_saved_configs_and_schedule(checked, client, session):
 def test_insights_and_answers_on_demo_data(checked, client, session):
     from app.ai.demo import generate_demo_answers
 
-    assert generate_demo_answers(session, weeks=2, samples=1) > 0
+    assert generate_demo_answers(session, weeks=2, samples=1, density=0.1) > 0
     ins = client.get("/ai/insights").json()
     assert ins["demo"] is True and {e["mode"] for e in ins["engines"]} == {"demo"}
     cerave = next(b for b in ins["brands"] if b["name"] == "CeraVe")

@@ -114,9 +114,15 @@ uv run python -m app.seed --demo-history      # pilot data + sample history (see
 
 - `uv run python -m app.seed` loads the pilot products, retailer pages and a sample team, and runs a check.
   Re-running it resets the pilot organisation.
-- `--demo-history` also adds 12 weeks of score history and six sample AI-assistant answers.
-  These rows are flagged as demo in the database and every chart or card that uses them
+- `--demo-history` also adds 12 weeks of score history and about 8,700 demo AI-assistant answers
+  (4 engines with 2 models each, search on and off, US / India (English and Hindi) / UK, 4 personas,
+  12 weekly runs). These rows are flagged as demo in the database and every chart or card that uses them
   shows a **Demo data** badge. Leave the flag out to see only real results.
+- `--demo-ai` only regenerates the demo AI answers, leaving everything else as it is.
+- When you add an engine's API key to `backend/.env`, that engine's demo answers stop showing (no restart
+  needed). Until it has real answers, the AI pages say "Key found, no real answers yet" with a **Run now**
+  button that shows the pilot plan's cost estimate and a budget cap first. Engines without a key keep
+  their badged demo answers.
 - `--no-run` seeds without running the first check.
 
 ### 6. Install the frontend

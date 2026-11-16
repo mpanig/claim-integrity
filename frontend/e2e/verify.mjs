@@ -65,14 +65,19 @@ await settle();
 await page.screenshot({ path: join(OUT, "04-conflict-detail.png") });
 console.log("ok  conflict panel  -> 04-conflict-detail.png");
 
-await panel.getByRole("button", { name: "Accept (create fix task)" }).click();
-await panel.getByText("Accepted · to fix").first().waitFor();
-await panel.getByRole("button", { name: "Mark fixed" }).click();
-await panel.getByText("Fixed · awaiting check").first().waitFor();
-const conflictId = new URL(page.url()).searchParams.get("conflict");
-const after = await (await fetch(`${BASE}/api/conflicts/${conflictId}`)).json();
-if (after.status !== "fixed") problems.push(`accept -> fixed: status is ${after.status}`);
-else console.log(`ok  accept -> fixed on conflict ${conflictId}`);
+const accept = panel.getByRole("button", { name: "Accept (create fix task)" });
+if (await accept.count()) {
+  await accept.click();
+  await panel.getByText("Accepted · to fix").first().waitFor();
+  await panel.getByRole("button", { name: "Mark fixed" }).click();
+  await panel.getByText("Fixed · awaiting check").first().waitFor();
+  const conflictId = new URL(page.url()).searchParams.get("conflict");
+  const after = await (await fetch(`${BASE}/api/conflicts/${conflictId}`)).json();
+  if (after.status !== "fixed") problems.push(`accept -> fixed: status is ${after.status}`);
+  else console.log(`ok  accept -> fixed on conflict ${conflictId}`);
+} else {
+  console.log("skip accept -> fixed: conflict already decided (reseed to rerun this step)");
+}
 await page.keyboard.press("Escape");
 
 await visit("/board", "05-fix-board.png");

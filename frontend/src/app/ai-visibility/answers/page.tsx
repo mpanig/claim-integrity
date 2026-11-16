@@ -4,6 +4,7 @@ import { AiFilters } from "@/components/ai/ai-filters";
 import { AnswerLink, ViewToggle } from "@/components/ai/answer-link";
 import { AnswerSheet } from "@/components/ai/answer-sheet";
 import { AiTabs } from "@/components/ai/ai-tabs";
+import { AwaitingEngines } from "@/components/ai/awaiting-engines";
 import { EngineStrip } from "@/components/ai/engine-strip";
 import { DemoBadge, EmptyState, LoadingBlock, TimeAgo } from "@/components/common";
 import { PageHeader } from "@/components/page-header";
@@ -48,6 +49,7 @@ async function Answers({ searchParams }: { searchParams: Promise<SP> }) {
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <EngineStrip modes={data.engines} statuses={engines} />
+        <AwaitingEngines modes={data.engines} />
         <ViewToggle view={view} />
       </div>
       <AiFilters personas={lib.personas} prompts={lib.prompts} regions={regions.length ? regions : ["US", "IN"]} showPrompt />

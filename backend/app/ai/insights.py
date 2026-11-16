@@ -11,7 +11,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
-from app.ai.engines import ENGINES
+from app.ai.engines import ENGINES, engine_env
 from app.models import AiAnswer, Conflict, Persona, Sku
 from app.services.trends import week_start
 
@@ -42,7 +42,10 @@ def select_answers(
     language: str | None = None,
     search: bool | None = None,
     sku_id: int | None = None,
+    env: dict[str, str] | None = None,
 ) -> tuple[list[AiAnswer], list[dict[str, Any]]]:
+    """Answers to report on. Per engine: with an API key, only real answers; without one,
+    real answers if any exist, else demo answers. The key is re-read on every call."""
     q = (
         select(AiAnswer)
         .options(selectinload(AiAnswer.mentions), selectinload(AiAnswer.claims), selectinload(AiAnswer.citations))
@@ -63,13 +66,19 @@ def select_answers(
     if sku_id:
         q = q.where(AiAnswer.sku_id == sku_id)
     rows = session.scalars(q.order_by(AiAnswer.asked_at)).all()
+    env = engine_env() if env is None else env
     chosen, modes = [], []
     for name, engine in ENGINES.items():
         live = [a for a in rows if a.engine == name and not a.is_demo]
         demo = [a for a in rows if a.engine == name and a.is_demo]
-        use = live or demo
+        if engine.status(env) == "live":
+            # Key present: real answers only, never mixed with demo; none yet -> "awaiting".
+            use, mode = live, "live" if live else "awaiting"
+        else:
+            use = live or demo
+            mode = "live" if live else ("demo" if demo else "none")
         chosen += use
-        modes.append({"engine": name, "label": engine.label, "mode": "live" if live else ("demo" if demo else "none"), "answers": len(use)})
+        modes.append({"engine": name, "label": engine.label, "mode": mode, "answers": len(use), "key": engine.status(env) == "live"})
     return chosen, modes
 
 
@@ -189,6 +198,7 @@ def insights(session: Session, **filters: Any) -> dict[str, Any]:
     return {
         "answers": n,
         "engines": modes,
+        "awaiting": [m["engine"] for m in modes if m["mode"] == "awaiting"],
         "demo": any(a.is_demo for a in answers),
         "brands": brands,
         "heatmap": heatmap,

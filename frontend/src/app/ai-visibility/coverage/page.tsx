@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AwaitingEngines } from "@/components/ai/awaiting-engines";
 import { Suspense } from "react";
 import { AiFilters } from "@/components/ai/ai-filters";
 import { AiTabs } from "@/components/ai/ai-tabs";
@@ -6,7 +7,7 @@ import { DemoBadge, EmptyState, LoadingBlock } from "@/components/common";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { aiFilterParams, type Library, pct, type Rate, rateRange } from "@/lib/ai";
+import { aiFilterParams, type EngineMode, type Library, pct, type Rate, rateRange } from "@/lib/ai";
 import { serverGet } from "@/lib/api";
 import type { SP } from "@/lib/params";
 
@@ -15,6 +16,7 @@ export const metadata: Metadata = { title: "AI coverage" };
 interface Coverage {
   answers: number;
   demo: boolean;
+  engines: EngineMode[];
   third_party: { domain: string; page_type: string; citations: number; with_our_brand: number; gap: number }[];
   use_cases: { use_case: string; persona: string; answers: number; our_brand: string | null; ours: Rate; top_competitor: string | null; competitor: Rate; gap: number }[];
 }
@@ -34,10 +36,17 @@ export default function CoveragePage({ searchParams }: PageProps<"/ai-visibility
 async function CoverageView({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
   const [cov, lib] = await Promise.all([serverGet<Coverage>("/ai/coverage", aiFilterParams(sp)), serverGet<Library>("/ai/library")]);
-  if (cov.answers === 0) return <EmptyState title="No answers for these filters">Run a test plan, or clear the filters.</EmptyState>;
+  if (cov.answers === 0)
+    return (
+      <div className="flex flex-col gap-6">
+        <AwaitingEngines modes={cov.engines} />
+        <EmptyState title="No answers for these filters">Run a test plan, or clear the filters.</EmptyState>
+      </div>
+    );
   return (
     <div className="flex flex-col gap-6">
-      <AiFilters personas={lib.personas} regions={["US", "IN"]} />
+      <AiFilters personas={lib.personas} regions={["US", "IN", "GB"]} />
+      <AwaitingEngines modes={cov.engines} />
       <Card>
         <CardHeader>
           <CardTitle className="flex flex-wrap items-center gap-2">Use-case coverage {cov.demo && <DemoBadge />}</CardTitle>

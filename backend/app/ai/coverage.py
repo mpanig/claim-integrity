@@ -51,11 +51,11 @@ def coverage(session: Session, **filters: Any) -> dict[str, Any]:
     third_party = sorted(domains.values(), key=lambda d: (-d["citations"], d["domain"]))
 
     groups: dict[tuple[str, str], list[Any]] = defaultdict(list)
+    labels = {pid: f"{INTENT_LABEL.get(p.intent, p.intent)}: {_topic(session, p)}" for pid, p in prompts.items()}
     for a in answers:
-        p = prompts.get(a.prompt_id)
-        if p is None:
+        use = labels.get(a.prompt_id)
+        if use is None:
             continue
-        use = f"{INTENT_LABEL.get(p.intent, p.intent)}: {_topic(session, p)}"
         groups[(use, personas.get(a.persona_id, "No persona") if a.persona_id else "No persona")].append(a)
     use_cases = []
     for (use, persona), group in groups.items():

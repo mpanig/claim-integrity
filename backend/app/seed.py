@@ -6,7 +6,7 @@
 All retailer pages are hand-written stand-ins in fixtures/, not scraped copies.
 Re-running deletes and recreates the pilot organisation (and everything under it).
 
-Run: uv run python -m app.seed [--no-run] [--demo-history]
+Run: uv run python -m app.seed [--no-run] [--demo-history] [--demo-ai]
 """
 
 import argparse
@@ -191,8 +191,16 @@ if __name__ == "__main__":
         action="store_true",
         help="also generate 12 weeks of score history and sample AI answers, marked as demo data in the UI",
     )
+    parser.add_argument(
+        "--demo-ai",
+        action="store_true",
+        help="only (re)generate the demo AI answers; does not reseed or touch any non-demo data",
+    )
     args = parser.parse_args()
     with SessionLocal() as s:
+        if args.demo_ai and not args.demo_history:
+            print(f"demo AI answers: {generate_demo_answers(s)} (labelled 'Demo data' in the UI)")
+            raise SystemExit(0)
         print(seed(s, run_checks=not args.no_run))
         if args.demo_history:
             print(f"demo history: {generate_demo_history(s)} snapshots (labelled 'Demo data' in the UI)")

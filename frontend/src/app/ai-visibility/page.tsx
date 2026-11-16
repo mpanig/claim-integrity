@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { AiFilters } from "@/components/ai/ai-filters";
 import { MentionTrend, RankChart } from "@/components/ai/ai-charts";
 import { AiTabs } from "@/components/ai/ai-tabs";
+import { AwaitingEngines } from "@/components/ai/awaiting-engines";
 import { EngineStrip } from "@/components/ai/engine-strip";
 import { HeatmapControls } from "@/components/ai/heatmap-controls";
 import { BarListChart } from "@/components/charts/bar-list-chart";
@@ -49,13 +50,13 @@ async function Overview({ searchParams }: { searchParams: Promise<SP> }) {
   const hmBrand = first(sp.hm_brand) ?? own[0]?.name ?? ins.brands[0]?.name ?? "";
   const hmMetric = first(sp.hm_metric) === "recommended" ? "recommended" : "mention";
   const colors = Object.fromEntries(own.map((b, i) => [b.name, SERIES[Math.min(i, SERIES.length - 1)]]));
-  const live = ins.engines.some((e) => e.mode === "live");
+  const keyed = ins.engines.some((e) => e.mode === "live" || e.mode === "awaiting");
 
   return (
     <div className="flex flex-col gap-6">
       <Alert>
         <Info />
-        <AlertTitle>{live ? "Live answers from the engines with keys" : "Demo answers: no AI engine is connected yet"}</AlertTitle>
+        <AlertTitle>{keyed ? "Real answers for engines with keys, demo for the rest" : "Demo answers: no AI engine is connected yet"}</AlertTitle>
         <AlertDescription>
           Answers come from each provider&apos;s official API, which has no account memory or personalisation like the
           consumer apps. We set the context instead: persona, region and language. Region goes through the API where it
@@ -66,6 +67,7 @@ async function Overview({ searchParams }: { searchParams: Promise<SP> }) {
 
       <div className="flex flex-col gap-3">
         <EngineStrip modes={ins.engines} statuses={engines} />
+        <AwaitingEngines modes={ins.engines} />
         <AiFilters personas={lib.personas} regions={regions.length ? regions : ["US", "IN"]} />
       </div>
 

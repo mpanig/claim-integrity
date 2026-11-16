@@ -135,7 +135,7 @@ def test_live_answers_replace_demo_per_engine(org_id, session):
     from app.ai.demo import generate_demo_answers
     from app.ai.runner import execute
 
-    generate_demo_answers(session, weeks=1, samples=1)
+    generate_demo_answers(session, weeks=1, samples=1, density=0.1)
     before = {e["engine"]: e["mode"] for e in insights(session)["engines"]}
     assert set(before.values()) == {"demo"}
 

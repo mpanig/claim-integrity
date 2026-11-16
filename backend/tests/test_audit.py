@@ -169,7 +169,7 @@ def test_audit_api(seeded, client):
 def test_ai_coverage(checked, client, session):
     from app.ai.demo import generate_demo_answers
 
-    generate_demo_answers(session, weeks=1, samples=1)
+    generate_demo_answers(session, weeks=1, samples=1, density=0.1)
     cov = client.get("/ai/coverage").json()
     assert cov["demo"] is True
     assert cov["third_party"] and all(d["page_type"] != "brand" for d in cov["third_party"])
