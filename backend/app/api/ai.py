@@ -11,6 +11,7 @@ from app.ai.discovery import discover
 from app.ai.engines import ENGINES, engine_env
 from app.ai.insights import insights, select_answers
 from app.ai.plan import LANGUAGE_NAMES, PlanConfig, estimate
+from app.ai.planned import planned
 from app.ai.runner import execute
 from app.ai.perception import ATTRIBUTES, perception
 from app.ai.score import aeo_score
@@ -44,6 +45,12 @@ def _org_id(session) -> int:
 
 
 # ---------------------------------------------------------------------------- engines
+
+
+@router.get("/engines/planned")
+def planned_engines() -> list[dict[str, Any]]:
+    """Engines planned but not connected yet, and the key that will switch each on (never the key itself)."""
+    return planned()
 
 
 @router.get("/engines")

@@ -1,4 +1,4 @@
-import { Bot, KeyRound, Mail, Server } from "lucide-react";
+import { Bot, Clock, KeyRound, Mail, Server } from "lucide-react";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { CarryLink, LoadingBlock, TimeAgo } from "@/components/common";
@@ -8,7 +8,7 @@ import { Pill } from "@/components/status";
 import { TeamManager } from "@/components/team-manager";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { serverGet } from "@/lib/api";
-import type { EngineStatus } from "@/lib/ai";
+import type { EngineStatus, PlannedEngine } from "@/lib/ai";
 import type { Team } from "@/lib/team";
 import type { Brand } from "@/lib/types";
 
@@ -123,7 +123,7 @@ async function JobsCard() {
 }
 
 async function EngineRows() {
-  const engines = await serverGet<EngineStatus[]>("/ai/engines");
+  const [engines, planned] = await Promise.all([serverGet<EngineStatus[]>("/ai/engines"), serverGet<PlannedEngine[]>("/ai/engines/planned")]);
   return (
     <>
       {engines.map((e) => (
@@ -136,6 +136,18 @@ async function EngineRows() {
             </>
           }
           status={<Pill tone={e.status === "live" ? "good" : "neutral"}>{e.status === "live" ? "Live" : "Key missing"}</Pill>}
+        />
+      ))}
+      {planned.map((p) => (
+        <Row
+          key={p.engine}
+          icon={Clock}
+          label={
+            <span title={p.how}>
+              {p.label} <span className="text-xs text-muted-foreground">({p.env_key})</span>
+            </span>
+          }
+          status={<Pill tone="neutral">{p.key_set ? "Key set, connector coming" : "Planned"}</Pill>}
         />
       ))}
     </>

@@ -6,7 +6,8 @@ import { LoadingBlock, TimeAgo } from "@/components/common";
 import { PageHeader } from "@/components/page-header";
 import { Pill } from "@/components/status";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { AiRunRow, EngineStatus, Library, PlanConfig } from "@/lib/ai";
+import { PlannedList } from "@/components/aeo/planned-engines";
+import type { AiRunRow, EngineStatus, Library, PlanConfig, PlannedEngine } from "@/lib/ai";
 import { serverGet } from "@/lib/api";
 
 export const metadata: Metadata = { title: "AEO test plans & runs" };
@@ -24,15 +25,25 @@ export default function PlanPage() {
 }
 
 async function Plan() {
-  const [lib, engines, saved, runs] = await Promise.all([
+  const [lib, engines, saved, runs, planned] = await Promise.all([
     serverGet<Library>("/ai/library"),
     serverGet<EngineStatus[]>("/ai/engines"),
     serverGet<{ id: number; name: string; config: PlanConfig; budget_usd: number; schedule: string; last_run_at: string | null }[]>("/ai/configs"),
     serverGet<AiRunRow[]>("/ai/runs"),
+    serverGet<PlannedEngine[]>("/ai/engines/planned"),
   ]);
   return (
     <div className="flex flex-col gap-6">
       <PlanBuilder lib={lib} engines={engines} saved={saved} />
+      <Card id="planned-engines">
+        <CardHeader>
+          <CardTitle>More engines (planned)</CardTitle>
+          <CardDescription>Not connected yet, so they can&apos;t be added to a plan. Each shows the key that will switch it on.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <PlannedList planned={planned} />
+        </CardContent>
+      </Card>
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>

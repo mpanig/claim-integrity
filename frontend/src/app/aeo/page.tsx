@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { AiFilters } from "@/components/ai/ai-filters";
 import { MentionTrend, RankChart } from "@/components/ai/ai-charts";
 import { AeoScoreSection } from "@/components/aeo/aeo-score";
+import { PlannedPills } from "@/components/aeo/planned-engines";
 import { AwaitingEngines } from "@/components/ai/awaiting-engines";
 import { EngineStrip } from "@/components/ai/engine-strip";
 import { HeatmapControls } from "@/components/ai/heatmap-controls";
@@ -13,7 +14,7 @@ import { Pill, VerdictBadge } from "@/components/status";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { type AeoScore, aiFilterParams, COUNTRY_LABEL, type EngineStatus, type Insights, type Library, pct, rateRange } from "@/lib/ai";
+import { type AeoScore, aiFilterParams, COUNTRY_LABEL, type EngineStatus, type Insights, type Library, pct, type PlannedEngine, rateRange } from "@/lib/ai";
 import { serverGet } from "@/lib/api";
 import { SERIES } from "@/lib/chart-colors";
 import { displayValue } from "@/lib/format";
@@ -38,11 +39,12 @@ export default function AeoOverviewPage({ searchParams }: PageProps<"/aeo">) {
 
 async function Overview({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
-  const [ins, engines, lib, score] = await Promise.all([
+  const [ins, engines, lib, score, planned] = await Promise.all([
     serverGet<Insights>("/ai/insights", aiFilterParams(sp)),
     serverGet<EngineStatus[]>("/ai/engines"),
     serverGet<Library>("/ai/library"),
     serverGet<AeoScore>("/ai/score", aiFilterParams(sp)),
+    serverGet<PlannedEngine[]>("/ai/engines/planned"),
   ]);
   const regions = [...new Set(ins.heatmap.map((h) => h.region))].sort();
   const own = ins.brands.filter((b) => b.is_own);
@@ -66,6 +68,7 @@ async function Overview({ searchParams }: { searchParams: Promise<SP> }) {
 
       <div className="flex flex-col gap-3">
         <EngineStrip modes={ins.engines} statuses={engines} />
+        <PlannedPills planned={planned} />
         <AwaitingEngines modes={ins.engines} />
         <AiFilters personas={lib.personas} regions={regions.length ? regions : ["US", "IN"]} />
       </div>

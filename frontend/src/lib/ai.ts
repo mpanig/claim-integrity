@@ -299,3 +299,14 @@ export interface ContentBrief {
   structure: { label: string; fix: string }[];
   markdown: string;
 }
+
+/** Engine listed but not connected yet; never run. */
+export interface PlannedEngine {
+  engine: string;
+  label: string;
+  env_key: string;
+  official_api: boolean;
+  how: string;
+  key_set: boolean;
+  status: string;
+}
