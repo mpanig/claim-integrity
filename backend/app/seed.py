@@ -21,7 +21,8 @@ from app.models import ApprovedClaim, Brand, Organisation, Page, Sku, TeamMember
 from app.pipeline.extract import ManualExtractor, save_extraction
 from app.pipeline.fetch import store_snapshot
 from app.pipeline.run import run_for_sku
-from app.services.ai_visibility import generate_demo_answers
+from app.ai.demo import generate_demo_answers
+from app.ai.library import seed_library
 from app.services.trends import generate_demo_history
 
 FIXTURES = BACKEND_DIR / "fixtures"
@@ -171,6 +172,7 @@ def seed(
         )
     session.commit()
 
+    seed_library(session, org)  # AI prompt library, personas, competitors, aliases (real config)
     if run_checks:
         for sku in skus.values():
             run_for_sku(session, sku)

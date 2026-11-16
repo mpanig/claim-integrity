@@ -89,18 +89,19 @@ Edit `backend/.env`. It is git-ignored; never commit it.
 | `TEST_DATABASE_URL` | for tests | same server, database name must end in `_test`: `.../claim_integrity_test` |
 | `CORS_ORIGINS` | no | JSON list of browser origins allowed to call the API directly; default `["http://localhost:3000","http://127.0.0.1:3000"]` |
 
-The collector agent (being built, not on `main` yet) adds optional keys. Every connector
-that needs a missing key is skipped with a logged reason; the rest still run.
+AI answer engine keys (all optional, empty placeholders in `.env.example`). Each key switches
+that engine from demo answers to live answers; engines without a key are skipped and cost nothing.
 
 | Variable | Unlocks |
 |---|---|
-| `ANTHROPIC_API_KEY` | Claude reads pages into claim fields, checks borderline "is this our product?" matches, and plans search queries |
-| `BRAVE_API_KEY` | Brave Search: find retailer pages, reviews and "best X" articles |
-| `EXA_API_KEY` | Exa search: same purpose as Brave, alongside or instead of it |
-| `JINA_API_KEY` | Jina Reader at a higher rate (it also works without a key, slowly) for JavaScript-heavy pages |
-| `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET` | Reddit posts mentioning the product (official API) |
-| `YOUTUBE_API_KEY` | YouTube videos and descriptions (YouTube Data API) |
-| `KEEPA_API_KEY` or `RAINFOREST_API_KEY` | Amazon listings through a licensed data provider (amazon.com is never scraped) |
+| `OPENAI_API_KEY` | OpenAI Responses API, with or without its web search tool (region passed as user location) |
+| `GEMINI_API_KEY` | Gemini with or without Google Search grounding (no location option: region goes in the question) |
+| `PERPLEXITY_API_KEY` | Perplexity Sonar (always searches the web; region passed as user location) |
+| `ANTHROPIC_API_KEY` | Claude, with or without its web search tool (region passed as user location); also makes Claude the answer analyser |
+| `OLLAMA_URL`, `OLLAMA_MODEL` | If no Anthropic key: a local model through [Ollama](https://ollama.com) analyses answers (`ollama pull qwen2.5:7b`). Without either, built-in rules analyse them |
+
+Provider endpoints can be overridden with `OPENAI_API_URL`, `GEMINI_API_URL` and `PERPLEXITY_API_URL`
+if a provider moves them.
 
 ### 5. Install, migrate, seed
 
@@ -184,7 +185,9 @@ backend/                 FastAPI + SQLAlchemy 2 + Alembic (Python 3.12, uv)
     models.py            all tables
     pipeline/            fetch -> extract -> compare -> run (reconcile conflicts)
     services/            workflow, scoring, trends, competitors, recommendations,
-                         ai_visibility, alerts, reports
+                         alerts, reports
+    ai/                  AI answer engine: engines (OpenAI, Gemini, Perplexity, Claude),
+                         plan, runner, analyse, insights, library, demo, schedule
     api/                 one router per area
     seed.py              pilot data (CeraVe + Aveeno)
   alembic/versions/      database migrations
@@ -209,7 +212,7 @@ docs/screenshots/        screenshots from the last end-to-end run
 | Conflicts | All issues with status / type / owner filters in the URL; bulk accept, dismiss, assign |
 | Fix board | To review → Accepted → Fixed → Verified, drag or buttons, owner and due date on cards |
 | Competitors | Brand cards, score and issues-per-product charts, claim-type × brand heatmap, claims coverage (approved vs unapproved), insights |
-| AI visibility | Prompts to track, answers, facts checked against the truth sheet, repeats of page issues, share of voice |
+| AI visibility | Overview: mention, recommendation and top-3 rates with 95% ranges, share of voice, sentiment, heatmap by engine × region × persona, rank distribution, fact accuracy and echoed page issues, cited sources, weekly trend. Answers: explorer and side-by-side compare. Test plan: builder with cost estimate, budget cap, save and schedule. Library: prompts, wording variants (any language), personas, competitors, aliases |
 | Recommendations | Ranked actions (risk × page weight × ease) with why, impact, owner team, Create task |
 | Alerts | New high-risk issues and score drops (5+ points), read / unread, bell in the top bar |
 | Reports | Weekly per brand: score change, new issues, fixes verified, top issues, products; CSV export; print / PDF |
@@ -245,6 +248,24 @@ Unresolved = open, accepted, fixed.
 Recommendations, alert and AI rules are documented at the top of
 `backend/app/services/recommendations.py`, `alerts.py` and `ai_visibility.py`.
 
+## AI answer engine
+
+`backend/app/ai/` asks AI assistants shopper questions through their official APIs and measures
+the answers. A test plan expands to prompts × wording variants × engines × models × web search
+on/off × regions × languages × personas × samples (default 3, since answers vary run to run).
+Every answer is stored raw with what shaped it: requested model and the exact version returned,
+web search on/off, region and how it was applied (`api` user location, or `prompt-only`),
+language, persona, sample number, tokens, cost, latency.
+
+Each answer is analysed for brand mentions (alias matching), rank in list answers, recommended
+or not, sentiment, product facts checked against the truth sheet (with links to open page
+issues they repeat), and citations by page type. Rates are reported with 95% Wilson ranges.
+APIs are stateless: they don't reproduce the consumer apps' memory or personalisation, so the
+plan sets that context explicitly (persona, region, language).
+
+Run a saved plan on its schedule from cron (e.g. hourly): `uv run python -m app.ai.schedule`.
+Nothing scrapes consumer chat apps.
+
 ## Pilot data
 
 - CeraVe Hydrating Facial Cleanser (truth: cerave.com) vs a Rite Aid page with the old formula:
@@ -261,8 +282,12 @@ the GTINs are empty. The sample team in Settings uses fictional names.
 `--demo-history` adds, all flagged `is_demo` in the database and shown with a **Demo data** badge:
 
 - 12 weeks of score history (Overview trend charts, last-week score in Reports)
-- six invented AI-assistant answers from "Assistant A/B (demo)" (AI visibility, and the
-  "Correct what AI assistants say" recommendation)
+- 480 template-generated AI answers across all four engines, US and India, every persona
+  (AI visibility, and the "Correct what AI assistants say" recommendation). For each engine they
+  are shown only until that engine has real answers.
+
+The prompt library, personas, competitors and aliases that the seed adds are real configuration,
+not demo data.
 
 Everything else (scores, conflicts, recommendations, alerts, competitor comparison) is computed
 from the seeded pages.
@@ -270,8 +295,9 @@ from the seeded pages.
 ## Not built yet (TODO)
 
 - Sign-in, per-organisation access and real users (everyone acts as "Demo CMO")
-- Live AI-assistant queries (needs API keys)
-- The collector agent that finds and reads real public pages (in progress)
+- Live AI answers need API keys (the engine is built; without keys it shows demo data)
+- Reading real retailer pages: a scraper/collector was started and is shelved on the
+  `shelved/scraper` branch
 - Email / Slack delivery of alerts and per-user notification settings
 
 ## Troubleshooting

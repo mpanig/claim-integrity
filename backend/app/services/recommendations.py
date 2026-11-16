@@ -26,7 +26,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
-from app.models import AiAnswer, ApprovedClaim, Conflict, ConflictStatus, Page, Sku, Verdict
+from app.models import AiAnswer, AnswerClaim, ApprovedClaim, Conflict, ConflictStatus, Page, Sku, Verdict
 from app.pipeline.compare import COMPARED_FIELDS
 from app.services.scoring import MAX_SEVERITY, UNRESOLVED, Tally, sku_tallies
 
@@ -157,15 +157,16 @@ def build(session: Session, brand_id: int | None = None) -> list[dict[str, Any]]
             r.weighted = 3.0 * len(gaps)  # a low, steady priority
             r.severity = 3
 
-    # Gap: AI assistants stating wrong facts (TODO(llm): only demo answers exist today).
-    from app.services.ai_visibility import compare_answer  # local import avoids a cycle
-    from app.pipeline.run import truth_for_sku
-
-    answers = session.scalars(select(AiAnswer).where(AiAnswer.sku_id.in_(skus))).all()
+    # Gap: AI answers stating wrong or unapproved facts (verdicts set by app.ai.analyse).
     by_sku: dict[int, list[AiAnswer]] = defaultdict(list)
-    for a in answers:
-        if compare_answer(truth_for_sku(session, skus[a.sku_id]), a.stated_facts):
-            by_sku[a.sku_id].append(a)
+    wrong_rows = session.execute(
+        select(AnswerClaim.sku_id, AiAnswer)
+        .join(AiAnswer, AnswerClaim.answer_id == AiAnswer.id)
+        .where(AnswerClaim.sku_id.in_(skus), AnswerClaim.verdict.is_not(None), AiAnswer.error.is_(None))
+    ).all()
+    for sku_id, answer in wrong_rows:
+        if answer not in by_sku[sku_id]:
+            by_sku[sku_id].append(answer)
     for sku_id, wrong in by_sku.items():
         sku = skus[sku_id]
         r = rec(f"ai:{sku_id}", rule="correct_ai_answers", sku=sku, owner_type="pr_editorial", ease=0.5,

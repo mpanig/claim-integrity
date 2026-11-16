@@ -1,224 +1,294 @@
-import { Bot, PlugZap, Repeat } from "lucide-react";
+import { Info, Repeat } from "lucide-react";
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { AiPromptForm, DeletePromptButton } from "@/components/ai-prompt-form";
+import { AiFilters } from "@/components/ai/ai-filters";
+import { MentionTrend, RankChart } from "@/components/ai/ai-charts";
+import { AiTabs } from "@/components/ai/ai-tabs";
+import { EngineStrip } from "@/components/ai/engine-strip";
+import { HeatmapControls } from "@/components/ai/heatmap-controls";
 import { BarListChart } from "@/components/charts/bar-list-chart";
-import { DemoBadge, EmptyState, LoadingBlock, TimeAgo } from "@/components/common";
+import { ConflictLink, DemoBadge, EmptyState, LoadingBlock } from "@/components/common";
 import { PageHeader } from "@/components/page-header";
-import { VerdictBadge } from "@/components/status";
+import { Pill, VerdictBadge } from "@/components/status";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { aiFilterParams, COUNTRY_LABEL, type EngineStatus, type Insights, type Library, pct, rateRange } from "@/lib/ai";
 import { serverGet } from "@/lib/api";
+import { SERIES } from "@/lib/chart-colors";
 import { displayValue } from "@/lib/format";
-import { FIELD_LABEL } from "@/lib/labels";
-import { brandParam, type SP } from "@/lib/params";
-import type { Field, Sku, Verdict } from "@/lib/types";
+import { first, type SP } from "@/lib/params";
+import type { Verdict } from "@/lib/types";
 
 export const metadata: Metadata = { title: "AI visibility" };
-
-interface AiOverview {
-  configured: boolean;
-  demo: boolean;
-  prompts: { id: number; text: string; sku_id: number | null; sku_name: string | null; answers: number }[];
-  answers: {
-    id: number;
-    prompt: string;
-    sku_name: string | null;
-    assistant: string;
-    answer: string;
-    asked_at: string;
-    stated_facts: Record<string, string[] | string>;
-    mentioned_brands: string[];
-    findings: { field: Field; verdict: Verdict; severity: number; stated: unknown; approved: unknown; echoes: string[] }[];
-    is_demo: boolean;
-  }[];
-  accuracy: { checked: number; with_issues: number };
-  share_of_voice: { brand: string; mentions: number; share: number }[];
-}
-
-const FACT_LABEL: Record<string, string> = { ...FIELD_LABEL, contains: "Says it contains" };
 
 export default function AiVisibilityPage({ searchParams }: PageProps<"/ai-visibility">) {
   return (
     <>
       <PageHeader
         title="AI visibility"
-        description="What AI assistants tell shoppers about your products, and whether it matches your approved claims."
+        description="How AI assistants answer shopper questions about your category and products: who they mention and recommend, in what order, and whether the facts they state are right."
       />
-      <Suspense fallback={<LoadingBlock rows={3} />}>
-        <AiVisibility searchParams={searchParams} />
+      <AiTabs />
+      <Suspense fallback={<LoadingBlock rows={4} />}>
+        <Overview searchParams={searchParams} />
       </Suspense>
     </>
   );
 }
 
-function verdictSentence(f: AiOverview["answers"][number]["findings"][number]): string {
-  const stated = displayValue(f.stated);
-  switch (f.verdict) {
-    case "outdated":
-      return `Says it contains ${stated}, which is not in the current formula.`;
-    case "risky":
-      return `Claims "${stated}", which is not approved.`;
-    case "drift":
-      return `Says "${stated}" instead of "${displayValue(f.approved)}".`;
-    default:
-      return `${FIELD_LABEL[f.field]}: ${stated}`;
-  }
-}
-
-async function AiVisibility({ searchParams }: { searchParams: Promise<SP> }) {
+async function Overview({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
-  const brand_id = brandParam(sp);
-  const [a, skus] = await Promise.all([
-    serverGet<AiOverview>("/ai-visibility", { brand_id }),
-    serverGet<Sku[]>("/skus", { brand_id }),
+  const [ins, engines, lib] = await Promise.all([
+    serverGet<Insights>("/ai/insights", aiFilterParams(sp)),
+    serverGet<EngineStatus[]>("/ai/engines"),
+    serverGet<Library>("/ai/library"),
   ]);
+  const regions = [...new Set(ins.heatmap.map((h) => h.region))].sort();
+  const own = ins.brands.filter((b) => b.is_own);
+  const hmBrand = first(sp.hm_brand) ?? own[0]?.name ?? ins.brands[0]?.name ?? "";
+  const hmMetric = first(sp.hm_metric) === "recommended" ? "recommended" : "mention";
+  const colors = Object.fromEntries(own.map((b, i) => [b.name, SERIES[Math.min(i, SERIES.length - 1)]]));
+  const live = ins.engines.some((e) => e.mode === "live");
 
   return (
     <div className="flex flex-col gap-6">
-      {!a.configured && (
-        <Alert>
-          <PlugZap />
-          <AlertTitle>AI assistants aren&apos;t connected yet</AlertTitle>
-          <AlertDescription>
-            No assistant is being asked right now. You can already choose the questions to track below; they&apos;ll be
-            asked automatically once assistant API keys are added.
-            {a.demo && " The answers on this page are invented samples, marked Demo data."}
-          </AlertDescription>
-        </Alert>
-      )}
+      <Alert>
+        <Info />
+        <AlertTitle>{live ? "Live answers from the engines with keys" : "Demo answers: no AI engine is connected yet"}</AlertTitle>
+        <AlertDescription>
+          Answers come from each provider&apos;s official API, which has no account memory or personalisation like the
+          consumer apps. We set the context instead: persona, region and language. Region goes through the API where it
+          supports a user location, otherwise into the question. Engines without an API key show demo answers, marked
+          Demo data, until a key is added.
+        </AlertDescription>
+      </Alert>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Stat label="Prompts tracked" value={a.prompts.length} />
-        <Stat label="Answers collected" value={a.answers.length} demo={a.demo} />
-        <Stat
-          label="Answers with wrong or unapproved facts"
-          value={a.accuracy.checked ? `${a.accuracy.with_issues} of ${a.accuracy.checked}` : "–"}
-          demo={a.demo}
-        />
+      <div className="flex flex-col gap-3">
+        <EngineStrip modes={ins.engines} statuses={engines} />
+        <AiFilters personas={lib.personas} regions={regions.length ? regions : ["US", "IN"]} />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-5">
-        <Card className="lg:col-span-3">
-          <CardHeader>
-            <CardTitle>Prompts to track</CardTitle>
-            <CardDescription>Questions shoppers ask. Product-specific prompts are checked against that product&apos;s truth sheet.</CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <AiPromptForm products={skus.map((s) => ({ id: s.id, name: s.name }))} />
-            {a.prompts.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No prompts yet.</p>
-            ) : (
-              <ul className="flex flex-col divide-y">
-                {a.prompts.map((p) => (
-                  <li key={p.id} className="flex items-center gap-3 py-2">
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm">{p.text}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {p.sku_name ?? "General question"} · {p.answers} answer{p.answers === 1 ? "" : "s"}
-                      </p>
-                    </div>
-                    <DeletePromptButton id={p.id} />
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex flex-wrap items-center gap-2">Share of voice {a.demo && <DemoBadge />}</CardTitle>
-            <CardDescription>How often each brand is mentioned across all answers.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {a.share_of_voice.length ? (
-              <BarListChart
-                data={a.share_of_voice.map((s) => ({ label: s.brand, value: s.share }))}
-                valueName="Share of mentions"
-                unit="%"
-                labelWidth={100}
-              />
-            ) : (
-              <EmptyState title="No answers yet" icon={Bot} />
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      {ins.answers === 0 ? (
+        <EmptyState title="No answers for these filters">Run a test plan, or clear the filters.</EmptyState>
+      ) : (
+        <>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex flex-wrap items-center gap-2">
+                Brands in AI answers {ins.demo && <DemoBadge />}
+              </CardTitle>
+              <CardDescription>
+                {ins.answers} answers. Rates show the 95% range in brackets: with few answers the true rate could be anywhere in it.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Brand</TableHead>
+                    <TableHead>Mentioned in</TableHead>
+                    <TableHead>Recommended in</TableHead>
+                    <TableHead>In top 3</TableHead>
+                    <TableHead className="text-right">Share of voice</TableHead>
+                    <TableHead className="text-right">Avg. rank</TableHead>
+                    <TableHead className="text-right">Sentiment</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {ins.brands.map((b) => (
+                    <TableRow key={b.name}>
+                      <TableCell className="font-medium">
+                        {b.name} {b.is_own ? <Pill tone="good">Ours</Pill> : <span className="text-xs text-muted-foreground">competitor</span>}
+                      </TableCell>
+                      <TableCell className="tabular-nums">{rateRange(b.mention)}</TableCell>
+                      <TableCell className="tabular-nums">{rateRange(b.recommended)}</TableCell>
+                      <TableCell className="tabular-nums">{rateRange(b.top3)}</TableCell>
+                      <TableCell className="text-right tabular-nums">{pct(b.share_of_voice)}</TableCell>
+                      <TableCell className="text-right tabular-nums">{b.avg_position ?? "–"}</TableCell>
+                      <TableCell className="text-right tabular-nums">{b.sentiment === null ? "–" : b.sentiment > 0 ? `+${b.sentiment}` : b.sentiment}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="flex items-center gap-2 font-medium">Answers {a.demo && <DemoBadge />}</h2>
-        {a.answers.length === 0 ? (
-          <EmptyState title="No answers yet" icon={Bot}>
-            Answers appear here once AI assistants are connected and your prompts have been asked.
-          </EmptyState>
-        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex flex-wrap items-center gap-2">Where a brand shows up {ins.demo && <DemoBadge />}</CardTitle>
+              <CardDescription>Share of answers by engine and region (rows) and persona (columns). Darker means more often.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3">
+              <HeatmapControls brands={ins.brands.map((b) => b.name)} brand={hmBrand} metric={hmMetric} />
+              <Heatmap ins={ins} brand={hmBrand} metric={hmMetric} />
+            </CardContent>
+          </Card>
+
           <div className="grid gap-4 lg:grid-cols-2">
-            {a.answers.map((x) => (
-              <Card key={x.id}>
-                <CardHeader>
-                  <CardDescription className="flex flex-wrap items-center gap-2">
-                    {x.assistant} · <TimeAgo iso={x.asked_at} /> {x.is_demo && <DemoBadge />}
-                  </CardDescription>
-                  <CardTitle className="text-base">{x.prompt}</CardTitle>
-                </CardHeader>
-                <CardContent className="flex flex-col gap-3">
-                  <blockquote className="rounded-lg bg-muted/60 p-3 text-sm leading-relaxed">{x.answer}</blockquote>
-                  {Object.keys(x.stated_facts).length > 0 && (
-                    <dl className="flex flex-col gap-1 text-xs">
-                      {Object.entries(x.stated_facts).map(([k, v]) => (
-                        <div key={k} className="flex gap-2">
-                          <dt className="w-32 shrink-0 text-muted-foreground">{FACT_LABEL[k] ?? k}</dt>
-                          <dd>{displayValue(v)}</dd>
-                        </div>
-                      ))}
-                    </dl>
-                  )}
-                  {x.sku_name && x.findings.length === 0 && (
-                    <p className="text-sm text-muted-foreground">Everything stated matches the approved claims.</p>
-                  )}
-                  {x.findings.length > 0 && (
-                    <ul className="flex flex-col gap-2">
-                      {x.findings.map((f, i) => (
-                        <li key={i} className="flex flex-col gap-1 rounded-lg border p-2">
-                          <VerdictBadge
-                            verdict={f.verdict}
-                            label={f.verdict === "outdated" ? "Outdated ingredient info" : undefined}
-                          />
-                          <span className="text-sm">{verdictSentence(f)}</span>
-                          {f.echoes.length > 0 && (
-                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                              <Repeat className="size-3.5" /> Repeats an open issue on {f.echoes.join(", ")}. Fixing that
-                              page may fix this answer too.
-                            </span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  {x.mentioned_brands.length > 0 && (
-                    <p className="text-xs text-muted-foreground">Mentions: {x.mentioned_brands.join(", ")}</p>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex flex-wrap items-center gap-2">Rank in list answers {ins.demo && <DemoBadge />}</CardTitle>
+                <CardDescription>How often each brand is listed first, second, and so on.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <RankChart rank={ins.rank} />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex flex-wrap items-center gap-2">Our brands over time {ins.demo && <DemoBadge />}</CardTitle>
+                <CardDescription>Share of answers that mention each of our brands, by week.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {ins.trend.length > 1 ? (
+                  <MentionTrend trend={ins.trend} brands={own.map((b) => b.name)} colors={colors} />
+                ) : (
+                  <p className="text-sm text-muted-foreground">Trends appear after answers from more than one week.</p>
+                )}
+              </CardContent>
+            </Card>
           </div>
-        )}
-      </section>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex flex-wrap items-center gap-2">Are the facts right? {ins.demo && <DemoBadge />}</CardTitle>
+              <CardDescription>
+                Product facts stated in answers, checked against your truth sheets. “Repeats” links an AI mistake to an open
+                issue on a retailer page, which is often where the AI picked it up.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              {ins.accuracy.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No product facts stated in these answers.</p>
+              ) : (
+                <div className="grid gap-3 md:grid-cols-2">
+                  {ins.accuracy.map((a) => (
+                    <div key={a.sku_id} className="flex flex-col gap-2 rounded-xl border p-3">
+                      <p className="font-medium">{a.sku_name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {a.claims} facts stated · {rateRange(a.accuracy)} correct
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {Object.entries(a.by_verdict).map(([v, n]) => (
+                          <span key={v} className="flex items-center gap-1 text-xs">
+                            <VerdictBadge verdict={v as Verdict} label={v === "outdated" ? "Outdated ingredient info" : undefined} /> × {n}
+                          </span>
+                        ))}
+                      </div>
+                      {a.echoes.map((e) => (
+                        <ConflictLink key={e.conflict_id} id={e.conflict_id} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+                          <Repeat className="size-3.5" /> Repeats {e.label} in {e.answers} answers
+                        </ConflictLink>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {ins.wrong_claims.length > 0 && (
+                <details className="rounded-xl border p-3">
+                  <summary className="cursor-pointer text-sm font-medium">Examples of wrong or unapproved facts</summary>
+                  <ul className="mt-2 flex flex-col divide-y">
+                    {ins.wrong_claims.slice(0, 12).map((w, i) => (
+                      <li key={i} className="flex flex-col gap-1 py-2 text-sm">
+                        <span className="flex flex-wrap items-center gap-2">
+                          <VerdictBadge verdict={w.verdict as Verdict} label={w.verdict === "outdated" ? "Outdated ingredient info" : undefined} />
+                          <span className="font-medium">{displayValue(w.value)}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {w.sku_name} · {w.engine} · {COUNTRY_LABEL[w.region] ?? w.region}
+                          </span>
+                        </span>
+                        <span className="text-xs text-muted-foreground">“{w.quote}”</span>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              )}
+            </CardContent>
+          </Card>
+
+          <div className="grid gap-4 lg:grid-cols-5">
+            <Card className="lg:col-span-3">
+              <CardHeader>
+                <CardTitle className="flex flex-wrap items-center gap-2">Most cited sources {ins.demo && <DemoBadge />}</CardTitle>
+                <CardDescription>The sites AI answers link to. Getting these right improves what the AI says.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {ins.citations.domains.length ? (
+                  <BarListChart data={ins.citations.domains.map((d) => ({ label: d.domain, value: d.count }))} valueName="Citations" labelWidth={160} />
+                ) : (
+                  <p className="text-sm text-muted-foreground">No citations. Engines only cite sources with web search on.</p>
+                )}
+              </CardContent>
+            </Card>
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle>By type of source</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <BarListChart
+                  data={Object.entries(ins.citations.by_type).sort((a, b) => b[1] - a[1]).map(([k, v]) => ({ label: k, value: v }))}
+                  valueName="Citations"
+                  labelWidth={90}
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </>
+      )}
     </div>
   );
 }
 
-function Stat({ label, value, demo }: { label: string; value: number | string; demo?: boolean }) {
+function Heatmap({ ins, brand, metric }: { ins: Insights; brand: string; metric: "mention" | "recommended" }) {
+  const cells = ins.heatmap.filter((h) => h.brand === brand);
+  const personas = [...new Set(cells.map((c) => c.persona))].sort((a, b) => (a === "No persona" ? -1 : b === "No persona" ? 1 : a.localeCompare(b)));
+  const rows = [...new Set(cells.map((c) => `${c.engine}|${c.region}`))].sort();
+  const label = Object.fromEntries(ins.engines.map((e) => [e.engine, e.label]));
+  if (!cells.length) return <p className="text-sm text-muted-foreground">No answers mention {brand}.</p>;
   return (
-    <Card>
-      <CardHeader>
-        <CardDescription className="flex flex-wrap items-center gap-2">
-          {label} {demo && <DemoBadge />}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <span className="text-3xl font-semibold tracking-tight">{value}</span>
-      </CardContent>
-    </Card>
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[640px] border-separate border-spacing-1 text-sm">
+        <thead>
+          <tr>
+            <th className="text-left text-xs font-medium text-muted-foreground">Engine · region</th>
+            {personas.map((p) => (
+              <th key={p} className="text-left text-xs font-medium text-muted-foreground">
+                {p}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => {
+            const [engine, region] = row.split("|");
+            return (
+              <tr key={row}>
+                <th scope="row" className="pr-2 text-left font-medium whitespace-nowrap">
+                  {label[engine] ?? engine} · {region}
+                </th>
+                {personas.map((p) => {
+                  const c = cells.find((x) => x.engine === engine && x.region === region && x.persona === p);
+                  const r = c ? c[metric] : null;
+                  return (
+                    <td
+                      key={p}
+                      className="h-12 min-w-24 rounded-md ring-1 ring-border ring-inset"
+                      style={{ background: r?.rate != null ? `color-mix(in oklab, var(--series-1) ${Math.max(5, Math.round(r.rate * 100))}%, transparent)` : undefined }}
+                      title={r ? `${r.k} of ${r.n} answers; 95% range ${pct(r.low)}–${pct(r.high)}` : undefined}
+                    >
+                      <div className="flex h-full flex-col items-start justify-center px-2">
+                        <span className="rounded bg-background/85 px-1 font-medium tabular-nums">{r ? pct(r.rate) : "–"}</span>
+                        {r && <span className="rounded bg-background/70 px-1 text-[11px] text-muted-foreground">n = {r.n}</span>}
+                      </div>
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }

@@ -87,7 +87,7 @@ def test_create_task_accepts_conflicts(checked, client):
 
 
 def test_ai_recommendation_is_flagged_demo(checked, client, session):
-    from app.services.ai_visibility import generate_demo_answers
+    from app.ai.demo import generate_demo_answers
 
     generate_demo_answers(session)
     ai = by_rule(recs(client))["correct_ai_answers"]

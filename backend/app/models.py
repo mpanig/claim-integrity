@@ -71,6 +71,7 @@ class Brand(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     organisation_id: Mapped[int] = _fk("organisation.id")
     name: Mapped[str] = mapped_column(String(200))
+    aliases: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
 
 
 class Sku(Base):
@@ -83,6 +84,7 @@ class Sku(Base):
     name: Mapped[str] = mapped_column(String(300))
     line: Mapped[str | None] = mapped_column(String(200))
     last_checked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    aliases: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
 
     brand: Mapped["Brand"] = relationship()
 
@@ -207,8 +209,22 @@ class ScoreSnapshot(Base):
     is_demo: Mapped[bool] = mapped_column(default=False, server_default="false")
 
 
+class Competitor(Base):
+    """A brand we don't track but want to recognise in AI answers (e.g. Cetaphil)."""
+
+    __tablename__ = "competitor"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    name: Mapped[str] = mapped_column(String(200))
+    aliases: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
+
+
 class AiPrompt(Base):
-    """A question to ask AI assistants about a product or category."""
+    """A question to ask AI assistants. `text` is the default wording; variants add more.
+
+    Placeholders filled at run time: {brand} {product} {category} {competitor} {retailer}.
+    """
 
     __tablename__ = "ai_prompt"
 
@@ -217,13 +233,77 @@ class AiPrompt(Base):
     brand_id: Mapped[int | None] = mapped_column(ForeignKey("brand.id", ondelete="CASCADE"), index=True)
     sku_id: Mapped[int | None] = mapped_column(ForeignKey("sku.id", ondelete="CASCADE"), index=True)
     text: Mapped[str] = mapped_column(Text)
+    intent: Mapped[str] = mapped_column(String(30), default="category", server_default="category")
+    funnel_stage: Mapped[str] = mapped_column(String(20), default="consideration", server_default="consideration")
+    category: Mapped[str | None] = mapped_column(String(200))
+    competitor: Mapped[str | None] = mapped_column(String(200))
+    retailer: Mapped[str | None] = mapped_column(String(200))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    variants: Mapped[list["PromptVariant"]] = relationship(cascade="all, delete-orphan", order_by="PromptVariant.id")
+
+
+class PromptVariant(Base):
+    __tablename__ = "prompt_variant"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    prompt_id: Mapped[int] = _fk("ai_prompt.id")
+    language: Mapped[str] = mapped_column(String(10), default="en", server_default="en")
+    text: Mapped[str] = mapped_column(Text)
+
+
+class Persona(Base):
+    """Who is asking. Context is added to the prompt; APIs keep no memory of real users."""
+
+    __tablename__ = "persona"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    name: Mapped[str] = mapped_column(String(100))
+    context: Mapped[str] = mapped_column(Text)  # e.g. "I'm a new parent with sensitive, dry skin."
+
+
+class RunConfig(Base):
+    """A saved test plan. `config` lists engines/models, search modes, regions, languages,
+    persona and prompt ids, and samples per cell. See app.ai.plan.PlanConfig."""
+
+    __tablename__ = "run_config"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    name: Mapped[str] = mapped_column(String(200))
+    config: Mapped[dict[str, Any]] = mapped_column(JSONB)
+    budget_usd: Mapped[float] = mapped_column(Float, default=5.0, server_default="5.0")
+    schedule: Mapped[str] = mapped_column(String(10), default="none", server_default="none")  # none|daily|weekly
+    last_run_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
-class AiAnswer(Base):
-    """What one assistant answered to a prompt, with the product facts it stated.
+class AiRun(Base):
+    __tablename__ = "ai_run"
 
-    stated_facts uses the compare fields plus "contains" (ingredients the answer says are in it).
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    run_config_id: Mapped[int | None] = mapped_column(ForeignKey("run_config.id", ondelete="SET NULL"), index=True)
+    config: Mapped[dict[str, Any]] = mapped_column(JSONB)
+    status: Mapped[str] = mapped_column(String(20), default="running", server_default="running")  # running|done|failed|stopped
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    planned_calls: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    done_calls: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    skipped: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list, server_default="[]")
+    errors: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list, server_default="[]")
+    budget_usd: Mapped[float] = mapped_column(Float, default=5.0, server_default="5.0")
+    est_cost_usd: Mapped[float] = mapped_column(Float, default=0.0, server_default="0")
+    cost_usd: Mapped[float] = mapped_column(Float, default=0.0, server_default="0")
+    analyser: Mapped[str | None] = mapped_column(String(20))
+    is_demo: Mapped[bool] = mapped_column(default=False, server_default="false")
+
+
+class AiAnswer(Base):
+    """One answer from one engine/model for one cell of a test plan, with everything that shaped it.
+
+    `answer` keeps the raw text. stated_facts / mentioned_brands are kept for older screens.
     """
 
     __tablename__ = "ai_answer"
@@ -232,14 +312,80 @@ class AiAnswer(Base):
     organisation_id: Mapped[int] = _fk("organisation.id")
     prompt_id: Mapped[int] = _fk("ai_prompt.id")
     sku_id: Mapped[int | None] = mapped_column(ForeignKey("sku.id", ondelete="CASCADE"), index=True)
-    assistant: Mapped[str] = mapped_column(String(100))
+    assistant: Mapped[str] = mapped_column(String(100))  # display label, e.g. "OpenAI gpt-4.1"
     answer: Mapped[str] = mapped_column(Text)
     stated_facts: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}")
     mentioned_brands: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
     asked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     is_demo: Mapped[bool] = mapped_column(default=False, server_default="false")
 
+    run_id: Mapped[int | None] = mapped_column(ForeignKey("ai_run.id", ondelete="SET NULL"), index=True)
+    variant_id: Mapped[int | None] = mapped_column(ForeignKey("prompt_variant.id", ondelete="SET NULL"))
+    persona_id: Mapped[int | None] = mapped_column(ForeignKey("persona.id", ondelete="SET NULL"))
+    prompt_text: Mapped[str | None] = mapped_column(Text)  # exactly what was sent
+    engine: Mapped[str | None] = mapped_column(String(20))  # openai | gemini | perplexity | anthropic
+    model_requested: Mapped[str | None] = mapped_column(String(100))
+    model_version: Mapped[str | None] = mapped_column(String(100))  # as returned by the API
+    search_enabled: Mapped[bool | None] = mapped_column()
+    region: Mapped[str | None] = mapped_column(String(10))  # ISO country code
+    city: Mapped[str | None] = mapped_column(String(100))
+    language: Mapped[str | None] = mapped_column(String(10))
+    location_mode: Mapped[str | None] = mapped_column(String(20))  # api | prompt-only | none
+    sample_index: Mapped[int | None] = mapped_column(Integer)
+    temperature: Mapped[float | None] = mapped_column(Float)  # None = provider default
+    latency_ms: Mapped[int | None] = mapped_column(Integer)
+    input_tokens: Mapped[int | None] = mapped_column(Integer)
+    output_tokens: Mapped[int | None] = mapped_column(Integer)
+    cost_usd: Mapped[float | None] = mapped_column(Float)
+    analyser: Mapped[str | None] = mapped_column(String(20))  # anthropic | ollama | rules
+    error: Mapped[str | None] = mapped_column(Text)
+
     prompt: Mapped[AiPrompt] = relationship()
+    mentions: Mapped[list["AnswerMention"]] = relationship(cascade="all, delete-orphan")
+    claims: Mapped[list["AnswerClaim"]] = relationship(cascade="all, delete-orphan")
+    citations: Mapped[list["AnswerCitation"]] = relationship(cascade="all, delete-orphan")
+
+
+class AnswerMention(Base):
+    __tablename__ = "answer_mention"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    answer_id: Mapped[int] = _fk("ai_answer.id")
+    name: Mapped[str] = mapped_column(String(200))  # canonical brand / competitor name
+    brand_id: Mapped[int | None] = mapped_column(ForeignKey("brand.id", ondelete="CASCADE"), index=True)
+    competitor_id: Mapped[int | None] = mapped_column(ForeignKey("competitor.id", ondelete="CASCADE"), index=True)
+    is_own: Mapped[bool] = mapped_column(default=False)  # one of our tracked brands
+    position: Mapped[int | None] = mapped_column(Integer)  # rank in a list, 1 = first
+    recommended: Mapped[bool] = mapped_column(default=False)
+    sentiment: Mapped[float] = mapped_column(Float, default=0.0)  # -1 .. 1
+    quote: Mapped[str | None] = mapped_column(Text)
+
+
+class AnswerClaim(Base):
+    """A product fact stated in an answer, checked against the truth sheet."""
+
+    __tablename__ = "answer_claim"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    answer_id: Mapped[int] = _fk("ai_answer.id")
+    sku_id: Mapped[int] = _fk("sku.id")
+    field: Mapped[str] = mapped_column(String(30))
+    value: Mapped[Any] = mapped_column(JSONB)
+    quote: Mapped[str | None] = mapped_column(Text)
+    verdict: Mapped[str | None] = mapped_column(String(20))  # None = matches the truth
+    severity: Mapped[int | None] = mapped_column(Integer)
+    echo_conflict_ids: Mapped[list[int]] = mapped_column(JSONB, default=list, server_default="[]")
+
+
+class AnswerCitation(Base):
+    __tablename__ = "answer_citation"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    answer_id: Mapped[int] = _fk("ai_answer.id")
+    url: Mapped[str] = mapped_column(Text)
+    domain: Mapped[str] = mapped_column(String(255))
+    title: Mapped[str | None] = mapped_column(Text)
+    page_type: Mapped[str] = mapped_column(String(20))  # brand | retailer | review | forum | video | news | reference | other
 
 
 class Alert(Base):

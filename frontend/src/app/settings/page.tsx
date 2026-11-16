@@ -7,6 +7,7 @@ import { Pill } from "@/components/status";
 import { TeamManager } from "@/components/team-manager";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { serverGet } from "@/lib/api";
+import type { EngineStatus } from "@/lib/ai";
 import type { Team } from "@/lib/team";
 import type { Brand } from "@/lib/types";
 
@@ -39,7 +40,9 @@ export default function SettingsPage() {
           <CardContent className="flex flex-col gap-3 text-sm">
             <Row icon={Server} label="Claim data" status={<Pill tone="good">Connected</Pill>} />
             <Row icon={KeyRound} label="Sign-in and permissions" status={<Pill tone="neutral">Not set up</Pill>} />
-            <Row icon={Bot} label="AI assistants" status={<Pill tone="neutral">Not connected</Pill>} />
+            <Suspense fallback={<Row icon={Bot} label="AI engines" status={<Pill tone="neutral">Checking…</Pill>} />}>
+              <EngineRows />
+            </Suspense>
             <Row
               icon={Mail}
               label={
@@ -55,6 +58,26 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
       </div>
+    </>
+  );
+}
+
+async function EngineRows() {
+  const engines = await serverGet<EngineStatus[]>("/ai/engines");
+  return (
+    <>
+      {engines.map((e) => (
+        <Row
+          key={e.engine}
+          icon={Bot}
+          label={
+            <>
+              {e.label} <span className="text-xs text-muted-foreground">({e.env_key})</span>
+            </>
+          }
+          status={<Pill tone={e.status === "live" ? "good" : "neutral"}>{e.status === "live" ? "Live" : "Key missing"}</Pill>}
+        />
+      ))}
     </>
   );
 }
