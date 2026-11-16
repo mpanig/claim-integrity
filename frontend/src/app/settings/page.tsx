@@ -2,6 +2,7 @@ import { Bot, KeyRound, Mail, Server } from "lucide-react";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { CarryLink, LoadingBlock, TimeAgo } from "@/components/common";
+import { type Branding, BrandingForm } from "@/components/branding-form";
 import { PageHeader } from "@/components/page-header";
 import { Pill } from "@/components/status";
 import { TeamManager } from "@/components/team-manager";
@@ -60,6 +61,17 @@ export default function SettingsPage() {
         <Suspense fallback={<LoadingBlock rows={1} />}>
           <JobsCard />
         </Suspense>
+        <Card id="branding" className="xl:col-span-2">
+          <CardHeader>
+            <CardTitle>Report branding</CardTitle>
+            <CardDescription>White-label the weekly report and its PDF: your logo, colours, title and footer.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Suspense fallback={<LoadingBlock rows={1} />}>
+              <BrandingLoader />
+            </Suspense>
+          </CardContent>
+        </Card>
       </div>
     </>
   );
@@ -128,6 +140,10 @@ async function EngineRows() {
       ))}
     </>
   );
+}
+
+async function BrandingLoader() {
+  return <BrandingForm initial={await serverGet<Branding>("/reports/branding")} />;
 }
 
 async function TeamSection() {

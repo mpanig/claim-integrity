@@ -471,6 +471,22 @@ class EntityCheck(Base):
     note: Mapped[str | None] = mapped_column(Text)
 
 
+class ReportBranding(Base):
+    """White-label settings for reports (one row per organisation)."""
+
+    __tablename__ = "report_branding"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = mapped_column(ForeignKey("organisation.id", ondelete="CASCADE"), unique=True)
+    agency_name: Mapped[str | None] = mapped_column(String(200))
+    report_title: Mapped[str] = mapped_column(String(200), default="Weekly claim consistency report", server_default="Weekly claim consistency report")
+    primary_color: Mapped[str] = mapped_column(String(7), default="#1f2937", server_default="#1f2937")
+    accent_color: Mapped[str] = mapped_column(String(7), default="#2a78d6", server_default="#2a78d6")
+    logo_data_url: Mapped[str | None] = mapped_column(Text)  # data:image/png;base64,...
+    footer_text: Mapped[str | None] = mapped_column(String(300))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
 class JobRun(Base):
     """One pass of a background job (the worker), so the app can show when jobs last ran."""
 

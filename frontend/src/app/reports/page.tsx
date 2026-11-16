@@ -1,7 +1,8 @@
-import { ArrowDownRight, ArrowUpRight, Download, Minus } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Download, FileDown, Minus } from "lucide-react";
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { DemoBadge, EmptyState, LoadingBlock } from "@/components/common";
+import type { Branding } from "@/components/branding-form";
+import { CarryLink, DemoBadge, EmptyState, LoadingBlock } from "@/components/common";
 import { PageHeader } from "@/components/page-header";
 import { PrintButton } from "@/components/print-button";
 import { ScoreBadge, SeverityBadge, StatusBadge, VerdictBadge } from "@/components/status";
@@ -60,11 +61,23 @@ function Headline({ r }: { r: Report }) {
 async function Reports({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
   const brand_id = brandParam(sp);
-  const { reports } = await serverGet<{ reports: Report[] }>("/reports/weekly", { brand_id });
-  const csvHref = `/api/reports/issues.csv${brand_id ? `?brand_id=${brand_id}` : ""}`;
+  const { reports, branding } = await serverGet<{ reports: Report[]; branding: Branding }>("/reports/weekly", { brand_id });
+  const q = brand_id ? `?brand_id=${brand_id}` : "";
+  const csvHref = `/api/reports/issues.csv${q}`;
+  const pdfHref = `/api/reports/weekly.pdf${q}`;
 
   return (
     <>
+      {/* Letterhead: always on white, as it prints, so brand colours read in dark mode too. */}
+      <div className="flex flex-col gap-3 rounded-xl border-t-4 bg-white p-4 text-neutral-900 ring-1 ring-border" style={{ borderTopColor: branding.accent_color }}>
+        {branding.logo_data_url && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={branding.logo_data_url} alt={branding.agency_name ?? "Logo"} className="h-10 w-fit max-w-48 object-contain" />
+        )}
+        <p className="text-sm font-semibold" style={{ color: branding.primary_color }}>
+          {branding.report_title}
+        </p>
+      </div>
       <PageHeader
         title="Weekly report"
         description={
@@ -77,11 +90,20 @@ async function Reports({ searchParams }: { searchParams: Promise<SP> }) {
             <a href={csvHref} download className="inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-sm font-medium hover:bg-muted">
               <Download className="size-4" /> Export issues (CSV)
             </a>
+            <a href={pdfHref} download className="inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-sm font-medium hover:bg-muted">
+              <FileDown className="size-4" /> Download PDF
+            </a>
+            <CarryLink href="/settings#branding" className="inline-flex h-8 items-center rounded-lg px-2.5 text-sm text-muted-foreground hover:text-foreground">
+              Branding
+            </CarryLink>
             <PrintButton />
           </>
         }
       />
       {reports.length === 0 && <EmptyState title="No brands yet">Add a product to start getting reports.</EmptyState>}
+      {(branding.footer_text || branding.agency_name) && (
+        <p className="order-last text-xs text-muted-foreground">{branding.footer_text || `Prepared by ${branding.agency_name}`}</p>
+      )}
       {reports.map((r, i) => (
         <section key={r.brand.id} className={`flex flex-col gap-4 ${i > 0 ? "border-t pt-6 print:break-before-page" : ""}`}>
           <div className="flex flex-wrap items-center gap-2">

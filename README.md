@@ -225,7 +225,8 @@ docs/screenshots/        screenshots from the last end-to-end run
 | AI visibility | Overview: mention, recommendation and top-3 rates with 95% ranges, share of voice, sentiment, heatmap by engine × region × persona, rank distribution, fact accuracy and echoed page issues, cited sources, weekly trend. Answers: explorer and side-by-side compare. Test plan: builder with cost estimate, budget cap, save and schedule. Library: prompts, wording variants (any language), personas, competitors, aliases |
 | Recommendations | Ranked actions (risk × page weight × ease) with why, impact, owner team, Create task |
 | Alerts | New high-risk issues and score drops (5+ points), read / unread, bell in the top bar |
-| Reports | Weekly per brand: score change, new issues, fixes verified, top issues, products; CSV export; print / PDF |
+| Reports | Weekly per brand: score change, new issues, fixes verified, top issues, products; CSV export; white-label PDF download (logo, colours, title, footer set in Settings › Report branding); print |
+| Site & entity audit | Pages you enter: schema.org product data, AI crawler access, freshness; brand completeness on Wikidata / Wikipedia |
 | Truth sheets | Approved claims per product; edit them or add a product |
 | Settings | Team members and roles (owner menus use them), connection status |
 | Search | Products, pages and issues (Ctrl/Cmd+K) |
