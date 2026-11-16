@@ -11,6 +11,7 @@ from app.ai.engines import ENGINES, engine_env
 from app.ai.insights import insights, select_answers
 from app.ai.plan import LANGUAGE_NAMES, PlanConfig, estimate
 from app.ai.runner import execute
+from app.ai.score import aeo_score
 from app.api.common import DB, get_or_404
 from app.db import SessionLocal
 from app.models import (
@@ -304,6 +305,21 @@ def get_insights(
     sku_id: int | None = None,
 ) -> dict[str, Any]:
     return insights(session, **_filters(engine, region, persona_id, prompt_id, language, search, sku_id))
+
+
+@router.get("/score")
+def get_score(
+    session: DB,
+    engine: list[str] = Query(default=[]),
+    region: list[str] = Query(default=[]),
+    persona_id: int | None = None,
+    prompt_id: int | None = None,
+    language: str | None = None,
+    search: bool | None = None,
+    sku_id: int | None = None,
+) -> dict[str, Any]:
+    """AEO score per brand, per brand x engine, weekly trend; prominence and word share."""
+    return aeo_score(session, **_filters(engine, region, persona_id, prompt_id, language, search, sku_id))
 
 
 def _answer_brief(a: AiAnswer, personas: dict[int, str]) -> dict[str, Any]:

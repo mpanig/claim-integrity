@@ -195,3 +195,38 @@ export function pct(r: number | null | undefined): string {
 export function rateRange(r: Rate): string {
   return r.n ? `${pct(r.rate)} (${pct(r.low)}–${pct(r.high)})` : "–";
 }
+
+export interface AeoBrandScore {
+  name: string;
+  is_own: boolean;
+  score: number;
+  change?: number;
+  components: Record<"mention" | "recommended" | "prominence" | "word_share" | "sentiment", number>;
+  answers: number;
+  /** Share of answers where this brand is the first one named. */
+  first_named: number;
+  /** Where in the answer it is first named, 0 = start, 1 = end (answers naming it). */
+  first_offset: number | null;
+  word_share: number;
+}
+
+export interface AeoScore {
+  answers: number;
+  engines: EngineMode[];
+  demo: boolean;
+  weights: Record<string, number>;
+  brands: AeoBrandScore[];
+  by_engine: { engine: EngineName; label: string; brands: AeoBrandScore[] }[];
+  trend: ({ week: string; answers: number } & Record<string, number | string>)[];
+  leader: string | null;
+  best_own: AeoBrandScore | null;
+  top_rival: AeoBrandScore | null;
+}
+
+export const AEO_COMPONENT_LABEL: Record<string, string> = {
+  mention: "Mentioned",
+  recommended: "Recommended",
+  prominence: "Prominence",
+  word_share: "Share of words",
+  sentiment: "Sentiment",
+};

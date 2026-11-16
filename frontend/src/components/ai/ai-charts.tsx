@@ -60,3 +60,27 @@ export function MentionTrend({ trend, brands, colors }: { trend: Insights["trend
     </div>
   );
 }
+
+/** AEO score (0-100) by week; rivals dashed. */
+export function ScoreTrend({ trend, brands, colors, rivals = [] }: { trend: Record<string, string | number>[]; brands: string[]; colors: Record<string, string>; rivals?: string[] }) {
+  const data = trend.map((t) => ({
+    week: new Date(`${t.week}T00:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" }),
+    ...Object.fromEntries(brands.map((b) => [b, typeof t[b] === "number" ? t[b] : null])),
+  }));
+  return (
+    <div className="h-64" role="img" aria-label={`AEO score by week for ${brands.join(", ")}`}>
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={data} margin={{ top: 8, right: 16, bottom: 0, left: -12 }}>
+          <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
+          <XAxis dataKey="week" {...AXIS} minTickGap={16} />
+          <YAxis domain={[0, 100]} {...AXIS} axisLine={false} />
+          <Tooltip content={<ChartTooltip />} />
+          <Legend formatter={legendText} iconType="plainline" />
+          {brands.map((b) => (
+            <Line key={b} type="monotone" dataKey={b} name={b} stroke={colors[b]} strokeWidth={2} strokeDasharray={rivals.includes(b) ? "5 4" : undefined} dot={false} connectNulls />
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
