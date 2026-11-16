@@ -277,6 +277,81 @@ class TeamMember(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
+class CandidateStatus(str, enum.Enum):
+    new = "new"
+    relevant = "relevant"
+    needs_review = "needs_review"
+    rejected = "rejected"
+
+
+class CollectorRun(Base):
+    """One run of the collector agent for a brand (and some of its products)."""
+
+    __tablename__ = "collector_run"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    brand_id: Mapped[int] = _fk("brand.id")
+    sku_ids: Mapped[list[int]] = mapped_column(JSONB, default=list, server_default="[]")
+    status: Mapped[str] = mapped_column(String(20), default="running", server_default="running")  # running|done|failed
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    budget: Mapped[int] = mapped_column(Integer)
+    requests_used: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    planner: Mapped[str] = mapped_column(String(20), default="templates", server_default="templates")  # templates|claude
+    stats: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}")  # per connector
+    found: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    fetched: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    skipped: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list, server_default="[]")
+    errors: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list, server_default="[]")
+    cost: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}")
+    log: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list, server_default="[]")
+
+
+class SourceCandidate(Base):
+    """A page, mention or fact the collector found for a brand or product."""
+
+    __tablename__ = "candidate"
+    __table_args__ = (Index("ix_candidate_brand_sku", "brand_id", "sku_id"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    brand_id: Mapped[int] = _fk("brand.id", index=False)
+    sku_id: Mapped[int | None] = mapped_column(ForeignKey("sku.id", ondelete="CASCADE"), nullable=True)
+    run_id: Mapped[int | None] = mapped_column(ForeignKey("collector_run.id", ondelete="SET NULL"), index=True)
+    page_id: Mapped[int | None] = mapped_column(ForeignKey("page.id", ondelete="SET NULL"), index=True)
+    connector: Mapped[str] = mapped_column(String(40))
+    source_type: Mapped[str] = mapped_column(String(30))
+    kind: Mapped[str] = mapped_column(String(20))  # page | mention | entity
+    url: Mapped[str] = mapped_column(Text)
+    canonical_url: Mapped[str] = mapped_column(Text, index=True)
+    title: Mapped[str | None] = mapped_column(Text)
+    why: Mapped[str | None] = mapped_column(Text)
+    snippet: Mapped[str | None] = mapped_column(Text)
+    status: Mapped[CandidateStatus] = mapped_column(
+        _pg_enum(CandidateStatus, "candidate_status"),
+        default=CandidateStatus.new,
+        server_default=CandidateStatus.new.value,
+    )
+    relevance_score: Mapped[float | None] = mapped_column(Float)
+    relevance_reason: Mapped[str | None] = mapped_column(Text)
+    data: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    extracted_fields: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
+    extraction_method: Mapped[str | None] = mapped_column(String(60))
+    fetch_note: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class ConnectorSetting(Base):
+    """On/off switch per collector connector. Keys stay in the environment, never here."""
+
+    __tablename__ = "connector_setting"
+
+    name: Mapped[str] = mapped_column(String(40), primary_key=True)
+    enabled: Mapped[bool] = mapped_column(default=True, server_default="true")
+
+
 class AuditEvent(Base):
     """Who did what, when. Notes are events with action='note'."""
 

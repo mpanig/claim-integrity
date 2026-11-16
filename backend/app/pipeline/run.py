@@ -43,7 +43,15 @@ def latest_extractions(session: Session, sku_id: int) -> dict[int, Extraction]:
 
 
 def page_fields(extraction: Extraction) -> dict[str, Any]:
-    return {name: f.get("value") for name, f in extraction.fields.items()}
+    return {name: f.get("value") for name, f in extraction.fields.items() if not name.startswith("_")}
+
+
+def is_partial(extraction: Extraction) -> bool:
+    """Collector extractions only hold what the extractor found, so absence proves nothing."""
+    return bool((extraction.fields.get("_meta") or {}).get("partial"))
+
+
+ABSENCE_VERDICTS = {"missing", "weaker"}
 
 
 def _key(page_id: int, f: Finding | Conflict) -> tuple:
@@ -71,7 +79,10 @@ def run_for_sku(session: Session, sku: Sku, actor: str = SYSTEM_USER) -> RunResu
     truth = truth_for_sku(session, sku)
     findings: dict[tuple, tuple[int, Finding]] = {}
     for page_id, extraction in latest_extractions(session, sku.id).items():
+        partial = is_partial(extraction)
         for finding in compare(truth, page_fields(extraction)):
+            if partial and finding.verdict.value in ABSENCE_VERDICTS:
+                continue  # "not found by the extractor" is not "not on the page"
             findings[_key(page_id, finding)] = (page_id, finding)
 
     result = RunResult()
