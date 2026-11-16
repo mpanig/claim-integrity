@@ -542,3 +542,21 @@ class AnswerGrade(Base):
     score: Mapped[int | None] = mapped_column(Integer)
     checks: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list, server_default="[]")
     is_demo: Mapped[bool] = mapped_column(default=False, server_default="false")
+
+
+class LlmsCheck(Base):
+    """One check of a site's /llms.txt (fetched once, robots.txt obeyed). is_demo rows are hidden for
+    a host once it has a real check."""
+
+    __tablename__ = "llms_check"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    brand_id: Mapped[int | None] = mapped_column(ForeignKey("brand.id", ondelete="SET NULL"))
+    host: Mapped[str] = mapped_column(String(300), index=True)
+    checked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    status: Mapped[str] = mapped_column(String(20))  # found | missing | blocked | error
+    http_status: Mapped[int | None] = mapped_column(Integer)
+    score: Mapped[int | None] = mapped_column(Integer)
+    result: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}")
+    is_demo: Mapped[bool] = mapped_column(default=False, server_default="false")

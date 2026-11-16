@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 
 from app.ai.brief import build_brief
+from app.ai.llms_txt import brand_hosts, check_host, generate, latest_checks
 from app.ai.readiness import grade_url, latest_grades
 from app.api.common import DB, get_or_404
 from app.models import AuditUrl, Brand
@@ -54,3 +55,22 @@ def brief(body: BriefIn, session: DB) -> dict[str, Any]:
         return build_brief(session, body.question.strip(), body.brand_id, body.sku_id)
     except ValueError as e:
         raise HTTPException(422, str(e)) from e
+
+
+@router.get("/llms")
+def llms_checks(session: DB) -> list[dict[str, Any]]:
+    """Latest /llms.txt check per brand site (demo hidden once a site has a real check)."""
+    return latest_checks(session)
+
+
+@router.post("/llms/check")
+def llms_check_all(session: DB) -> dict[str, Any]:
+    """Fetch /llms.txt once per brand site (robots.txt obeyed)."""
+    rows = [check_host(session, host, brand.id) for brand, host in brand_hosts(session)]
+    return {"checked": len(rows), "found": sum(1 for r in rows if r.status == "found")}
+
+
+@router.get("/llms/generate/{brand_id}")
+def llms_generate(brand_id: int, session: DB) -> dict[str, str]:
+    """A draft llms.txt for the brand, from its products, approved facts and positioning."""
+    return {"text": generate(session, get_or_404(session, Brand, brand_id, "Brand"))}

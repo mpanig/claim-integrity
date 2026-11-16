@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { RunButton } from "@/components/audit/audit-actions";
 import { type Audit, type Entity, EntityClarity, PageAuditList } from "@/components/audit/page-audits";
+import { LlmsList, type LlmsRow } from "@/components/aeo/llms";
 import { BriefBuilder, GradeForm, GradeList } from "@/components/aeo/readiness";
 import { DemoBadge, LoadingBlock } from "@/components/common";
 import { PageHeader } from "@/components/page-header";
@@ -43,13 +44,14 @@ export default function ContentPage() {
 }
 
 async function Content() {
-  const [audits, entities, brands, skus, grades, lib] = await Promise.all([
+  const [audits, entities, brands, skus, grades, lib, llms] = await Promise.all([
     serverGet<Audit[]>("/audit"),
     serverGet<Entity[]>("/audit/entities"),
     serverGet<Brand[]>("/brands"),
     serverGet<Sku[]>("/skus"),
     serverGet<AnswerGradeRow[]>("/aeo/grades"),
     serverGet<Library>("/ai/library"),
+    serverGet<LlmsRow[]>("/aeo/llms"),
   ]);
   return (
     <div className="flex flex-col gap-6">
@@ -84,6 +86,21 @@ async function Content() {
               .map((p) => p.text.replaceAll("{category}", p.category ?? "face cleanser").replaceAll("{competitor}", p.competitor ?? "").replaceAll("{product}", p.sku_name ?? ""))
               .filter((t) => !/[{}]/.test(t))}
           />
+        </CardContent>
+      </Card>
+      <Card id="llms">
+        <CardHeader>
+          <CardTitle className="flex flex-wrap items-center gap-2">llms.txt {llms.some((r) => r.is_demo) && <DemoBadge />}</CardTitle>
+          <CardDescription>
+            A short Markdown file at your site&apos;s root that points AI tools to your key pages (llmstxt.org format). Checked
+            once per brand site after robots.txt; draft one from your product data if it&apos;s missing.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <div>
+            <RunButton path="/aeo/llms/check" label="Check llms.txt now" ok="llms.txt checked" />
+          </div>
+          <LlmsList rows={llms} />
         </CardContent>
       </Card>
       <Card>
