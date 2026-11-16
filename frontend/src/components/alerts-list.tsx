@@ -1,9 +1,9 @@
 "use client";
 
-import { CheckCheck, OctagonAlert, TrendingDown } from "lucide-react";
+import { ArrowUpRight, Bot, CheckCheck, OctagonAlert, ThumbsDown, TrendingDown, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { CarryLink, TimeAgo } from "@/components/common";
+import { CarryLink, DemoBadge, TimeAgo } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { useUrlState } from "@/hooks/use-url-state";
 import { api } from "@/lib/api";
@@ -11,17 +11,29 @@ import { cn } from "@/lib/utils";
 
 export interface AlertItem {
   id: number;
-  kind: "high_risk" | "score_drop";
+  kind: "high_risk" | "score_drop" | "aeo_score_drop" | "aeo_lost_recommendation" | "aeo_wrong_fact" | "aeo_overtaken";
   title: string;
   body: string;
-  sku_id: number;
-  sku_name: string;
+  sku_id: number | null;
+  sku_name: string | null;
+  brand_name: string | null;
+  link: string | null;
+  is_demo: boolean;
   conflict_id: number | null;
   created_at: string;
   read: boolean;
 }
 
-export function AlertsList({ items, unread }: { items: AlertItem[]; unread: number }) {
+const ICON = {
+  high_risk: OctagonAlert,
+  score_drop: TrendingDown,
+  aeo_score_drop: TrendingDown,
+  aeo_overtaken: Users,
+  aeo_lost_recommendation: ThumbsDown,
+  aeo_wrong_fact: Bot,
+} as const;
+
+export function AlertsList({ items, unread, kindPrefix }: { items: AlertItem[]; unread: number; kindPrefix?: string }) {
   const router = useRouter();
   const { set, params } = useUrlState();
 
@@ -46,7 +58,7 @@ export function AlertsList({ items, unread }: { items: AlertItem[]; unread: numb
           size="sm"
           disabled={unread === 0}
           onClick={async () => {
-            await api("/alerts/read-all", { method: "POST", params: { brand_id: params.get("brand") } });
+            await api("/alerts/read-all", { method: "POST", params: { brand_id: params.get("brand"), kind_prefix: kindPrefix } });
             toast.success("All alerts marked as read");
             router.refresh();
             window.dispatchEvent(new Event("alerts-changed"));
@@ -57,7 +69,7 @@ export function AlertsList({ items, unread }: { items: AlertItem[]; unread: numb
       </div>
       <ul className="flex flex-col divide-y rounded-xl border">
         {items.map((a) => {
-          const Icon = a.kind === "score_drop" ? TrendingDown : OctagonAlert;
+          const Icon = ICON[a.kind] ?? OctagonAlert;
           return (
             <li key={a.id} className={cn("flex items-start gap-3 p-4", !a.read && "bg-muted/40")}>
               <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-critical/10">
@@ -66,17 +78,27 @@ export function AlertsList({ items, unread }: { items: AlertItem[]; unread: numb
               <div className="min-w-0 flex-1">
                 <p className="flex items-center gap-2 text-sm font-medium">
                   {!a.read && <span className="size-2 rounded-full bg-series-1" aria-label="Unread" />}
-                  {a.title}
+                  <span>{a.title}</span>
+                  {a.is_demo && <DemoBadge className="shrink-0" />}
                 </p>
                 <p className="text-sm text-muted-foreground">{a.body}</p>
                 <div className="mt-1 flex flex-wrap items-center gap-x-3 text-xs text-muted-foreground">
                   <TimeAgo iso={a.created_at} />
-                  <CarryLink href={`/products/${a.sku_id}`} className="hover:text-foreground hover:underline">
-                    {a.sku_name}
-                  </CarryLink>
+                  {a.sku_id ? (
+                    <CarryLink href={`/products/${a.sku_id}`} className="hover:text-foreground hover:underline">
+                      {a.sku_name}
+                    </CarryLink>
+                  ) : (
+                    a.brand_name && <span>{a.brand_name} · AEO / GEO</span>
+                  )}
                 </div>
               </div>
               <div className="flex shrink-0 flex-col items-end gap-1.5 sm:flex-row sm:items-center">
+                {a.link && !a.conflict_id && (
+                  <Button size="sm" variant="outline" nativeButton={false} render={<CarryLink href={a.link} />} onClick={() => !a.read && markRead(a.id, true)}>
+                    Open <ArrowUpRight />
+                  </Button>
+                )}
                 {a.conflict_id && (
                   <Button
                     size="sm"

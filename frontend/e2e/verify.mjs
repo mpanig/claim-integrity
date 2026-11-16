@@ -107,6 +107,7 @@ await settle();
 await page.screenshot({ path: join(OUT, "08k-aeo-brief.png"), fullPage: true });
 console.log("ok  content brief  -> 08k-aeo-brief.png");
 await visit("/aeo/crawlers", "08h-aeo-crawlers.png");
+await visit("/aeo/alerts", "08l-aeo-alerts.png");
 await visit("/audit"); // old route redirects
 await visit("/recommendations", "09-recommendations.png");
 await visit("/alerts", "10-alerts.png");

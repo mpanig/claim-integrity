@@ -152,6 +152,13 @@ def execute(
             http.close()
     run.finished_at = datetime.now(UTC)
     session.commit()
+    if run.done_calls:
+        try:  # AEO alerts compare this week's answers with last week's
+            from app.ai.aeo_alerts import evaluate
+
+            evaluate(session, env=env)
+        except Exception:  # noqa: BLE001 - alerts must never fail a run
+            session.rollback()
     return run
 
 

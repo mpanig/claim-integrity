@@ -118,7 +118,8 @@ uv run python -m app.seed --demo-history      # pilot data + sample history (see
   (4 engines with 2 models each, search on and off, US / India (English and Hindi) / UK, 4 personas,
   12 weekly runs). These rows are flagged as demo in the database and every chart or card that uses them
   shows a **Demo data** badge. Leave the flag out to see only real results.
-- `--demo-ai` only regenerates the demo AI answers, leaving everything else as it is.
+- `--demo-ai` only regenerates the AEO / GEO demo data (AI answers, page grades, llms.txt checks,
+  crawler log, referral export, outreach rows, AEO alerts), leaving everything else as it is.
 - When you add an engine's API key to `backend/.env`, that engine's demo answers stop showing (no restart
   needed). Until it has real answers, the AI pages say "Key found, no real answers yet" with a **Run now**
   button that shows the pilot plan's cost estimate and a budget cap first. Engines without a key keep
@@ -228,7 +229,7 @@ docs/screenshots/        screenshots from the last end-to-end run
 | Conflicts | All issues with status / type / owner filters in the URL; bulk accept, dismiss, assign |
 | Fix board | To review → Accepted → Fixed → Verified, drag or buttons, owner and due date on cards |
 | Competitors | Brand cards, score and issues-per-product charts, claim-type × brand heatmap, claims coverage (approved vs unapproved), insights |
-| AEO / GEO | A sidebar group (formerly AI visibility and Site & entity audit). **Overview**: mention, recommendation and top-3 rates with 95% ranges, share of voice, sentiment, heatmap by engine × region × persona, rank distribution, fact accuracy and echoed page issues, weekly trend. **Prompts**: library (prompts, wording variants in any language, personas, competitors, aliases) and test plans & runs (builder with cost estimate, budget cap, save and schedule). **Answers**: explorer and side-by-side compare. **Citations & sources**: most cited sites, source types, gap sites. **Content & pages**: structured data, freshness, brand entity clarity. **Crawlers & traffic**: AI crawler access per page. **Coverage**: shopper situations where competitors win. Old `/ai-visibility/*` and `/audit` links redirect. |
+| AEO / GEO | Answer / generative engine optimisation, a sidebar group with 10 subsections (see [AEO / GEO](#aeo--geo) below): Overview, Prompts, Answers, Citations & sources, Brand perception, Content & pages, Crawlers & traffic, Coverage, Alerts. Old `/ai-visibility/*` and `/audit` links redirect. |
 | Recommendations | Ranked actions (risk × page weight × ease) with why, impact, owner team, Create task |
 | Alerts | New high-risk issues and score drops (5+ points), read / unread, bell in the top bar |
 | Reports | Weekly per brand: score change, new issues, fixes verified, top issues, products; CSV export; white-label PDF download (logo, colours, title, footer set in Settings › Report branding); print |
@@ -282,6 +283,32 @@ plan sets that context explicitly (persona, region, language).
 Run a saved plan on its schedule from cron (e.g. hourly): `uv run python -m app.ai.schedule`.
 Nothing scrapes consumer chat apps.
 
+## AEO / GEO
+
+Everything about how AI assistants answer shoppers, in one sidebar group. Each subsection is its
+own page; the group opens when you are in it and otherwise remembers whether you left it open.
+
+| Subsection | What it does |
+|---|---|
+| Overview | **AEO score** 0–100 per brand (mentioned 35%, recommended 25%, prominence 20%, share of words 10%, sentiment 10%) with week-on-week change, competitor benchmark, score by week, score by brand × engine; **prominence** (named first, how far into the answer, share of words); mention / recommendation / top-3 rates with 95% ranges, heatmap, rank distribution, fact accuracy, trend. Engine strip shows live / demo / "key found, no real answers yet" (with Run now) and planned engines |
+| Prompts | Library; **Discovery** (rule-based questions per type, persona, competitor and product, deduplicated against the library, with an *estimated* importance and its reasons; "Suggest more with Claude" when an Anthropic key is set, one call on request); Test plans & runs; planned engines |
+| Answers | Explorer and side-by-side compare |
+| Citations & sources | Most cited sites, source types, gap sites (cited when a competitor is recommended and our brands aren't); **outreach tracker** (to contact → contacted → published / declined, owner, due date, note; competitor and retailer sites never suggested) |
+| Brand perception | Attribute × brand map from AI answers (13 attributes incl. negatives; product names excluded), the brand that owns each attribute, **intended positioning** per brand (editable) and its gaps |
+| Content & pages | **Answer-readiness grader** (12 checks, 100 points, a fix for each); **content briefs** from your own data (Markdown); **llms.txt** checker (llmstxt.org format, score and fixes) and draft generator; structured data, freshness, brand entity clarity |
+| Crawlers & traffic | **AI crawler log analytics** from uploaded access logs (combined format or CSV; counts only, no IPs); **AI referral traffic** from an analytics CSV (ChatGPT, Perplexity, Gemini, Copilot, Claude, DeepSeek, Meta AI; GA4 connector planned); crawlability per page |
+| Coverage | Shopper situations (question type × persona) where competitors are mentioned more |
+| Alerts | **AEO alerts**: score drop, competitor overtaking, lost recommendation on a top prompt, new wrong fact; checked after every AI run and on demand, also in the bell and on Alerts |
+
+Engines: OpenAI, Gemini, Perplexity and Claude are connected (official APIs; a key in
+`backend/.env` switches that engine from demo to real answers, re-read on every request).
+Google AI Overviews, Google AI Mode, Copilot, Grok, DeepSeek and Meta AI are listed as
+**planned** with the key each will use; they are never run, estimated or given demo answers.
+
+How it fetches: every page, robots.txt and llms.txt fetch goes through one polite fetcher
+(robots.txt first, honest User-Agent, one request per URL per check, nothing fetched when the
+site says no). AI crawler and referral analytics only read files you upload.
+
 ## Page and entity checks (AEO / GEO › Content & pages, Crawlers & traffic)
 
 `backend/app/audit/` checks pages a user enters (the seed adds each product's brand page from its
@@ -316,9 +343,13 @@ the GTINs are empty. The sample team in Settings uses fictional names.
 `--demo-history` adds, all flagged `is_demo` in the database and shown with a **Demo data** badge:
 
 - 12 weeks of score history (Overview trend charts, last-week score in Reports)
-- About 8,700 template-generated AI answers across all four engines (2 models each), US, India
+- About 8,750 template-generated AI answers across all four engines (2 models each), US, India
   (English and Hindi) and UK, every persona, 12 weekly runs (AEO / GEO, and the "Correct what AI
   assistants say" recommendation). For each engine they are hidden as soon as its API key is set.
+- AEO extras, each hidden as soon as real data of that kind exists: page answer-readiness grades
+  (bundled hand-written pages, per URL), llms.txt checks (per site), a 28-day AI crawler log and an
+  8-week AI referral export (until your first upload), five outreach rows (until your first tracked
+  site), and AEO alerts computed from the demo answers (replaced on every check).
 
 The prompt library, personas, competitors and aliases that the seed adds are real configuration,
 not demo data.
@@ -333,6 +364,9 @@ from the seeded pages.
 - Reading real retailer pages: a scraper/collector was started and is shelved on the
   `shelved/scraper` branch
 - Email / Slack delivery of alerts and per-user notification settings
+- Connectors for the planned AI engines (Google AI Overviews / AI Mode and Copilot via a SERP provider, Grok, DeepSeek, Meta AI)
+- Direct GA4 connection for AI referral traffic (CSV import works today)
+- Brand perception and the rule-based analyser read English wording only
 
 ## Troubleshooting
 

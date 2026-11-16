@@ -7,6 +7,7 @@ from fastapi import APIRouter, HTTPException, Query, Request, Response
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 
+from app.ai.aeo_alerts import evaluate as evaluate_aeo_alerts
 from app.ai.brief import build_brief
 from app.ai.crawlers import analytics, ingest
 from app.ai.outreach import STATUSES, tracker
@@ -181,3 +182,10 @@ def outreach_delete(row_id: int, session: DB) -> Response:
     session.delete(get_or_404(session, Outreach, row_id, "Outreach"))
     session.commit()
     return Response(status_code=204)
+
+
+@router.post("/alerts/evaluate")
+def aeo_alerts_evaluate(session: DB) -> dict[str, Any]:
+    """Compare the latest week of AI answers with the week before and raise AEO alerts."""
+    out = evaluate_aeo_alerts(session)
+    return {"raised": len(out), "kinds": sorted({a.kind for a in out})}

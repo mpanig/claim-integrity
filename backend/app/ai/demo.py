@@ -147,6 +147,8 @@ def _answer(rng: random.Random, prompt: AiPrompt, engine: str, region: str, lang
     hindi = lang == "hi"
     if prompt.intent in ("category", "problem"):
         picks = _order(rng, engine, region, persona, week, weeks)[: rng.choice([3, 4, 4, 5])]
+        if week == weeks - 1 and prompt.intent == "problem" and "Aveeno" in picks and rng.random() < 0.75:
+            picks.remove("Aveeno")  # this week Aveeno drops out of problem-led answers (an AEO alert)
         text = _list_answer(rng, picks, hindi)
         if not hindi and "CeraVe" in picks and rng.random() < 0.25:
             text += "\n\nCeraVe Hydrating Facial Cleanser is fragrance-free and non-comedogenic."
@@ -165,7 +167,10 @@ def _answer(rng: random.Random, prompt: AiPrompt, engine: str, region: str, lang
         if hindi:
             return ("Aveeno Calm + Restore Nourishing Oat Cleanser में oat और feverfew हैं।", ["Aveeno"])
         if rng.random() < (0.6 if search else 0.45):
-            return ("Yes, Aveeno Calm + Restore Nourishing Oat Cleanser is described as hypoallergenic and fragrance-free, with oat and feverfew to calm sensitive skin.", ["Aveeno"])
+            text = "Yes, Aveeno Calm + Restore Nourishing Oat Cleanser is described as hypoallergenic and fragrance-free, with oat and feverfew to calm sensitive skin."
+            if week == weeks - 1 and rng.random() < 0.4:
+                text += " Aveeno Calm + Restore Nourishing Oat Cleanser is also sulfate-free."  # a new wrong fact this week (an AEO alert)
+            return (text, ["Aveeno"])
         return ("Aveeno's own page for the Calm + Restore Nourishing Oat Cleanser lists oat kernel flour and feverfew; I couldn't find a hypoallergenic claim from the brand itself.", ["Aveeno"])
     if prompt.intent == "versus":
         p_cerave = {"openai": 0.75, "anthropic": 0.7, "gemini": 0.45, "perplexity": 0.5}[engine] + (0.1 if persona == "Dermatologist-informed" else 0) - (0.15 if region == "IN" else 0)

@@ -24,6 +24,7 @@ from app.pipeline.run import run_for_sku
 from app.ai.demo import generate_demo_answers
 from app.ai.crawlers import generate_demo_crawls
 from app.ai.llms_txt import generate_demo_checks
+from app.ai.aeo_alerts import evaluate as evaluate_aeo_alerts
 from app.ai.outreach import generate_demo_outreach
 from app.ai.readiness import generate_demo_grades
 from app.ai.referrals import generate_demo_referrals
@@ -204,7 +205,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--demo-ai",
         action="store_true",
-        help="only (re)generate the demo AI answers; does not reseed or touch any non-demo data",
+        help="only (re)generate the AEO / GEO demo data (answers, grades, llms.txt, logs, referrals, outreach, alerts); never touches non-demo data",
     )
     args = parser.parse_args()
     with SessionLocal() as s:
@@ -215,6 +216,7 @@ if __name__ == "__main__":
             print(f"demo AI crawler hits: {generate_demo_crawls(s)} (labelled 'Demo data' in the UI)")
             print(f"demo AI referral sessions: {generate_demo_referrals(s)} (labelled 'Demo data' in the UI)")
             print(f"demo outreach rows: {generate_demo_outreach(s)} (labelled 'Demo data' in the UI)")
+            print(f"demo AEO alerts: {len(evaluate_aeo_alerts(s))} (labelled 'Demo data' in the UI)")
             raise SystemExit(0)
         print(seed(s, run_checks=not args.no_run))
         if args.demo_history:
@@ -225,3 +227,4 @@ if __name__ == "__main__":
             print(f"demo AI crawler hits: {generate_demo_crawls(s)} (labelled 'Demo data' in the UI)")
             print(f"demo AI referral sessions: {generate_demo_referrals(s)} (labelled 'Demo data' in the UI)")
             print(f"demo outreach rows: {generate_demo_outreach(s)} (labelled 'Demo data' in the UI)")
+            print(f"demo AEO alerts: {len(evaluate_aeo_alerts(s))} (labelled 'Demo data' in the UI)")
