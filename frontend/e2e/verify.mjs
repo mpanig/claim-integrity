@@ -94,6 +94,7 @@ console.log("ok  ai plan estimate  -> 08c-ai-plan.png");
 await visit("/aeo/prompts");
 await visit("/aeo/coverage", "08d-ai-coverage.png");
 await visit("/aeo/citations", "08g-aeo-citations.png");
+await visit("/aeo/perception", "08i-aeo-perception.png");
 await visit("/aeo/content", "08e-aeo-content.png");
 await visit("/aeo/crawlers", "08h-aeo-crawlers.png");
 await visit("/audit"); // old route redirects

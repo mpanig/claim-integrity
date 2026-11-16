@@ -44,6 +44,7 @@ export const NAV: { section: string; items: NavItem[] }[] = [
           { href: "/aeo/prompts", label: "Prompts" },
           { href: "/aeo/answers", label: "Answers" },
           { href: "/aeo/citations", label: "Citations & sources" },
+          { href: "/aeo/perception", label: "Brand perception" },
           { href: "/aeo/content", label: "Content & pages" },
           { href: "/aeo/crawlers", label: "Crawlers & traffic" },
           { href: "/aeo/coverage", label: "Coverage" },

@@ -11,6 +11,7 @@ from app.ai.engines import ENGINES, engine_env
 from app.ai.insights import insights, select_answers
 from app.ai.plan import LANGUAGE_NAMES, PlanConfig, estimate
 from app.ai.runner import execute
+from app.ai.perception import ATTRIBUTES, perception
 from app.ai.score import aeo_score
 from app.api.common import DB, get_or_404
 from app.db import SessionLocal
@@ -320,6 +321,37 @@ def get_score(
 ) -> dict[str, Any]:
     """AEO score per brand, per brand x engine, weekly trend; prominence and word share."""
     return aeo_score(session, **_filters(engine, region, persona_id, prompt_id, language, search, sku_id))
+
+
+@router.get("/perception")
+def get_perception(
+    session: DB,
+    engine: list[str] = Query(default=[]),
+    region: list[str] = Query(default=[]),
+    persona_id: int | None = None,
+    prompt_id: int | None = None,
+    language: str | None = None,
+    search: bool | None = None,
+    sku_id: int | None = None,
+) -> dict[str, Any]:
+    """Attributes AI answers attach to each brand, vs each own brand's intended positioning."""
+    return perception(session, **_filters(engine, region, persona_id, prompt_id, language, search, sku_id))
+
+
+class PositioningIn(BaseModel):
+    attributes: list[str] = Field(max_length=len(ATTRIBUTES))
+
+
+@router.put("/brands/{brand_id}/positioning")
+def set_positioning(brand_id: int, body: PositioningIn, session: DB) -> dict[str, Any]:
+    """Intended positioning: the attributes this brand wants AI answers to associate with it."""
+    brand = get_or_404(session, Brand, brand_id, "Brand")
+    unknown = [a for a in body.attributes if a not in ATTRIBUTES]
+    if unknown:
+        raise HTTPException(422, f"Unknown attributes: {', '.join(unknown)}")
+    brand.positioning = list(dict.fromkeys(body.attributes))
+    session.commit()
+    return {"brand_id": brand.id, "positioning": brand.positioning}
 
 
 def _answer_brief(a: AiAnswer, personas: dict[int, str]) -> dict[str, Any]:

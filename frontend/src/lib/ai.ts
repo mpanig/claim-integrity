@@ -230,3 +230,21 @@ export const AEO_COMPONENT_LABEL: Record<string, string> = {
   word_share: "Share of words",
   sentiment: "Sentiment",
 };
+
+export interface Perception {
+  answers: number;
+  engines: EngineMode[];
+  demo: boolean;
+  attributes: { key: string; label: string; polarity: "positive" | "negative" }[];
+  brands: {
+    name: string;
+    is_own: boolean;
+    brand_id: number | null;
+    answers: number;
+    attributes: Record<string, Rate & { example: string | null }>;
+    positioning: string[];
+    gaps: { attribute: string; kind: "missing" | "unwanted" | "unplanned"; rate: number }[];
+  }[];
+  leaders: Record<string, string>;
+  thresholds: { weak: number; strong: number };
+}

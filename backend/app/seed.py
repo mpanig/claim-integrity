@@ -106,12 +106,17 @@ SAMPLE_TEAM = [
     ("Agency team", "agency", None),
 ]
 TRUTH = CERAVE["truth"]  # kept for the compare tests
+# Intended positioning per brand (attribute keys from app.ai.perception). Real configuration, not demo.
+POSITIONING = {
+    "CeraVe": ["barrier", "derm", "hydrating", "value", "gentle"],
+    "Aveeno": ["natural", "gentle", "sensitive", "eczema", "hydrating"],
+}
 
 
 def _seed_product(
     session: Session, org: Organisation, product: dict[str, Any], extractor: ManualExtractor
 ) -> Sku:
-    brand = Brand(organisation_id=org.id, name=product["brand"])
+    brand = Brand(organisation_id=org.id, name=product["brand"], positioning=POSITIONING.get(product["brand"], []))
     session.add(brand)
     session.flush()
     sku = Sku(

@@ -72,6 +72,8 @@ class Brand(Base):
     organisation_id: Mapped[int] = _fk("organisation.id")
     name: Mapped[str] = mapped_column(String(200))
     aliases: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
+    # Attribute keys (app.ai.perception.ATTRIBUTES) the brand wants AI answers to associate with it.
+    positioning: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
 
 
 class Sku(Base):
