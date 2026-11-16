@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field, ValidationError
 from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 
+from app.ai.discovery import discover
 from app.ai.engines import ENGINES, engine_env
 from app.ai.insights import insights, select_answers
 from app.ai.plan import LANGUAGE_NAMES, PlanConfig, estimate
@@ -420,3 +421,10 @@ def summary(session: DB) -> dict[str, Any]:
     live = session.scalar(select(func.count()).select_from(AiAnswer).where(AiAnswer.engine.is_not(None), AiAnswer.is_demo.is_(False)))
     demo = session.scalar(select(func.count()).select_from(AiAnswer).where(AiAnswer.engine.is_not(None), AiAnswer.is_demo.is_(True)))
     return {"live_answers": live, "demo_answers": demo, "prompts": session.scalar(select(func.count()).select_from(AiPrompt))}
+
+
+@router.get("/discovery")
+def get_discovery(session: DB, llm: bool = False) -> dict[str, Any]:
+    """Questions the library doesn't test yet, with an estimated importance and reasons.
+    llm=true also asks Claude for more (needs ANTHROPIC_API_KEY; costs a little per call)."""
+    return discover(session, llm=llm)

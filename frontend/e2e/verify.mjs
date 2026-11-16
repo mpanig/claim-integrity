@@ -92,6 +92,7 @@ await page.getByText(/answers in this plan/).waitFor();
 await page.screenshot({ path: join(OUT, "08c-ai-plan.png"), fullPage: true });
 console.log("ok  ai plan estimate  -> 08c-ai-plan.png");
 await visit("/aeo/prompts");
+await visit("/aeo/prompts/discovery", "08j-aeo-discovery.png");
 await visit("/aeo/coverage", "08d-ai-coverage.png");
 await visit("/aeo/citations", "08g-aeo-citations.png");
 await visit("/aeo/perception", "08i-aeo-perception.png");

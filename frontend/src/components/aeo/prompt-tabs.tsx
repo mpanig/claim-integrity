@@ -6,6 +6,7 @@ export function PromptTabs() {
       label="Prompt sections"
       tabs={[
         { href: "/aeo/prompts", label: "Library" },
+        { href: "/aeo/prompts/discovery", label: "Discovery" },
         { href: "/aeo/prompts/plan", label: "Test plans & runs" },
       ]}
     />

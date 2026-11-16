@@ -248,3 +248,24 @@ export interface Perception {
   leaders: Record<string, string>;
   thresholds: { weak: number; strong: number };
 }
+
+export interface Discovery {
+  candidates: {
+    id: string;
+    text: string;
+    intent: string;
+    funnel_stage: string;
+    category: string | null;
+    sku_id: number | null;
+    competitor: string | null;
+    attribute: string | null;
+    brand: string | null;
+    source: "rules" | "claude";
+    /** Estimate 0-100 from answers and positioning; not search volume. */
+    importance: number;
+    reasons: string[];
+  }[];
+  already_covered: number;
+  llm: string;
+  importance_note: string;
+}
