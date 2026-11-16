@@ -1,5 +1,6 @@
-"""AEO / GEO tools: page answer-readiness grades and content briefs."""
+"""AEO / GEO tools: grades, briefs, llms.txt, crawler logs, referrals, outreach."""
 
+from datetime import date
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query, Request, Response
@@ -8,12 +9,14 @@ from sqlalchemy import select
 
 from app.ai.brief import build_brief
 from app.ai.crawlers import analytics, ingest
+from app.ai.outreach import STATUSES, tracker
+from app.ai.outreach import add as outreach_create
 from app.ai.llms_txt import brand_hosts, check_host, generate, latest_checks
 from app.ai.readiness import grade_url, latest_grades
 from app.ai.referrals import ingest as referral_ingest
 from app.ai.referrals import referrals
 from app.api.common import DB, get_or_404
-from app.models import AuditUrl, Brand, LogUpload
+from app.models import AuditUrl, Brand, LogUpload, Outreach
 
 router = APIRouter(prefix="/aeo")
 
@@ -129,5 +132,52 @@ async def referral_upload(request: Request, session: DB, filename: str = Query(d
 def referral_delete(upload_id: int, session: DB) -> Response:
     up = get_or_404(session, LogUpload, upload_id, "Upload")
     session.delete(up)
+    session.commit()
+    return Response(status_code=204)
+
+
+class OutreachIn(BaseModel):
+    domain: str = Field(min_length=3, max_length=300)
+    page_url: str | None = Field(default=None, max_length=2000)
+    owner_id: int | None = None
+    note: str | None = Field(default=None, max_length=2000)
+
+
+class OutreachPatch(BaseModel):
+    status: str | None = None
+    owner_id: int | None = None
+    note: str | None = Field(default=None, max_length=2000)
+    due_date: date | None = None
+    page_url: str | None = Field(default=None, max_length=2000)
+    published_url: str | None = Field(default=None, max_length=2000)
+
+
+@router.get("/outreach")
+def outreach_list(session: DB) -> dict[str, Any]:
+    """Tracked sites by status, plus gap sites not tracked yet (demo until the first real row)."""
+    return tracker(session)
+
+
+@router.post("/outreach", status_code=201)
+def outreach_add(body: OutreachIn, session: DB) -> dict[str, Any]:
+    o = outreach_create(session, body.domain, page_url=body.page_url, owner_id=body.owner_id, note=body.note)
+    return {"id": o.id, "domain": o.domain}
+
+
+@router.patch("/outreach/{row_id}")
+def outreach_update(row_id: int, body: OutreachPatch, session: DB) -> dict[str, Any]:
+    o = get_or_404(session, Outreach, row_id, "Outreach")
+    data = body.model_dump(exclude_unset=True)
+    if "status" in data and data["status"] not in STATUSES:
+        raise HTTPException(422, f"status must be one of {STATUSES}")
+    for k, v in data.items():
+        setattr(o, k, v)
+    session.commit()
+    return {"id": o.id, "status": o.status}
+
+
+@router.delete("/outreach/{row_id}", status_code=204)
+def outreach_delete(row_id: int, session: DB) -> Response:
+    session.delete(get_or_404(session, Outreach, row_id, "Outreach"))
     session.commit()
     return Response(status_code=204)

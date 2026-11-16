@@ -24,6 +24,7 @@ from app.pipeline.run import run_for_sku
 from app.ai.demo import generate_demo_answers
 from app.ai.crawlers import generate_demo_crawls
 from app.ai.llms_txt import generate_demo_checks
+from app.ai.outreach import generate_demo_outreach
 from app.ai.readiness import generate_demo_grades
 from app.ai.referrals import generate_demo_referrals
 from app.ai.library import seed_library
@@ -213,6 +214,7 @@ if __name__ == "__main__":
             print(f"demo llms.txt checks: {generate_demo_checks(s)} (labelled 'Demo data' in the UI)")
             print(f"demo AI crawler hits: {generate_demo_crawls(s)} (labelled 'Demo data' in the UI)")
             print(f"demo AI referral sessions: {generate_demo_referrals(s)} (labelled 'Demo data' in the UI)")
+            print(f"demo outreach rows: {generate_demo_outreach(s)} (labelled 'Demo data' in the UI)")
             raise SystemExit(0)
         print(seed(s, run_checks=not args.no_run))
         if args.demo_history:
@@ -222,3 +224,4 @@ if __name__ == "__main__":
             print(f"demo llms.txt checks: {generate_demo_checks(s)} (labelled 'Demo data' in the UI)")
             print(f"demo AI crawler hits: {generate_demo_crawls(s)} (labelled 'Demo data' in the UI)")
             print(f"demo AI referral sessions: {generate_demo_referrals(s)} (labelled 'Demo data' in the UI)")
+            print(f"demo outreach rows: {generate_demo_outreach(s)} (labelled 'Demo data' in the UI)")

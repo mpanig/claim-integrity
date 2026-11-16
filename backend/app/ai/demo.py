@@ -183,14 +183,31 @@ def _answer(rng: random.Random, prompt: AiPrompt, engine: str, region: str, lang
     return (f"You can usually find Aveeno Calm + Restore Nourishing Oat Cleanser at {stores}, and online from the brand's retailers.", ["Aveeno"])
 
 
+# Review sites that tend to recommend competitors: cited mostly in answers that leave our brands
+# out, so they show up as gap sites (outreach targets) in the demo.
+RIVAL_LEANING = [
+    ("https://www.verywellhealth.com/best-face-wash-for-eczema", "Best face washes for eczema | Verywell Health"),
+    ("https://www.dermstore.com/blog/best-cleansers-for-sensitive-skin/", "Best cleansers for sensitive skin | Dermstore"),
+    ("https://www.goodhousekeeping.com/beauty/g31257/best-face-wash/", "Best face washes | Good Housekeeping"),
+    ("https://www.cosmopolitan.com/style-beauty/beauty/g2131/best-face-wash/", "Best face washes | Cosmopolitan"),
+]
+OWN = ("CeraVe", "Aveeno")
+
+
 def _citations(rng: random.Random, brands: list[str], region: str, search: bool) -> list[dict[str, str]]:
     if not search:
         return []  # without web search, engines don't cite sources
     pool = [BRAND_SITES[b] for b in brands[:3] if b in BRAND_SITES]
     pool += rng.sample(RETAILERS[region], k=rng.randint(1, 2))  # search-on answers lean on retailers
     pool += rng.sample(EDITORIAL, k=rng.randint(1, 3))
-    rng.shuffle(pool)
-    return [{"url": u, "title": t} for u, t in pool[: rng.randint(3, 6)]]
+    if not any(b in OWN for b in brands):
+        pool = rng.sample(RIVAL_LEANING, k=rng.randint(1, 2)) + pool
+    elif rng.random() < 0.06:
+        pool.append(rng.choice(RIVAL_LEANING))
+    lead = pool[:2] if not any(b in OWN for b in brands) else []  # keep rival-leaning sources in view
+    rest = pool[len(lead):]
+    rng.shuffle(rest)
+    return [{"url": u, "title": t} for u, t in (lead + rest)[: rng.randint(3, 6)]]
 
 
 def generate_demo_answers(session: Session, weeks: int = 12, samples: int = 3, density: float = 1.0, seed: int = 7) -> int:
