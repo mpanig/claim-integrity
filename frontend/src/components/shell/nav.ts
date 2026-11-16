@@ -2,6 +2,7 @@ import {
   Bell,
   Bot,
   FileText,
+  Globe,
   LayoutDashboard,
   Lightbulb,
   ListChecks,
@@ -27,6 +28,7 @@ export const NAV = [
     items: [
       { href: "/competitors", label: "Competitors", icon: Scale },
       { href: "/ai-visibility", label: "AI visibility", icon: Bot },
+      { href: "/audit", label: "Site & entity audit", icon: Globe },
       { href: "/recommendations", label: "Recommendations", icon: Lightbulb },
       { href: "/alerts", label: "Alerts", icon: Bell },
       { href: "/reports", label: "Reports", icon: FileText },

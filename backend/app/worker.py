@@ -62,10 +62,24 @@ def ai_plans(session: Session, env: dict[str, str] | None = None) -> dict[str, A
     return {"runs": [{"id": r.id, "status": r.status, "answers": r.done_calls, "cost_usd": r.cost_usd} for r in runs]}
 
 
-def run_once(session: Session, *, env: dict[str, str] | None = None, now: datetime | None = None) -> list[JobRun]:
+def site_audit(session: Session, transport: Any = None) -> dict[str, Any]:
+    """Weekly: re-audit entered URLs and re-check brand entities on Wikidata."""
+    from app.audit.run import STALE_AFTER, audit_urls, check_entities
+    from app.models import EntityCheck
+
+    results = audit_urls(session, only_due=True, transport=transport)
+    last = session.scalar(select(EntityCheck.checked_at).order_by(EntityCheck.checked_at.desc()).limit(1))
+    entities = 0
+    if last is None or datetime.now(UTC) - last >= STALE_AFTER:
+        entities = len(check_entities(session, transport=transport))
+    return {"urls_audited": len(results), "entities_checked": entities}
+
+
+def run_once(session: Session, *, env: dict[str, str] | None = None, now: datetime | None = None, transport: Any = None) -> list[JobRun]:
     return [
         _job(session, "product_checks", lambda: product_checks(session, now)),
         _job(session, "ai_plans", lambda: ai_plans(session, env)),
+        _job(session, "site_audit", lambda: site_audit(session, transport)),
     ]
 
 

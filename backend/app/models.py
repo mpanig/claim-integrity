@@ -423,6 +423,54 @@ class TeamMember(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
+class AuditUrl(Base):
+    """A page a user asked us to audit (only these URLs are ever fetched)."""
+
+    __tablename__ = "audit_url"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    brand_id: Mapped[int] = _fk("brand.id")
+    sku_id: Mapped[int | None] = mapped_column(ForeignKey("sku.id", ondelete="CASCADE"), index=True)
+    url: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    last_checked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class AuditResult(Base):
+    """One audit of one URL: structured data, AI crawlability, freshness."""
+
+    __tablename__ = "audit_result"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    audit_url_id: Mapped[int] = _fk("audit_url.id")
+    checked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    status: Mapped[str] = mapped_column(String(20))  # ok | blocked | error
+    http_status: Mapped[int | None] = mapped_column(Integer)
+    note: Mapped[str | None] = mapped_column(Text)
+    structured: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}")
+    crawlability: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}")
+    freshness: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}")
+
+
+class EntityCheck(Base):
+    """How completely a brand is described on Wikidata / Wikipedia (AI models lean on both)."""
+
+    __tablename__ = "entity_check"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    brand_id: Mapped[int] = _fk("brand.id")
+    checked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    qid: Mapped[str | None] = mapped_column(String(20))
+    label: Mapped[str | None] = mapped_column(String(200))
+    description: Mapped[str | None] = mapped_column(Text)
+    wikipedia_url: Mapped[str | None] = mapped_column(Text)
+    facts: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}")
+    missing: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
+    score: Mapped[int] = mapped_column(Integer, default=0)
+    note: Mapped[str | None] = mapped_column(Text)
+
+
 class JobRun(Base):
     """One pass of a background job (the worker), so the app can show when jobs last ran."""
 

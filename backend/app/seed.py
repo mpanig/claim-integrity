@@ -23,6 +23,7 @@ from app.pipeline.fetch import store_snapshot
 from app.pipeline.run import run_for_sku
 from app.ai.demo import generate_demo_answers
 from app.ai.library import seed_library
+from app.audit.run import seed_brand_pages
 from app.services.trends import generate_demo_history
 
 FIXTURES = BACKEND_DIR / "fixtures"
@@ -173,6 +174,7 @@ def seed(
     session.commit()
 
     seed_library(session, org)  # AI prompt library, personas, competitors, aliases (real config)
+    seed_brand_pages(session, org.id)  # each product's brand page, for the site audit
     if run_checks:
         for sku in skus.values():
             run_for_sku(session, sku)

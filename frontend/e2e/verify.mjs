@@ -87,6 +87,8 @@ await page.getByText(/answers in this plan/).waitFor();
 await page.screenshot({ path: join(OUT, "08c-ai-plan.png"), fullPage: true });
 console.log("ok  ai plan estimate  -> 08c-ai-plan.png");
 await visit("/ai-visibility/library");
+await visit("/ai-visibility/coverage", "08d-ai-coverage.png");
+await visit("/audit", "08e-site-audit.png");
 await visit("/recommendations", "09-recommendations.png");
 await visit("/alerts", "10-alerts.png");
 await visit("/reports", "11-reports.png");

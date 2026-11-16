@@ -12,6 +12,7 @@ router = APIRouter()
 JOBS = {
     "product_checks": "Re-check every product (writes score history)",
     "ai_plans": "Run scheduled AI test plans",
+    "site_audit": "Re-audit entered pages and brand entities (weekly)",
 }
 
 

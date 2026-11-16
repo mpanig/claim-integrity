@@ -276,6 +276,23 @@ plan sets that context explicitly (persona, region, language).
 Run a saved plan on its schedule from cron (e.g. hourly): `uv run python -m app.ai.schedule`.
 Nothing scrapes consumer chat apps.
 
+## Site & entity audit
+
+`backend/app/audit/` checks pages a user enters (the seed adds each product's brand page from its
+truth sheet). Each page is fetched once with an honest User-Agent after reading robots.txt; if
+robots.txt disallows us, or the site refuses the request, the page is marked blocked and not
+fetched. Nothing impersonates an AI crawler.
+
+- Structured data: schema.org Product present, required/recommended properties, GTIN check digit, price
+- AI crawlability: robots.txt rules for GPTBot, OAI-SearchBot, ClaudeBot, Claude-SearchBot,
+  PerplexityBot, Google-Extended, Googlebot, Bingbot, CCBot and others; noindex/noai; JavaScript-only pages
+- Freshness: dates on the page (JSON-LD, meta, Last-Modified), and how much of the approved
+  ingredient list the page shows
+- Entity clarity: each brand's Wikidata entry and Wikipedia article (public APIs), scored on the facts AI models use
+
+AI visibility › Coverage uses AI answers: use cases (question type × persona) where a competitor
+is mentioned more than us, and third-party sites the answers cite. The worker re-audits weekly.
+
 ## Pilot data
 
 - CeraVe Hydrating Facial Cleanser (truth: cerave.com) vs a Rite Aid page with the old formula:

@@ -6,6 +6,7 @@ import Link from "next/link";
 
 const TABS = [
   { href: "/ai-visibility", label: "Overview" },
+  { href: "/ai-visibility/coverage", label: "Coverage" },
   { href: "/ai-visibility/answers", label: "Answers" },
   { href: "/ai-visibility/plan", label: "Test plan" },
   { href: "/ai-visibility/library", label: "Library" },
