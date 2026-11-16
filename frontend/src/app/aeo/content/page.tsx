@@ -3,10 +3,12 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { RunButton } from "@/components/audit/audit-actions";
 import { type Audit, type Entity, EntityClarity, PageAuditList } from "@/components/audit/page-audits";
-import { LoadingBlock } from "@/components/common";
+import { BriefBuilder, GradeForm, GradeList } from "@/components/aeo/readiness";
+import { DemoBadge, LoadingBlock } from "@/components/common";
 import { PageHeader } from "@/components/page-header";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import type { AnswerGradeRow, Library } from "@/lib/ai";
 import { serverGet } from "@/lib/api";
 import type { Brand, Sku } from "@/lib/types";
 
@@ -41,14 +43,49 @@ export default function ContentPage() {
 }
 
 async function Content() {
-  const [audits, entities, brands, skus] = await Promise.all([
+  const [audits, entities, brands, skus, grades, lib] = await Promise.all([
     serverGet<Audit[]>("/audit"),
     serverGet<Entity[]>("/audit/entities"),
     serverGet<Brand[]>("/brands"),
     serverGet<Sku[]>("/skus"),
+    serverGet<AnswerGradeRow[]>("/aeo/grades"),
+    serverGet<Library>("/ai/library"),
   ]);
   return (
     <div className="flex flex-col gap-6">
+      <Card id="readiness">
+        <CardHeader>
+          <CardTitle className="flex flex-wrap items-center gap-2">
+            Answer-readiness {grades.some((g) => g.is_demo) && <DemoBadge />}
+          </CardTitle>
+          <CardDescription>
+            How easy each page is for AI assistants to quote correctly, out of 100, with what to fix. Each grade fetches the
+            page once, after checking robots.txt. Demo grades use bundled sample pages and disappear once you grade that URL.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <GradeForm />
+          {grades.length ? <GradeList grades={grades} /> : <p className="text-sm text-muted-foreground">No pages graded yet.</p>}
+        </CardContent>
+      </Card>
+      <Card id="brief">
+        <CardHeader>
+          <CardTitle>Content brief</CardTitle>
+          <CardDescription>
+            What a page should say to win one AI question: built from your truth sheet, positioning, what AI gets wrong,
+            competitors and gap sites. Copy or download it as Markdown for your writers.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <BriefBuilder
+            brands={brands.map((b) => ({ id: b.id, name: b.name }))}
+            skus={skus.map((s) => ({ id: s.id, name: s.name, brand_id: s.brand_id }))}
+            suggestions={lib.prompts
+              .map((p) => p.text.replaceAll("{category}", p.category ?? "face cleanser").replaceAll("{competitor}", p.competitor ?? "").replaceAll("{product}", p.sku_name ?? ""))
+              .filter((t) => !/[{}]/.test(t))}
+          />
+        </CardContent>
+      </Card>
       <Card>
         <CardHeader>
           <CardTitle>Structured data and freshness</CardTitle>

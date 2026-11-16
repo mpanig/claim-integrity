@@ -97,6 +97,12 @@ await visit("/aeo/coverage", "08d-ai-coverage.png");
 await visit("/aeo/citations", "08g-aeo-citations.png");
 await visit("/aeo/perception", "08i-aeo-perception.png");
 await visit("/aeo/content", "08e-aeo-content.png");
+current = "content brief";
+await page.getByRole("button", { name: "Build brief" }).click();
+await page.getByRole("article", { name: "Content brief" }).waitFor({ timeout: 60000 });
+await settle();
+await page.screenshot({ path: join(OUT, "08k-aeo-brief.png"), fullPage: true });
+console.log("ok  content brief  -> 08k-aeo-brief.png");
 await visit("/aeo/crawlers", "08h-aeo-crawlers.png");
 await visit("/audit"); // old route redirects
 await visit("/recommendations", "09-recommendations.png");

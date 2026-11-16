@@ -1,0 +1,56 @@
+"""AEO / GEO tools: page answer-readiness grades and content briefs."""
+
+from typing import Any
+
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, Field
+from sqlalchemy import select
+
+from app.ai.brief import build_brief
+from app.ai.readiness import grade_url, latest_grades
+from app.api.common import DB, get_or_404
+from app.models import AuditUrl, Brand
+
+router = APIRouter(prefix="/aeo")
+
+
+class GradeIn(BaseModel):
+    url: str = Field(pattern=r"^https?://", max_length=2000)
+    brand_id: int | None = None
+    sku_id: int | None = None
+
+
+@router.get("/grades")
+def list_grades(session: DB) -> list[dict[str, Any]]:
+    """Newest answer-readiness grade per page (demo hidden for a page once it has a real grade)."""
+    return latest_grades(session)
+
+
+@router.post("/grades", status_code=201)
+def add_grade(body: GradeIn, session: DB) -> dict[str, Any]:
+    """Fetch the page once (robots.txt obeyed) and grade it."""
+    g = grade_url(session, body.url.strip(), brand_id=body.brand_id, sku_id=body.sku_id)
+    return {"id": g.id, "status": g.status, "score": g.score, "note": g.note}
+
+
+@router.post("/grades/audited")
+def grade_audited(session: DB) -> dict[str, Any]:
+    """Grade every page on the audit list (one fetch each)."""
+    rows = session.scalars(select(AuditUrl).order_by(AuditUrl.id)).all()
+    done = [grade_url(session, u.url, brand_id=u.brand_id, sku_id=u.sku_id) for u in rows]
+    return {"graded": len(done), "ok": sum(1 for g in done if g.status == "ok")}
+
+
+class BriefIn(BaseModel):
+    question: str = Field(min_length=5, max_length=500)
+    brand_id: int
+    sku_id: int | None = None
+
+
+@router.post("/brief")
+def brief(body: BriefIn, session: DB) -> dict[str, Any]:
+    get_or_404(session, Brand, body.brand_id, "Brand")
+    try:
+        return build_brief(session, body.question.strip(), body.brand_id, body.sku_id)
+    except ValueError as e:
+        raise HTTPException(422, str(e)) from e

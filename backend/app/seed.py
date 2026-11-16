@@ -22,6 +22,7 @@ from app.pipeline.extract import ManualExtractor, save_extraction
 from app.pipeline.fetch import store_snapshot
 from app.pipeline.run import run_for_sku
 from app.ai.demo import generate_demo_answers
+from app.ai.readiness import generate_demo_grades
 from app.ai.library import seed_library
 from app.audit.run import seed_brand_pages
 from app.services.trends import generate_demo_history
@@ -205,8 +206,10 @@ if __name__ == "__main__":
     with SessionLocal() as s:
         if args.demo_ai and not args.demo_history:
             print(f"demo AI answers: {generate_demo_answers(s)} (labelled 'Demo data' in the UI)")
+            print(f"demo page grades: {generate_demo_grades(s)} (labelled 'Demo data' in the UI)")
             raise SystemExit(0)
         print(seed(s, run_checks=not args.no_run))
         if args.demo_history:
             print(f"demo history: {generate_demo_history(s)} snapshots (labelled 'Demo data' in the UI)")
             print(f"demo AI answers: {generate_demo_answers(s)} (labelled 'Demo data' in the UI)")
+            print(f"demo page grades: {generate_demo_grades(s)} (labelled 'Demo data' in the UI)")

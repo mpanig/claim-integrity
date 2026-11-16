@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
-from app.api import ai, alerts, audit, conflicts, jobs, recommendations, reports, search, skus, summary, team
+from app.api import aeo, ai, alerts, audit, conflicts, jobs, recommendations, reports, search, skus, summary, team
 from app.api.common import DB
 from app.config import settings
 
@@ -28,6 +28,7 @@ app.include_router(search.router)  # before conflicts, so /conflicts/bulk isn't 
 app.include_router(conflicts.router)
 app.include_router(audit.router)  # before ai: /ai/coverage must not be shadowed
 app.include_router(ai.router)
+app.include_router(aeo.router)
 app.include_router(recommendations.router)
 app.include_router(alerts.router)
 app.include_router(reports.router)

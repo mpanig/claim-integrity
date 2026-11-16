@@ -269,3 +269,33 @@ export interface Discovery {
   llm: string;
   importance_note: string;
 }
+
+export interface AnswerGradeRow {
+  id: number;
+  url: string;
+  brand_name: string | null;
+  sku_id: number | null;
+  graded_at: string;
+  status: "ok" | "blocked" | "error";
+  http_status: number | null;
+  note: string | null;
+  title: string | null;
+  score: number | null;
+  checks: { key: string; label: string; points: number; passed: boolean; detail: string; fix: string | null }[];
+  is_demo: boolean;
+}
+
+export interface ContentBrief {
+  question: string;
+  brand: string;
+  product: string;
+  answer_first: string;
+  emphasise: { attribute: string; ai_rate: number; leader: string | null; gap: boolean }[];
+  facts: { label: string; value: unknown }[];
+  correct: { claim: string; verdict: string; quote: string }[];
+  competitors: string[];
+  related_questions: string[];
+  sites: string[];
+  structure: { label: string; fix: string }[];
+  markdown: string;
+}

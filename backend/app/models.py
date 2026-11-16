@@ -519,3 +519,26 @@ class AuditEvent(Base):
     action: Mapped[str] = mapped_column(String(40))
     detail: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}")
     at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class AnswerGrade(Base):
+    """How ready one page is to be quoted in AI answers (fetched once per grading, robots.txt obeyed).
+
+    is_demo rows grade bundled hand-written pages; for a URL they are hidden once a real grade exists.
+    """
+
+    __tablename__ = "answer_grade"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    organisation_id: Mapped[int] = _fk("organisation.id")
+    brand_id: Mapped[int | None] = mapped_column(ForeignKey("brand.id", ondelete="SET NULL"))
+    sku_id: Mapped[int | None] = mapped_column(ForeignKey("sku.id", ondelete="SET NULL"))
+    url: Mapped[str] = mapped_column(Text, index=True)
+    graded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    status: Mapped[str] = mapped_column(String(20))  # ok | blocked | error
+    http_status: Mapped[int | None] = mapped_column(Integer)
+    note: Mapped[str | None] = mapped_column(Text)
+    title: Mapped[str | None] = mapped_column(Text)
+    score: Mapped[int | None] = mapped_column(Integer)
+    checks: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list, server_default="[]")
+    is_demo: Mapped[bool] = mapped_column(default=False, server_default="false")

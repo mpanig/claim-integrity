@@ -165,7 +165,16 @@ def _llm(session: Session, existing: list[str], env: dict[str, str], client: Any
     ]
 
 
-def discover(session: Session, *, llm: bool = False, env: dict[str, str] | None = None, anthropic_client: Any = None) -> dict[str, Any]:
+def discover(
+    session: Session,
+    *,
+    llm: bool = False,
+    env: dict[str, str] | None = None,
+    anthropic_client: Any = None,
+    per: dict[str, Any] | None = None,
+    cov: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """per / cov: perception() and coverage() results, when the caller already has them."""
     env = engine_env() if env is None else env
     prompts = list(session.scalars(select(AiPrompt).options(selectinload(AiPrompt.variants))))
     library = [(p.id, _tokens(t)) for p in prompts for t in [p.text, *(v.text for v in p.variants)]]
@@ -180,7 +189,7 @@ def discover(session: Session, *, llm: bool = False, env: dict[str, str] | None 
             llm_status = f"error: {type(e).__name__}"
 
     # Signals for the importance estimate.
-    per = perception(session)
+    per = per if per is not None else perception(session)
     leaders = per["leaders"]
     own = {b["name"] for b in per["brands"] if b["is_own"]}
     missing: dict[str, list[str]] = {}
@@ -188,7 +197,8 @@ def discover(session: Session, *, llm: bool = False, env: dict[str, str] | None 
         for g in b["gaps"]:
             if g["kind"] == "missing":
                 missing.setdefault(g["attribute"], []).append(b["name"])
-    losing = {u["use_case"].split(":")[0] for u in coverage(session)["use_cases"] if u["gap"] > 0.1}
+    cov = cov if cov is not None else coverage(session)
+    losing = {u["use_case"].split(":")[0] for u in cov["use_cases"] if u["gap"] > 0.1}
     intent_label = {"category": "Best-of", "problem": "Problem-led", "attribute": "Product question", "versus": "Brand vs brand", "where_to_buy": "Where to buy"}
 
     seen: set[str] = set()
