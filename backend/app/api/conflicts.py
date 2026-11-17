@@ -1,5 +1,7 @@
+from typing import Any
+
 from fastapi import APIRouter, HTTPException, Query
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from app.api.common import DB, conflict_out, conflict_query, events_out, get_or_404
 from app.models import (
@@ -25,17 +27,8 @@ def _load(session, conflict_id: int) -> Conflict:
     return conflict
 
 
-@router.get("/conflicts", response_model=list[ConflictOut])
-def list_conflicts(
-    session: DB,
-    status: list[ConflictStatus] = Query(default=[]),
-    verdict: list[Verdict] = Query(default=[]),
-    sku_id: int | None = None,
-    brand_id: int | None = None,
-    page_id: int | None = None,
-    owner: str | None = None,
-) -> list[ConflictOut]:
-    stmt = conflict_query().join(Sku, Conflict.sku_id == Sku.id)
+def _filter(stmt, *, status=None, verdict=None, sku_id=None, brand_id=None, page_id=None, owner=None, min_severity=None):
+    """Shared filters for the conflict list and the paged view (stmt must join Sku)."""
     if status:
         stmt = stmt.where(Conflict.status.in_(status))
     if verdict:
@@ -48,8 +41,60 @@ def list_conflicts(
         stmt = stmt.where(Conflict.page_id == page_id)
     if owner:
         stmt = stmt.where(Conflict.owner == owner)
+    if min_severity:
+        stmt = stmt.where(Conflict.severity >= min_severity)
+    return stmt
+
+
+@router.get("/conflicts", response_model=list[ConflictOut])
+def list_conflicts(
+    session: DB,
+    status: list[ConflictStatus] = Query(default=[]),
+    verdict: list[Verdict] = Query(default=[]),
+    sku_id: int | None = None,
+    brand_id: int | None = None,
+    page_id: int | None = None,
+    owner: str | None = None,
+    min_severity: int | None = Query(default=None, ge=1, le=10),
+) -> list[ConflictOut]:
+    stmt = _filter(conflict_query().join(Sku, Conflict.sku_id == Sku.id), status=status, verdict=verdict, sku_id=sku_id,
+                   brand_id=brand_id, page_id=page_id, owner=owner, min_severity=min_severity)
     rows = session.scalars(stmt.order_by(Conflict.severity.desc(), Conflict.detected_at.desc(), Conflict.id))
     return [conflict_out(c) for c in rows]
+
+
+@router.get("/conflicts/page")
+def page_conflicts(
+    session: DB,
+    status: list[ConflictStatus] = Query(default=[]),
+    verdict: list[Verdict] = Query(default=[]),
+    sku_id: int | None = None,
+    brand_id: int | None = None,
+    owner: str | None = None,
+    min_severity: int | None = Query(default=None, ge=1, le=10),
+    sort: str = Query(default="severity", pattern="^(severity|recent)$"),
+    limit: int = Query(default=50, ge=1, le=200),
+    offset: int = Query(default=0, ge=0),
+) -> dict[str, Any]:
+    """One page of conflicts (highest severity first, or most recently changed) and the total, so long
+    lists stay fast. Also the owners in scope, for the owner filter."""
+    filters = {"status": status, "verdict": verdict, "sku_id": sku_id, "brand_id": brand_id, "owner": owner, "min_severity": min_severity}
+    count = _filter(select(func.count()).select_from(Conflict).join(Sku, Conflict.sku_id == Sku.id), **filters)
+    total = session.scalar(count) or 0
+    order = (
+        (Conflict.severity.desc(), Conflict.detected_at.desc(), Conflict.id)
+        if sort == "severity"
+        else (func.coalesce(Conflict.status_changed_at, Conflict.detected_at).desc(), Conflict.id.desc())
+    )
+    rows = session.scalars(_filter(conflict_query().join(Sku, Conflict.sku_id == Sku.id), **filters).order_by(*order).limit(limit).offset(offset))
+    owners = _filter(select(Conflict.owner).distinct().join(Sku, Conflict.sku_id == Sku.id), brand_id=brand_id).where(Conflict.owner.is_not(None))
+    return {
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+        "items": [conflict_out(c).model_dump(mode="json") for c in rows],
+        "owners": sorted(session.scalars(owners)),
+    }
 
 
 @router.get("/conflicts/{conflict_id}", response_model=ConflictDetail)

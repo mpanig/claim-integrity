@@ -25,7 +25,10 @@ function overdue(due: string | null) {
   return !!due && due < new Date().toISOString().slice(0, 10);
 }
 
-export function FixBoard({ conflicts }: { conflicts: Conflict[] }) {
+type Column = { items: Conflict[]; total: number };
+
+/** Columns arrive paged: each shows its highest-risk issues (verified: most recent) with a total and "Show more". */
+export function FixBoard({ columns, show }: { columns: Partial<Record<Status, Column>>; show: number }) {
   const router = useRouter();
   const { set } = useUrlState();
   const [dragging, setDragging] = useState<Conflict | null>(null);
@@ -54,7 +57,8 @@ export function FixBoard({ conflicts }: { conflicts: Conflict[] }) {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       {COLUMNS.map(({ status, hint }) => {
-        const items = conflicts.filter((c) => c.status === status);
+        const items = columns[status]?.items ?? [];
+        const total = columns[status]?.total ?? 0;
         const droppable = dragging && canMove(dragging.status, status);
         return (
           <section
@@ -82,7 +86,7 @@ export function FixBoard({ conflicts }: { conflicts: Conflict[] }) {
             <header>
               <h2 className="flex items-center justify-between text-sm font-medium">
                 {STATUS_LABEL[status]}
-                <span className="rounded-full bg-background px-2 text-xs tabular-nums ring-1 ring-border">{items.length}</span>
+                <span className="rounded-full bg-background px-2 text-xs tabular-nums ring-1 ring-border">{total}</span>
               </h2>
               <p className="text-xs text-muted-foreground">{hint}</p>
             </header>
@@ -139,6 +143,19 @@ export function FixBoard({ conflicts }: { conflicts: Conflict[] }) {
                 </div>
               </article>
             ))}
+            {total > items.length && (
+              <div className="flex flex-col items-center gap-1 pt-1 text-xs text-muted-foreground">
+                <span className="tabular-nums">
+                  Showing {items.length} of {total}
+                  {status === "verified" ? " (most recent)" : " (highest risk first)"}
+                </span>
+                {status !== "verified" && (
+                  <Button size="xs" variant="outline" onClick={() => set({ show: String(show + 15) })}>
+                    Show {Math.min(15, total - items.length)} more
+                  </Button>
+                )}
+              </div>
+            )}
           </section>
         );
       })}

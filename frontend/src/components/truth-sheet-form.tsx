@@ -149,7 +149,7 @@ export function TruthSheetForm({ sku, claims, brands, inferred }: { sku?: Sku; c
   }
 
   const canCreate = values.name.trim() && fromLines(values.ingredients).length > 0 && (brandChoice !== NEW_BRAND || newBrand.trim());
-  const brandItems = [...(brands ?? []).map((b) => ({ value: String(b.id), label: b.name })), { value: NEW_BRAND, label: "New brand…" }];
+  const brandItems = [...(brands ?? []).map((b) => ({ value: String(b.id), label: b.label ?? b.name })), { value: NEW_BRAND, label: "New brand…" }];
 
   return (
     <form

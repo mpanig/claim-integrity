@@ -5,6 +5,9 @@ export type Field = "name" | "ingredients" | "free_from" | "claims" | "seals";
 export interface Brand {
   id: number;
   name: string;
+  organisation_name?: string | null;
+  /** Name, plus the organisation when another organisation has a brand with the same name. */
+  label?: string | null;
 }
 
 export interface Sku {
@@ -161,4 +164,13 @@ export interface InferredTruth {
   sources: number;
   fields: Partial<Record<Field, string | string[]>>;
   agreement: Partial<Record<Field, number>>;
+}
+
+/** One page of conflicts (GET /conflicts/page). */
+export interface ConflictPage {
+  total: number;
+  limit: number;
+  offset: number;
+  items: Conflict[];
+  owners: string[];
 }

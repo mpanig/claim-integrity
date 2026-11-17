@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { LoadingBlock } from "@/components/common";
+import { ConflictFilters } from "@/components/conflict-filters";
 import { FixBoard } from "@/components/fix-board";
 import { PageHeader } from "@/components/page-header";
 import { serverGet } from "@/lib/api";
-import { brandParam, type SP } from "@/lib/params";
-import type { Conflict } from "@/lib/types";
+import { brandParam, first, type SP } from "@/lib/params";
+import type { ConflictPage } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Fix board" };
 
@@ -14,7 +15,7 @@ export default function BoardPage({ searchParams }: PageProps<"/board">) {
     <>
       <PageHeader
         title="Fix board"
-        description="Track each issue from decision to verified fix. Drag a card to the next column, or use its button. Click a card for details, owner and due date."
+        description="Track each issue from decision to verified fix, highest risk first. Drag a card to the next column, or use its button. Click a card for details, owner and due date."
       />
       <Suspense fallback={<LoadingBlock rows={2} />}>
         <Board searchParams={searchParams} />
@@ -23,16 +24,24 @@ export default function BoardPage({ searchParams }: PageProps<"/board">) {
   );
 }
 
+const OPEN = ["open", "accepted", "fixed"] as const;
+
 async function Board({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
-  const conflicts = await serverGet<Conflict[]>("/conflicts", {
-    brand_id: brandParam(sp),
-    status: ["open", "accepted", "fixed", "verified"],
-  });
-  // Keep the verified column short: the 20 most recently verified.
-  const verified = conflicts
-    .filter((c) => c.status === "verified")
-    .sort((a, b) => (b.status_changed_at ?? "").localeCompare(a.status_changed_at ?? ""))
-    .slice(0, 20);
-  return <FixBoard conflicts={[...conflicts.filter((c) => c.status !== "verified"), ...verified]} />;
+  const show = Math.min(200, Math.max(15, Number(first(sp.show) ?? 15) || 15));
+  const filters = { brand_id: brandParam(sp), verdict: first(sp.verdict), min_severity: first(sp.sev) };
+  // One page per column: open columns by highest risk first; verified = the 20 most recently verified.
+  const [open, accepted, fixed, verified] = await Promise.all([
+    ...OPEN.map((s) => serverGet<ConflictPage>("/conflicts/page", { ...filters, status: [s], limit: show })),
+    serverGet<ConflictPage>("/conflicts/page", { ...filters, status: ["verified"], sort: "recent", limit: 20 }),
+  ]);
+  return (
+    <div className="flex flex-col gap-4">
+      <ConflictFilters board />
+      <FixBoard
+        columns={{ open, accepted, fixed, verified }}
+        show={show}
+      />
+    </div>
+  );
 }

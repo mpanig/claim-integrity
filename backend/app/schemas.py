@@ -10,6 +10,11 @@ class BrandOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     name: str
+    organisation_id: int | None = None
+    organisation_name: str | None = None
+    # Display name: the brand name, plus its organisation when the same name exists in another one,
+    # e.g. "Aveeno (pilot)" and "Aveeno (public data)".
+    label: str | None = None
 
 
 class SkuOut(BaseModel):

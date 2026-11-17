@@ -12,7 +12,7 @@ function LegendText(value: string) {
   return <span className="text-xs text-muted-foreground">{value}</span>;
 }
 
-export function ScoreTrendChart({ trends, brandColors }: { trends: Trends; brandColors: Record<string, string> }) {
+export function ScoreTrendChart({ trends, brandColors, labels = {} }: { trends: Trends; brandColors: Record<string, string>; labels?: Record<string, string> }) {
   const multi = trends.brands.length > 1;
   const data = trends.weeks.map((w) => ({
     week: weekLabel(w.week),
@@ -34,7 +34,7 @@ export function ScoreTrendChart({ trends, brandColors }: { trends: Trends; brand
                 key={b.id}
                 type="monotone"
                 dataKey={`b${b.id}`}
-                name={b.name}
+                name={labels[String(b.id)] ?? b.name}
                 stroke={brandColors[String(b.id)]}
                 strokeWidth={2}
                 dot={false}

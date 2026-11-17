@@ -11,10 +11,10 @@ const ALL = "all";
 export function BrandSwitcher({ brands }: { brands: Brand[] }) {
   const { params, set } = useUrlState();
   const value = params.get("brand") ?? ALL;
-  const items = [{ value: ALL, label: "All brands" }, ...brands.map((b) => ({ value: String(b.id), label: b.name }))];
+  const items = [{ value: ALL, label: "All brands" }, ...brands.map((b) => ({ value: String(b.id), label: b.label ?? b.name }))];
   return (
     <Select items={items} value={value} onValueChange={(v) => set({ brand: v === ALL ? null : (v as string) })}>
-      <SelectTrigger aria-label="Brand" className="w-40">
+      <SelectTrigger aria-label="Brand" className="w-52">
         <Tags className="size-4 text-muted-foreground" />
         <SelectValue />
       </SelectTrigger>

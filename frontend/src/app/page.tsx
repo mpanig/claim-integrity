@@ -116,7 +116,7 @@ async function Overview({ searchParams }: { searchParams: Promise<SP> }) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ScoreTrendChart trends={t} brandColors={brandColors} />
+            <ScoreTrendChart trends={t} brandColors={brandColors} labels={Object.fromEntries(allBrands.map((b) => [String(b.id), b.label ?? b.name]))} />
           </CardContent>
         </Card>
         <Card>
@@ -145,7 +145,7 @@ async function Overview({ searchParams }: { searchParams: Promise<SP> }) {
                 <Card className="transition-colors group-hover:bg-muted/40">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between gap-2">
-                      {b.name}
+                      {allBrands.find((x) => x.id === b.id)?.label ?? b.name}
                       <ArrowRight className="size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
                     </CardTitle>
                     <CardDescription>

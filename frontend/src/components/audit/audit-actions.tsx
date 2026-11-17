@@ -47,12 +47,12 @@ export function DeleteUrl({ id }: { id: number }) {
   );
 }
 
-export function AddUrl({ brands, skus }: { brands: { id: number; name: string }[]; skus: { id: number; name: string; brand_id: number }[] }) {
+export function AddUrl({ brands, skus }: { brands: { id: number; name: string; label?: string | null }[]; skus: { id: number; name: string; brand_id: number }[] }) {
   const { busy, run } = useAction();
   const [url, setUrl] = useState("");
   const [brand, setBrand] = useState(String(brands[0]?.id ?? ""));
   const [sku, setSku] = useState("none");
-  const brandItems = brands.map((b) => ({ value: String(b.id), label: b.name }));
+  const brandItems = brands.map((b) => ({ value: String(b.id), label: b.label ?? b.name }));
   const skuItems = [{ value: "none", label: "Not a product page" }, ...skus.filter((s) => String(s.brand_id) === brand).map((s) => ({ value: String(s.id), label: s.name }))];
   return (
     <form

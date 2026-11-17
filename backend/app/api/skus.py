@@ -49,9 +49,23 @@ def _sku_query():
     return select(Sku).options(selectinload(Sku.brand)).order_by(Sku.name)
 
 
+def _org_short(name: str) -> str:
+    """"Public data: Aveeno & Listerine" -> "public data"; "Pilot" -> "pilot"."""
+    return name.split(":")[0].strip().lower()
+
+
 @router.get("/brands", response_model=list[BrandOut])
-def list_brands(session: DB) -> list[Brand]:
-    return list(session.scalars(select(Brand).order_by(Brand.name)))
+def list_brands(session: DB) -> list[BrandOut]:
+    orgs = {o.id: o.name for o in session.scalars(select(Organisation))}
+    brands = list(session.scalars(select(Brand).order_by(Brand.name, Brand.organisation_id)))
+    counts: dict[str, int] = {}
+    for b in brands:
+        counts[b.name.lower()] = counts.get(b.name.lower(), 0) + 1
+    return [
+        BrandOut(id=b.id, name=b.name, organisation_id=b.organisation_id, organisation_name=orgs.get(b.organisation_id),
+                 label=f"{b.name} ({_org_short(orgs.get(b.organisation_id, ''))})" if counts[b.name.lower()] > 1 else b.name)
+        for b in brands
+    ]
 
 
 @router.get("/skus", response_model=list[SkuOut])
