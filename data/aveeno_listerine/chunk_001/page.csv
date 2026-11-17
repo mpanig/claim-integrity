@@ -1,0 +1,879 @@
+id,organisation_id,url,source_type,retailer,country,weight
+100001,100001,https://www.aveeno.com/products/tone-texture-renewing-lotion-sensitive-skin,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100002,100001,https://www.aveeno.com/products/gentle-moisturizing-face-cleansing-bar-dry-skin,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100003,100001,https://www.aveeno.in/products/baby/baby-daily-moisturising-wash-and-shampoo,brand,Aveeno brand site (www.aveeno.in),IN,1.0
+100004,100001,https://www.aveeno.com/products/tone-texture-gentle-renewing-night-cream,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100005,100001,https://www.aveeno.in/products/body/aveeno-daily-moisturizing-lotion,brand,Aveeno brand site (www.aveeno.in),IN,1.0
+100006,100001,https://www.aveeno.in/products/baby/baby-daily-moisture-lotion,brand,Aveeno brand site (www.aveeno.in),IN,1.0
+100007,100001,https://www.aveeno.com/products/discontinued-products/daily-moisturizing-facial-cleanser-refill,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100008,100001,https://www.aveeno.in/products/body/aveeno-soothing-and-calming-lotion,brand,Aveeno brand site (www.aveeno.in),IN,1.0
+100009,100001,https://www.aveeno.com/products/therapeutic-shave-gel-with-oat-for-dry-skin,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100010,100001,https://www.aveeno.in/products/body/aveeno-skin-relief-moisturizing-lotion,brand,Aveeno brand site (www.aveeno.in),IN,1.0
+100011,100001,https://www.listerine.com.br/produtos/listerine-cuidado-total,brand,Listerine brand site (www.listerine.com.br),BR,1.0
+100012,100001,https://www.aveeno.in/products/body/daily-moisturizing,brand,Aveeno brand site (www.aveeno.in),IN,1.0
+100013,100001,https://www.aveeno.com/products/kids-continuous-mineral-sunscreen-stick-spf-50,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100014,100001,https://www.listerine.com/products/mouthwash/alcohol-free,brand,Listerine brand site (www.listerine.com),US,1.0
+100015,100001,https://www.aveeno.de/produkte/koerperreinigung,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100016,100001,https://www.listerine.com.br/produtos/listerine-cuidado-total-refrescancia-suave-zero-sem-alcool,brand,Listerine brand site (www.listerine.com.br),BR,1.0
+100017,100001,https://www.aveeno.it/prodotti/baby-care,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100018,100001,https://www.aveeno.de/produkte/daily-moisturising,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100019,100001,https://www.aveeno.in/products/body,brand,Aveeno brand site (www.aveeno.in),IN,1.0
+100020,100001,https://www.listerine.com.br/products/cuidado-essencial/listerine-cool-mint-refrescancia-suave-zero-sem-alcool,brand,Listerine brand site (www.listerine.com.br),BR,1.0
+100021,100001,https://www.listerine.com/products/mouthwash/cool-mint-alcohol-free-extra-mild,brand,Listerine brand site (www.listerine.com),US,1.0
+100022,100001,https://www.aveeno.it/prodotti/skin-relief-shampoo-lenitivo,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100023,100001,https://www.aveeno.com/products/kids/sensitive-skin-face-body-gel-cream,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100024,100001,https://www.listerine.de/produkte/listerine-cool-mint-intensiv,brand,Listerine brand site (www.listerine.de),DE,1.0
+100025,100001,https://www.aveeno.com.au/body-care/moisturising-lotions-creams/daily-moisturising-lotion,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100026,100001,https://www.aveeno.de/produkte/daily-moisturising/seifenfreies-duschgel-500ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100027,100001,https://www.aveeno.in/products/baby/sensitive-skin,brand,Aveeno brand site (www.aveeno.in),IN,1.0
+100028,100001,https://www.listerine.ca/products/smart-rinse-mouthwashes-for-kids,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100029,100001,https://www.listerine.com.br/products/cuidado-essencial/listerine-cool-mint-refrescancia-intensa,brand,Listerine brand site (www.listerine.com.br),BR,1.0
+100030,100001,https://www.aveeno.it/prodotti/skin-relief-olio-bagno-doccia,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100031,100001,https://www.aveeno.de/produkte/daily-moisturising/body-lotion-300ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100032,100001,https://www.listerine.co.uk/products/fresh-breath/listerine-flavours-fresh-lime-and-mint,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100033,100001,https://www.listerine.com/products/mouthwash/on-the-go-cool-mint-mouthwash-packets,brand,Listerine brand site (www.listerine.com),US,1.0
+100034,100001,https://www.listerine.de/produkte/listerine-advanced-white,brand,Listerine brand site (www.listerine.de),DE,1.0
+100035,100001,https://www.aveeno.it/prodotti/skin-relief-crema-nutriente-lenitiva,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100036,100001,https://www.listerine.com.br/products/cuidado-essencial/listerine-melancia-e-hortela-refrescancia-suave-sem-alcool,brand,Listerine brand site (www.listerine.com.br),BR,1.0
+100037,100001,https://www.aveeno.ca/products/baby-diaper-cream,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100038,100001,https://www.aveeno.com/products/kids/coily-hair-leave-in-conditioner,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100039,100001,https://www.listerine.it/prodotti/naturals-protezione-gengive-delicato,brand,Listerine brand site (www.listerine.it),IT,1.0
+100040,100001,https://www.listerine.com.au/product/listerine-go/pocketmist-freshburst,brand,Listerine brand site (www.listerine.com.au),AU,1.0
+100041,100001,https://www.aveeno.de/produkte/skin-relief/body-lotion-300ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100042,100001,https://www.listerine.com.br/produtos/listerine-cool-mint-extra-suave,brand,Listerine brand site (www.listerine.com.br),BR,1.0
+100043,100001,https://www.listerine.co.uk/products/fresh-breath/listerine-flavours-mild-and-minty,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100044,100001,https://www.aveeno.it/prodotti/skin-relief-crema-idratante-al-mentolo,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100045,100001,https://www.listerine.es/productos/naturals-esmalte-sabor-suave,brand,Listerine brand site (www.listerine.es),ES,1.0
+100046,100001,https://www.listerine.it/prodotti/listerine-total-care-tartar-protect-intenso,brand,Listerine brand site (www.listerine.it),IT,1.0
+100047,100001,https://www.listerine.com/products/mouthwash/citrus-mint-alcohol-free-mild,brand,Listerine brand site (www.listerine.com),US,1.0
+100048,100001,https://www.listerine.ca/products/listerine-total-care,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100049,100001,https://www.aveeno.com.au/body-care/moisturising-lotions-creams/skin-renewal-smoothing-lotion,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100050,100001,https://www.listerine.com.au/product/listerine-go/pocketmist-coolmint,brand,Listerine brand site (www.listerine.com.au),AU,1.0
+100051,100001,https://www.aveeno.co.uk/baby/products/daily-care-lotion-150ml,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100052,100001,https://www.listerine.co.uk/products/fresh-breath/listerine-total-care-intense-taste-classic-mouthwash,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100053,100001,https://www.aveeno.it/prodotti/skin-relief-balsamo-riparatore-lenitivo-cica,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100054,100001,https://www.aveeno.de/produkte/skin-relief/koerperoel-spray-200ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100055,100001,https://www.listerine.de/produkte/listerine-total-care-intensiv-alkoholfrei,brand,Listerine brand site (www.listerine.de),DE,1.0
+100056,100001,https://www.listerine.es/productos/listerine-cuidado-total-suave-sin-alcohol,brand,Listerine brand site (www.listerine.es),ES,1.0
+100057,100001,https://www.listerine.it/prodotti/listerine-fresh-burst-intenso,brand,Listerine brand site (www.listerine.it),IT,1.0
+100058,100001,https://www.listerine.com.br/produtos/listerine-antitartaro-refrescancia-intensa,brand,Listerine brand site (www.listerine.com.br),BR,1.0
+100059,100001,https://www.aveeno.ca/products/kids-bubble-bath,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100060,100001,https://www.listerine.ca/products/listerine-total-care-zero,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100061,100001,https://www.listerine.it/prodotti/listerine-cool-mint-intenso,brand,Listerine brand site (www.listerine.it),IT,1.0
+100062,100001,https://www.aveeno.de/produkte/skin-relief/seifenfreies-duschgel-500ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100063,100001,https://www.listerine.com.au/product/listerine-go/listerine-pocketpaks-oral-care-strips,brand,Listerine brand site (www.listerine.com.au),AU,1.0
+100064,100001,https://www.listerine.com.br/produtos/listerine-profissional-gengiva-expert,brand,Listerine brand site (www.listerine.com.br),BR,1.0
+100065,100001,https://www.aveeno.it/prodotti/skin-relief-bagno-doccia,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100066,100001,https://www.aveeno.com/products/discontinued-products/daily-moisturizing-exfoliating-body-scrub,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100067,100001,https://www.listerine.es/productos/naturals-proteccion-encias-suave,brand,Listerine brand site (www.listerine.es),ES,1.0
+100068,100001,https://www.listerine.co.uk/products/strengthens-teeth/listerine-advanced-white,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100069,100001,https://www.listerine.com/products/mouthwash/whitening-alcohol-free-extra-mild,brand,Listerine brand site (www.listerine.com),US,1.0
+100070,100001,https://www.listerine.it/prodotti/listerine-total-care-intenso,brand,Listerine brand site (www.listerine.it),IT,1.0
+100071,100001,https://www.listerine.ca/products/listerine-clinical-solutions-breath-defence-antiseptic-mouthwash,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100072,100001,https://www.aveeno.ca/products/kids-curly-hair-shampoo,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100073,100001,https://www.listerine.de/produkte/listerine-total-care-mild-alkoholfrei,brand,Listerine brand site (www.listerine.de),DE,1.0
+100074,100001,https://www.aveeno.de/produkte/skin-relief/handcreme-75ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100075,100001,https://www.aveeno.it/prodotti/dermexa-crema-idratante-emolliente,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100076,100001,https://www.listerine.es/productos/listerine-advanced-proteccion-esmalte-y-sensibilidad,brand,Listerine brand site (www.listerine.es),ES,1.0
+100077,100001,https://www.listerine.com.au/product/listerine-go/pocketpaks-freshburst-oral-care-strips,brand,Listerine brand site (www.listerine.com.au),AU,1.0
+100078,100001,https://www.listerine.co.uk/products/fresh-breath/listerine-nightly-reset,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100079,100001,https://www.listerine.com.br/produtos/listerine-anticaries-refrescancia-suave-zero-sem-alcool,brand,Listerine brand site (www.listerine.com.br),BR,1.0
+100080,100001,https://www.listerine.it/prodotti/listerine-total-care-denti-e-gengive-intenso,brand,Listerine brand site (www.listerine.it),IT,1.0
+100081,100001,https://www.aveeno.com.au/hair-care/conditioner/oat-milk-blend-conditioner,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100082,100001,https://www.aveeno.co.uk/kids/products/aveeno-kids-conditioner-250ml,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100083,100001,https://www.listerine.es/productos/listerine-mentol-suave-sin-alcohol,brand,Listerine brand site (www.listerine.es),ES,1.0
+100084,100001,https://www.listerine.com/products/mouthwash/ultra-clean-gum-whitening-intense,brand,Listerine brand site (www.listerine.com),US,1.0
+100085,100001,https://www.aveeno.it/prodotti/dermexa-balsamo-corpo-lenitivo-sollievo-immediato,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100086,100001,https://www.listerine.com.br/produtos/listerine-whitening-extreme,brand,Listerine brand site (www.listerine.com.br),BR,1.0
+100087,100001,https://www.listerine.co.uk/products/fresh-breath/listerine-total-care-mild-taste-alcohol-free-mouthwash,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100088,100001,https://www.listerine.it/prodotti/listerine-total-care-denti-e-gengive-delicato-senza-alcol,brand,Listerine brand site (www.listerine.it),IT,1.0
+100089,100001,https://www.aveeno.de/produkte/dermexa/emollientien-creme-200ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100090,100001,https://www.aveeno.com/products/kids-continuous-protection-broad-spectrum-zinc-oxide-sunscreen-spf-50,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100091,100001,https://www.listerine.es/productos/listerine-cuidado-total-sabor-suave,brand,Listerine brand site (www.listerine.es),ES,1.0
+100092,100001,https://www.listerine.ca/products/listerine-smart-rinse-mint,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100093,100001,https://www.listerine.de/produkte/listerine-cool-mint-extra-mild-alkoholfrei,brand,Listerine brand site (www.listerine.de),DE,1.0
+100094,100001,https://www.aveeno.ca/products/daily-moisturizing-lotion-sheer-hydration,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100095,100001,https://www.listerine.it/prodotti/naturals-protezione-smalto-delicato,brand,Listerine brand site (www.listerine.it),IT,1.0
+100096,100001,https://www.listerine.com/products/concerns,brand,Listerine brand site (www.listerine.com),US,1.0
+100097,100001,https://www.aveeno.it/prodotti/dermexa-bagno-doccia-emolliente,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100098,100001,https://www.listerine.co.uk/products/listerine-multi-protect-mouthwash,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100099,100001,https://www.aveeno.de/produkte/dermexa/emollientien-duschcreme-300ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100100,100001,https://www.listerine.com.br/produtos/listerine-antitartaro-refrescancia-suave-zero-sem-alcool,brand,Listerine brand site (www.listerine.com.br),BR,1.0
+100101,100001,https://www.aveeno.co.uk/baby/products/dermexa-moisturising-wash,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100102,100001,https://www.listerine.it/prodotti/listerine-kids-zero-alcol,brand,Listerine brand site (www.listerine.it),IT,1.0
+100103,100001,https://www.listerine.es/productos/listerine-cuidado-total-dientes-encias,brand,Listerine brand site (www.listerine.es),ES,1.0
+100104,100001,https://www.aveeno.com.au/hair-care/shampoo/oat-milk-blend-shampoo,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100105,100001,https://www.aveeno.it/prodotti/daily-moisturising-spray-idratante-dopo-doccia,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100106,100001,https://www.listerine.co.uk/products/range-of-intensities/listerine-total-care-extra-mild-taste-alcohol-free-mouthwash,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100107,100001,https://www.listerine.com.br/produtos/listerinekidshomemaranha,brand,Listerine brand site (www.listerine.com.br),BR,1.0
+100108,100001,https://www.listerine.ca/products/listerine-cool-mint,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100109,100001,https://www.listerine.it/prodotti/listerine-clinical-solutions-gengive-delicato-zero-alcol,brand,Listerine brand site (www.listerine.it),IT,1.0
+100110,100001,https://www.listerine.de/produkte/listerine-professional-frischer-atem-plus,brand,Listerine brand site (www.listerine.de),DE,1.0
+100111,100001,https://www.listerine.es/productos/listerine-kids-sin-alcohol,brand,Listerine brand site (www.listerine.es),ES,1.0
+100112,100001,https://www.aveeno.ca/products/daily-moisturizing-lotion,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100113,100001,https://www.listerine.com.br/produtos/listerinekidsfrozen,brand,Listerine brand site (www.listerine.com.br),BR,1.0
+100114,100001,https://www.listerine.co.uk/products/range-of-intensities/listerine-total-care-intense-taste-alcohol-free-mouthwash,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100115,100001,https://www.aveeno.it/prodotti/daily-moisturising-detergente-olio-bagno-doccia,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100116,100001,https://www.aveeno.com/products/kids/2-in-1,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100117,100001,https://www.listerine.it/prodotti/listerine-clinical-solutions-whitening-delicato-zero-alcol,brand,Listerine brand site (www.listerine.it),IT,1.0
+100118,100001,https://www.listerine.ca/products/listerine-green-tea-zero,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100119,100001,https://www.aveeno.de/produkte/calm-restore/naehrender-hafer-gesichtsreiniger-200ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100120,100001,https://www.aveeno.co.uk/baby/products/nappy-cream,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100121,100001,https://www.listerine.es/productos/listerine-advanced-defence-gum,brand,Listerine brand site (www.listerine.es),ES,1.0
+100122,100001,https://www.listerine.com.br/produtos/listerine-cuidado-total-extra-suave,brand,Listerine brand site (www.listerine.com.br),BR,1.0
+100123,100001,https://www.listerine.co.uk/products/listerine-advanced-gum-expert-500ml,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100124,100001,https://www.listerine.it/prodotti/listerine-total-care-intenso-senza-alcol,brand,Listerine brand site (www.listerine.it),IT,1.0
+100125,100001,https://www.aveeno.it/prodotti/daily-moisturising-detergente-intimo-profumo-vaniglia,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100126,100001,https://www.listerine.ca/products/listerine-pocketmist,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100127,100001,https://www.listerine.com.br/produtos/listerine-whitening-antimanchas,brand,Listerine brand site (www.listerine.com.br),BR,1.0
+100128,100001,https://www.aveeno.in/products/body/aveeno-soothing-and-calming-body-wash,brand,Aveeno brand site (www.aveeno.in),IN,1.0
+100129,100001,https://www.listerine.es/productos/listerine-menta-fresca,brand,Listerine brand site (www.listerine.es),ES,1.0
+100130,100001,https://www.listerine.de/produkte/listerine-fresh-mint,brand,Listerine brand site (www.listerine.de),DE,1.0
+100131,100001,https://www.listerine.co.za/products/sensitive/listerine-total-care-mouthwash,brand,Listerine brand site (www.listerine.co.za),ZA,1.0
+100132,100001,https://www.listerine.it/prodotti/listerine-total-care-delicato-senza-alcol,brand,Listerine brand site (www.listerine.it),IT,1.0
+100133,100001,https://www.aveeno.de/produkte/calm-restore/beruhigende-hafer-toning-lotion-200ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100134,100001,https://www.listerine.com.br/produtos/listerine-whitening-pre-escovacao,brand,Listerine brand site (www.listerine.com.br),BR,1.0
+100135,100001,https://www.aveeno.com.au/baby-skin-care/moisturising-lotions-creams/baby-dermexa-wash,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100136,100001,https://www.listerine.co.uk/products/healthy-gums/listerine-fresh-burst-intense-taste-classic-mouthwash,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100137,100001,https://www.aveeno.it/prodotti/daily-moisturising-cremy-oil-idratante-cremosa,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100138,100001,https://www.aveeno.in/products/body/aveeno-skin-relief-body-wash,brand,Aveeno brand site (www.aveeno.in),IN,1.0
+100139,100001,https://www.aveeno.co.uk/baby/products/daily-care-hair-body-wash,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100140,100001,https://www.listerine.es/productos/listerine-mentol,brand,Listerine brand site (www.listerine.es),ES,1.0
+100141,100001,https://www.listerine.ca/products/listerine-ultraclean-enamel-protection-zero,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100142,100001,https://www.aveeno.ca/products/baby-calming-comfort-bath,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100143,100001,https://www.listerine.it/prodotti/listerine-cool-mint-delicato-senza-alcol,brand,Listerine brand site (www.listerine.it),IT,1.0
+100144,100001,https://www.aveeno.com/products/bubble-bath-sensitive-skin,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100145,100001,https://www.listerine.co.uk/products/healthy-gums/listerine-cool-mint-intense-taste-classic-mouthwash,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100146,100001,https://www.listerine.co.za/products/listerine-antiseptic/listerine-teeth-and-gum-defence-mouthwash,brand,Listerine brand site (www.listerine.co.za),ZA,1.0
+100147,100001,https://www.aveeno.de/produkte/calm-restore/feuchtigkeitsspendende-hafer-tagespflege-50ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100148,100001,https://www.listerine.es/productos/listerine-clinical-solutions-encias-suave-sin-alcohol,brand,Listerine brand site (www.listerine.es),ES,1.0
+100149,100001,https://www.aveeno.in/products/body/aveeno-dermexa-daily-emollient-cream,brand,Aveeno brand site (www.aveeno.in),IN,1.0
+100150,100001,https://www.aveeno.it/prodotti/daily-moisturising-crema-idratante-corpo-alla-lavanda,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100151,100001,https://www.listerine.ca/products/listerine-ultraclean-enamel-protection,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100152,100001,https://www.listerine.de/produkte/listerine-total-care-intensiv,brand,Listerine brand site (www.listerine.de),DE,1.0
+100153,100001,https://www.listerine.co.uk/products/strengthens-teeth/listerine-smart-rinse-mild-mint,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100154,100001,https://www.listerine.es/productos/listerine-clinical-solutions-whitening-suave-sin-alcohol,brand,Listerine brand site (www.listerine.es),ES,1.0
+100155,100001,https://www.listerine.com/products/concerns/tartar-plaque,brand,Listerine brand site (www.listerine.com),US,1.0
+100156,100001,https://www.aveeno.in/products/body/aveeno-daily-moisturizing-body-wash,brand,Aveeno brand site (www.aveeno.in),IN,1.0
+100157,100001,https://www.aveeno.de/produkte/calm-restore/3-faches-hafer-serum-30ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100158,100001,https://www.aveeno.it/prodotti/daily-moisturising-crema-idratante-corpo,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100159,100001,https://www.listerine.ca/products/listerine-freshburst,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100160,100001,https://www.listerine.co.uk/products/range-of-intensities/listerine-cool-mint-intense-taste-alcohol-free-mouthwash,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100161,100001,https://www.listerine.es/productos/listerine-cuidado-total-dientes-encias-suave-sin-alcohol,brand,Listerine brand site (www.listerine.es),ES,1.0
+100162,100001,https://www.aveeno.ca/products/baby-eczema-care-moisturizing-cream,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100163,100001,https://www.aveeno.com.au/body-care/moisturising-lotions-creams/dermexa-daily-emollient-cream,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100164,100001,https://www.aveeno.de/produkte/calm-restore/re-hydrierende-hafer-nachtcreme-50ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100165,100001,https://www.aveeno.it/prodotti/daily-moisturising-crema-idratante-allo-yogurt-e-al-profumo-di-miele-e-albicocca,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100166,100001,https://www.aveeno.com/products/kids/coily-hair-conditioner,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100167,100001,https://www.listerine.ca/products/listerine-original,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100168,100001,https://www.aveeno.in/products/baby/baby-soothing-relief-moisturizing-cream,brand,Aveeno brand site (www.aveeno.in),IN,1.0
+100169,100001,https://www.listerine.co.za/products/listerine-antiseptic/tartar-control-listerine-antiseptic-mouthwash,brand,Listerine brand site (www.listerine.co.za),ZA,1.0
+100170,100001,https://www.listerine.es/productos/listerine-cuidado-total-1,brand,Listerine brand site (www.listerine.es),ES,1.0
+100171,100001,https://www.listerine.de/produkte/listerine-cool-mint-mild,brand,Listerine brand site (www.listerine.de),DE,1.0
+100172,100001,https://www.listerine.co.uk/products/strengthens-teeth/listerine-smart-rinse-mild-berry,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100173,100001,https://www.aveeno.it/prodotti/daily-moisturising-bagno-doccia-allo-yogurt-e-al-profumo-di-miele-e-albicocca,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100174,100001,https://www.listerine.ca/products/listerine-ultraclean-stain-protection,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100175,100001,https://www.aveeno.co.uk/baby/products/daily-care-2-in-1-shampoo-conditioner-250ml,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100176,100001,https://www.aveeno.de/produkte/calm-restore/hafer-tagespflege-lsf-50-50ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100177,100001,https://www.listerine.es/productos/listerine-cuidado-total,brand,Listerine brand site (www.listerine.es),ES,1.0
+100178,100001,https://www.listerine.co.uk/products/fresh-breath/listerine-cool-mint-mild-taste-alcohol-free-mouthwash,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100179,100001,https://www.aveeno.in/products/baby/baby-dermexa-moisturising-cream,brand,Aveeno brand site (www.aveeno.in),IN,1.0
+100180,100001,https://www.listerine.co.za/products/listerine-healthywhite/listerine-advanced-white-mouthwash,brand,Listerine brand site (www.listerine.co.za),ZA,1.0
+100181,100001,https://www.listerine.com/products/concerns/gingivitis-gum-disease,brand,Listerine brand site (www.listerine.com),US,1.0
+100182,100001,https://www.aveeno.it/prodotti/daily-moisturising-bagno-doccia-idratante-profumo-delicato,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100183,100001,https://www.listerine.ca/products/listerine-total-care-for-sensitive-teeth,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100184,100001,https://www.aveeno.ca/products/baby-calming-comfort-lotion,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100185,100001,https://www.aveeno.de/produkte/calm-restore/schaeumender-gesichtsreiniger-200ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100186,100001,https://www.aveeno.com/products/kids/curly-hair-conditioner,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100187,100001,https://www.listerine.co.uk/products/fresh-breath/listerine-total-care-teeth-gum-intense-taste-classic-mouthwash,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100188,100001,https://www.listerine.de/produkte/listerine-cool-mint-intensiv-alkoholfrei,brand,Listerine brand site (www.listerine.de),DE,1.0
+100189,100001,https://www.aveeno.in/products/baby/baby-cleansing-therapy-moisturising-wash,brand,Aveeno brand site (www.aveeno.in),IN,1.0
+100190,100001,https://www.listerine.co.za/products/listerine-smart-rinse/listerine-smart-rinse-mild-berry-mouthwash,brand,Listerine brand site (www.listerine.co.za),ZA,1.0
+100191,100001,https://www.aveeno.co.uk/baby/products/daily-care-moisturising-lotion,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100192,100001,https://www.aveeno.it/prodotti/daily-moisturising-crema-idratante,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100193,100001,https://www.aveeno.com.au/body-care/moisturising-oils/daily-moisturising-creamy-oil,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100194,100001,https://www.aveeno.de/produkte/baby-dermexa/gute-nacht-emollientien-balsam-75ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100195,100001,https://www.listerine.co.uk/products/fresh-breath/listerine-total-care-stay-white-intense-taste-classic-mouthwash,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100196,100001,https://www.listerine.com/products/mouthwash/total-care-alcohol-free-extra-mild,brand,Listerine brand site (www.listerine.com),US,1.0
+100197,100001,https://www.aveeno.it/prodotti/baby-care/baby-daily-salviettine,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100198,100001,https://www.listerine.ca/products/listerine-ultraclean-gum-protection-zero,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100199,100001,https://www.listerine.co.za/products/listerine-smart-rinse/listerine-smart-rinse-mild-mint-mouthwash,brand,Listerine brand site (www.listerine.co.za),ZA,1.0
+100200,100001,https://www.listerine.de/produkte/listerine-smart-kidz,brand,Listerine brand site (www.listerine.de),DE,1.0
+100201,100001,https://www.aveeno.de/produkte/baby-dermexa/emollientien-duschcreme-250ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100202,100001,https://www.listerine.co.uk/products/gum-health/listerine-multi-protect-gum,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100203,100001,https://www.aveeno.co.uk/baby/products/dermexa-good-night-emollient-balm,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100204,100001,https://www.aveeno.com/products/daily-moisturizing-body-wash-refill-soothing-oat,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100205,100001,https://www.aveeno.it/prodotti/daily-moisturising-bagno-doccia-allo-yogurt-e-al-profumo-di-avena-e-vaniglia,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100206,100001,https://www.aveeno.ca/products/baby-wash-shampoo,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100207,100001,https://www.listerine.ca/products/listerine-smart-rinse-bubblegum,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100208,100001,https://www.aveeno.de/produkte/baby-daily-care/seifenfreies-bad-und-waschgel-400ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100209,100001,https://www.listerine.co.uk/products/range-of-intensities/listerine-cool-mint-extra-mild-taste-alcohol-free-mouthwash,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100210,100001,https://www.listerine.com/products/mouthwash/total-care-anticavity,brand,Listerine brand site (www.listerine.com),US,1.0
+100211,100001,https://www.aveeno.it/prodotti/baby-care/baby-daily-care-crema-idratante,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100212,100001,https://www.listerine.ca/products/listerine-ultraclean-gum-protection,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100213,100001,https://www.listerine.de/produkte/listerine-total-care-extra-mild-alkoholfrei,brand,Listerine brand site (www.listerine.de),DE,1.0
+100214,100001,https://www.aveeno.de/produkte/baby-daily-care/body-lotion-150ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100215,100001,https://www.aveeno.co.uk/baby/products/dermexa-daily-emollient-cream,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100216,100001,https://www.aveeno.com.au/body-care/cleansing-body-wash-scrubs/skin-relief-body-wash,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100217,100001,https://www.listerine.co.uk/products/healthy-gums/listerine-advanced-defenced-gum-treatment,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100218,100001,https://www.aveeno.it/prodotti/baby-care/baby-daily-care-fluid-bagnetto-delicato,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100219,100001,https://www.listerine.ca/products/listerine-on-the-go-mouthwash-packets,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100220,100001,https://www.aveeno.com/products/kids/curly-coily-hair-shampoo,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100221,100001,https://www.listerine.co.uk/products/sensitivity-relief/listerine-advanced-defence-sensitive,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100222,100001,https://www.aveeno.de/produkte/baby-dermexa/emollientien-creme-150ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100223,100001,https://www.aveeno.ca/products/baby-daily-lotion,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100224,100001,https://www.listerine.com/products/mouthwash/total-care-anticavity-alcohol-free,brand,Listerine brand site (www.listerine.com),US,1.0
+100225,100001,https://www.listerine.de/produkte/listerine-clean-and-fresh,brand,Listerine brand site (www.listerine.de),DE,1.0
+100226,100001,https://www.aveeno.it/prodotti/baby-care/baby-daily-care-crema-barriera,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100227,100001,https://www.listerine.co.uk/products/listerine-multi-protect-sensitive,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100228,100001,https://www.aveeno.co.uk/baby/products/soothing-relief-emollient-wash,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100229,100001,https://www.listerine.ca/products/listerine-watermelon-mint,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100230,100001,https://www.aveeno.de/produkte/baby-daily-care/seifenfreies-duschgel-und-shampoo-250ml,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100231,100001,https://www.aveeno.it/prodotti/baby-care/baby-daily-care-bagnetto-corpo-e-capelli,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100232,100001,https://www.aveeno.ca/products/kids-curly-hair-conditioner,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100233,100001,https://www.listerine.co.uk/products/listerine-flavours-spearmint,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100234,100001,https://www.listerine.de/produkte/listerine-professional-zahnfleischschutz-plus,brand,Listerine brand site (www.listerine.de),DE,1.0
+100235,100001,https://www.aveeno.com/products/kids/detangling-spray,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100236,100001,https://www.listerine.com/products/mouthwash/antiseptic-cool-mint,brand,Listerine brand site (www.listerine.com),US,1.0
+100237,100001,https://www.aveeno.it/prodotti/baby-care/aveeno-baby-bagno-lenitivo-all-avena,brand,Aveeno brand site (www.aveeno.it),IT,1.0
+100238,100001,https://www.aveeno.co.uk/kids/products/aveeno-kids-curling-cream-150ml,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100239,100001,https://www.listerine.co.uk/products/gum-health/listerine-naturals-gum-protect-mouthwash-500ml,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100240,100001,https://www.aveeno.de/produkte/skin-relief,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100241,100001,https://www.listerine.ca/products/total-care-mouthwashes,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100242,100001,https://www.listerine.co.uk/products/enamel-protection/listerine-naturals-enamel-protect-mouthwash-500ml,brand,Listerine brand site (www.listerine.co.uk),GB,1.0
+100243,100001,https://www.aveeno.com.au/hair-care/conditioner/rose-water-chamomile-blend-conditioner,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100244,100001,https://www.aveeno.de/produkte/dermexa,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100245,100001,https://www.aveeno.ca/products/positively-radiant,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100246,100001,https://www.listerine.de/produkte/listerine-total-care-zahnfleisch-schutz-intensiv,brand,Listerine brand site (www.listerine.de),DE,1.0
+100247,100001,https://www.listerine.com/products/mouthwash/cool-mint-alcohol-free,brand,Listerine brand site (www.listerine.com),US,1.0
+100248,100001,https://www.aveeno.co.uk/baby/products/daily-baby-gentle-wash,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100249,100001,https://www.listerine.ca/products/listerine-clinical-solutions-enamel-repair-mouthwash,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100250,100001,https://www.aveeno.com/products/positively-smooth-shave-gel,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100251,100001,https://www.aveeno.de/produkte/calm-restore,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100252,100001,https://www.listerine.ca/products/listerine-clinical-solutions-gum-therapy-mouthwash,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100253,100001,https://www.listerine.com/products/mouthwash/watermelon-mint,brand,Listerine brand site (www.listerine.com),US,1.0
+100254,100001,https://www.aveeno.ca/products/baby-sensitive-skin-sunscreen-spf-50,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100255,100001,https://www.aveeno.co.uk/baby/products/soothing-relief-emollient-cream,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100256,100001,https://www.listerine.de/produkte/listerine-total-care-zahnstein-schutz,brand,Listerine brand site (www.listerine.de),DE,1.0
+100257,100001,https://www.listerine.ca/products/listerine-clinical-solutions-sensitivity-relief-mouthwash,brand,Listerine brand site (www.listerine.ca),CA,1.0
+100258,100001,https://www.aveeno.de/produkte/baby-dermexa,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100259,100001,https://www.listerine.com/products/mouthwash/clinical-solutions-gum-health,brand,Listerine brand site (www.listerine.com),US,1.0
+100260,100001,https://www.aveeno.com/products/kids/sensitive-wash,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100261,100001,https://www.aveeno.com.au/body-care/moisturising-oils/daily-moisturising-oil-mist,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100262,100001,https://www.aveeno.co.uk/kids/products/aveeno-kids-bubble-bath-wash,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100263,100001,https://www.aveeno.ca/products/baby-daily-cream-coconut,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100264,100001,https://www.aveeno.de/produkte/babypflege,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100265,100001,https://www.aveeno.de/produkte/baby-daily-care,brand,Aveeno brand site (www.aveeno.de),DE,1.0
+100266,100001,https://www.listerine.com/products/mouthwash/antiseptic-gum-therapy,brand,Listerine brand site (www.listerine.com),US,1.0
+100267,100001,https://www.aveeno.co.uk/kids/products/aveeno-kids-shampoo,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100268,100001,https://www.aveeno.com/products/daily-moisturizing-facial-cleanser-soothing-oat,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100269,100001,https://www.aveeno.ca/products/baby-daily-healthy-start-wash,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100270,100001,https://www.listerine.com/products/mouthwash/ultra-clean-tartar-control,brand,Listerine brand site (www.listerine.com),US,1.0
+100271,100001,https://www.aveeno.co.uk/baby/products/calming-comfort-bedtime-bath-and-wash-400ml,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100272,100001,https://www.aveeno.ca/products/baby-sensitive-skin-face-sunscreen-stick-spf-50,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100273,100001,https://www.aveeno.com/products/baby-hand-face-wipes,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100274,100001,https://www.listerine.com/products/mouthwash/ultra-clean-cool-mint-antiseptic,brand,Listerine brand site (www.listerine.com),US,1.0
+100275,100001,https://www.aveeno.com.au/body-care/cleansing-body-wash-scrubs/dermexa-daily-emollient-body-wash,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100276,100001,https://www.aveeno.ca/products/baby-daily-wash-shampoo-coconut,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100277,100001,https://www.listerine.com/products/mouthwash/antiseptic-original,brand,Listerine brand site (www.listerine.com),US,1.0
+100278,100001,https://www.aveeno.com/products/baby-cleansing-therapy-moisturizing-wash,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100279,100001,https://www.aveeno.co.uk/products/daily-moisturising-creamy-oil,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100280,100001,https://www.aveeno.ca/products/baby-daily-healthy-start-balm,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100281,100001,https://www.listerine.com/products/mouthwash/antiseptic-freshburst,brand,Listerine brand site (www.listerine.com),US,1.0
+100282,100001,https://www.aveeno.co.uk/products/daily-moisturising-body-wash,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100283,100001,https://www.aveeno.com/products/fresh-greens-blend-conditioner,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100284,100001,https://www.aveeno.ca/products/baby-bubble-bath,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100285,100001,https://www.listerine.com/products/kids-mouthwash/total-care-mint-shield,brand,Listerine brand site (www.listerine.com),US,1.0
+100286,100001,https://www.aveeno.co.uk/products/skin-relief-hand-cream,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100287,100001,https://www.aveeno.ca/products/skin-relief-body-wash-fragrance-free,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100288,100001,https://www.aveeno.com/products/baby-eczema-therapy-nighttime-balm,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100289,100001,https://www.listerine.com/products/kids-mouthwash/total-care-bubble-blast,brand,Listerine brand site (www.listerine.com),US,1.0
+100290,100001,https://www.aveeno.co.uk/products/dermexa-fast-long-lasting-balm,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100291,100001,https://www.aveeno.ca/products/skin-relief-shower-and-bath-oil,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100292,100001,https://www.listerine.com/products/kids-mouthwash/total-care-berry-splash,brand,Listerine brand site (www.listerine.com),US,1.0
+100293,100001,https://www.aveeno.com/products/discontinued-products/plant-protein-conditioner,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100294,100001,https://www.aveeno.co.uk/products/skin-relief-lotion,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100295,100001,https://www.aveeno.ca/products/protect-hydrate-lotion-sunscreen-spf-30,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100296,100001,https://www.aveeno.com/products/rose-water-chamomile-blend-conditioner,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100297,100001,https://www.aveeno.co.uk/products/skin-relief-body-wash,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100298,100001,https://www.aveeno.com.au/body-care/moisturising-lotions-creams/skin-relief-moisturising-lotion,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100299,100001,https://www.aveeno.ca/products/anti-itch-lotion,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100300,100001,https://www.aveeno.co.uk/baby/products/daily-care-hair-and-body-wash,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100301,100001,https://www.listerine.com/products/flavor-intensity/extra-mild,brand,Listerine brand site (www.listerine.com),US,1.0
+100302,100001,https://www.aveeno.com/products/oat-milk-blend-conditioner,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100303,100001,https://www.aveeno.ca/products/daily-moisturizing-body-wash,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100304,100001,https://www.aveeno.co.uk/baby/products/aveeno-baby-daily-care-moisturising-lotion,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100305,100001,https://www.aveeno.ca/products/baby-eczema-care-wash,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100306,100001,https://www.aveeno.com/products/baby-eczema-therapy-moisturizing-cream,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100307,100001,https://www.aveeno.co.uk/products/dermexa-daily-emollient-body-wash,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100308,100001,https://www.aveeno.ca/products/soothing-bath-treatment,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100309,100001,https://www.aveeno.com/products/blackberry-quinoa-blend-conditioner,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100310,100001,https://www.aveeno.co.uk/products/aveeno-wash-skin-renewal-gentle-body-scrub,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100311,100001,https://www.aveeno.ca/products/protect-hydrate-face-spf-50,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100312,100001,https://www.aveeno.com/products/discontinued-products/plant-protein-shampoo,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100313,100001,https://www.aveeno.co.uk/products/daily-moisturising-yogurt-body-cream-vanilla-oat,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100314,100001,https://www.aveeno.ca/products/positively-radiant-face-toner,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100315,100001,https://www.aveeno.com.au/hair-care/shampoo/rose-water-chamomile-blend-shampoo,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100316,100001,https://www.listerine.com/products/mouthwash/clinical-solutions-sensitive-teeth,brand,Listerine brand site (www.listerine.com),US,1.0
+100317,100001,https://www.aveeno.co.uk/products/daily-moisturising-hand-cream,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100318,100001,https://www.aveeno.com/products/blackberry-quinoa-blend-shampoo,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100319,100001,https://www.listerine.com/products/breath-freshener/pocketpaks-cool-mint,brand,Listerine brand site (www.listerine.com),US,1.0
+100320,100001,https://www.aveeno.ca/products/intense-relief-hand-cream,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100321,100001,https://www.aveeno.co.uk/products/daily-moisturising-after-shower-mist,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100322,100001,https://www.aveeno.com/products/rose-water-chamomile-blend-shampoo,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100323,100001,https://www.listerine.com/products/breath-freshener/pocketmist-spray-freshburst,brand,Listerine brand site (www.listerine.com),US,1.0
+100324,100001,https://www.aveeno.ca/products/intense-relief-moisture-repair-cream,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100325,100001,https://www.aveeno.co.uk/products/calming-relief,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100326,100001,https://www.listerine.com/products/breath-freshener/pocketmist-spray-cool-mint,brand,Listerine brand site (www.listerine.com),US,1.0
+100327,100001,https://www.aveeno.com/products/apple-cider-vinegar-blend-shampoo,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100328,100001,https://www.aveeno.ca/products/repairing-cica-foot-mask,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100329,100001,https://www.listerine.com/products/breath-freshener/pocketpaks-freshburst,brand,Listerine brand site (www.listerine.com),US,1.0
+100330,100001,https://www.aveeno.co.uk/products/daily-moisturising-yogurt-body-wash-apricot-honey,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100331,100001,https://www.aveeno.com/products/fresh-greens-blend-shampoo,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100332,100001,https://www.aveeno.ca/products/eczema-care-body-wash,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100333,100001,https://www.listerine.com/products/toothpaste/essential-care-fluoride-anticavity-toothpaste,brand,Listerine brand site (www.listerine.com),US,1.0
+100334,100001,https://www.aveeno.co.uk/products/dermexa-daily-emollient-cream,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100335,100001,https://www.listerine.com/products/discontinued-products/coconut-lime-zero-alcohol,brand,Listerine brand site (www.listerine.com),US,1.0
+100336,100001,https://www.aveeno.ca/products/clarifying-shampoo-with-apple-cider-vinegar,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100337,100001,https://www.aveeno.com/products/baby-eczema-therapy-soothing-bath-treatment,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100338,100001,https://www.aveeno.co.uk/products/daily-moisturising-yogurt-body-wash-vanilla-oat,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100339,100001,https://www.aveeno.com.au/baby-skin-care/moisturising-lotions-creams/dermexa-moisturising-cream-eczema,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100340,100001,https://www.listerine.com/products/discontinued-products/grapefruit-rose-zero-alcohol,brand,Listerine brand site (www.listerine.com),US,1.0
+100341,100001,https://www.aveeno.ca/products/scalp-soothing-oat-milk-shampoo,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100342,100001,https://www.aveeno.co.uk/products/daily-moisturising-yogurt-body-cream-apricot-honey,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100343,100001,https://www.aveeno.com/products/apple-cider-vinegar-blend-conditioner,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100344,100001,https://www.listerine.com/products/flavor-intensity,brand,Listerine brand site (www.listerine.com),US,1.0
+100345,100001,https://www.aveeno.ca/products/scalp-soothing-shampoo-fresh-greens-blend,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100346,100001,https://www.aveeno.co.uk/products/skin-relief-menthol-lotion,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100347,100001,https://www.aveeno.com/products/oat-milk-blend-shampoo,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100348,100001,https://www.aveeno.ca/products/skin-relief-shave-gel,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100349,100001,https://www.aveeno.co.uk/products/skin-relief-soothing-shampoo,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100350,100001,https://www.aveeno.com/products/discontinued-products/calm-restore-nourishing-oat-facial-cleanser-refill,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100351,100001,https://www.aveeno.com.au/hair-care/shampoo/apple-cider-vinegar-blend-shampoo,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100352,100001,https://www.aveeno.ca/products/baby-soothing-bath-treatment,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100353,100001,https://www.aveeno.co.uk/products/skin-relief-body-oil-spray,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100354,100001,https://www.aveeno.co.uk/products/cream,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100355,100001,https://www.aveeno.ca/products/positively-smooth-shave-gel,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100356,100001,https://www.aveeno.com/products/discontinued-products/positively-radiant-daily-gel-facial-moisturizer,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100357,100001,https://www.aveeno.co.uk/products/aveeno-skin-renewal-smoothing-cream,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100358,100001,https://www.aveeno.ca/products/rose-water-chamomile-shampoo-for-sensitive-scalp,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100359,100001,https://www.listerine.com/products/concerns/tooth-sensitivity,brand,Listerine brand site (www.listerine.com),US,1.0
+100360,100001,https://www.aveeno.com/products/baby-daily-moisture-face-cream,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100361,100001,https://www.aveeno.co.uk/products/daily-moisturising-lotion,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100362,100001,https://www.aveeno.ca/products/stress-relief-body-wash,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100363,100001,https://www.aveeno.co.uk/products/daily-moisturising-cocoa-vanilla-body,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100364,100001,https://www.listerine.com/products/discontinued-products/healthy-white-vibrant-fluoride-mouthwash,brand,Listerine brand site (www.listerine.com),US,1.0
+100365,100001,https://www.aveeno.ca/products/almond-blend-hair-shampoo,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100366,100001,https://www.aveeno.com/products/baby-care/body-wash,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100367,100001,https://www.aveeno.co.uk/products/daily-moisturising-shea-berry-body-wash,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100368,100001,https://www.listerine.com/products/discontinued-products/mouthwash/clinical-solutions-teeth-strength,brand,Listerine brand site (www.listerine.com),US,1.0
+100369,100001,https://www.aveeno.ca/products/skin-relief-moisturizing-cream,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100370,100001,https://www.aveeno.com.au/hair-care/conditioner/apple-cider-vinegar-blend-conditioner,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100371,100001,https://www.aveeno.com/products/baby-bubble-bath,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100372,100001,https://www.aveeno.co.uk/products/daily-moisturising-cocoa-vanilla-body-wash,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100373,100001,https://www.listerine.com/products/discontinued-products/cool-mint-concentrate-mouthwash-refill,brand,Listerine brand site (www.listerine.com),US,1.0
+100374,100001,https://www.aveeno.ca/products/repairing-cica-hand-mask,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100375,100001,https://www.listerine.com/products/discontinued-products/statement,brand,Listerine brand site (www.listerine.com),US,1.0
+100376,100001,https://www.listerine.com/products/discontinued-products/sensitivity-zero-alcohol-mouthrinse,brand,Listerine brand site (www.listerine.com),US,1.0
+100377,100001,https://www.aveeno.ca/products/positively-radiant-exfoliating-body-wash,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100378,100001,https://www.aveeno.com.au/baby-skin-care/moisturising-lotions-creams/soothing-relief-moisturising-cream-dry-skin,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100379,100001,https://www.listerine.com/products/discontinued-products/mouthwash/clinical-solutions-breath-defense,brand,Listerine brand site (www.listerine.com),US,1.0
+100380,100001,https://www.aveeno.ca/products/hair-shampoo-with-blackberry-quinoa,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100381,100001,https://www.aveeno.com/products/baby-calming-comfort-lotion,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100382,100001,https://www.listerine.com/products/discontinued-products/healthy-white-restoring-fluoride-mouthwash,brand,Listerine brand site (www.listerine.com),US,1.0
+100383,100001,https://www.aveeno.ca/products/daily-moisturizing-face-cream,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100384,100001,https://www.listerine.com/products/discontinued-products/natural-herbal-mint-mouthwash,brand,Listerine brand site (www.listerine.com),US,1.0
+100385,100001,https://www.aveeno.co.uk/products/lotion/aveeno-skin-renewal-firming-lotion,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100386,100001,https://www.aveeno.com/products/baby-calming-comfort-bath-wash-lotion-set,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100387,100001,https://www.aveeno.ca/products/intense-relief-overnight-cream,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100388,100001,https://www.aveeno.co.uk/baby/products/calming-comfort-bedtime-lotion,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100389,100001,https://www.listerine.com/products/discontinued-products/smart-rinse-mouthwash-pink-lemonade,brand,Listerine brand site (www.listerine.com),US,1.0
+100390,100001,https://www.aveeno.ca/products/kids-face-body-wash,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100391,100001,https://www.aveeno.co.uk/baby/products/calming-comfort-bedtime-bath-wash,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100392,100001,https://www.listerine.com/products/discontinued-products/ultraclean-fresh-citrus-antiseptic-mouthwash,brand,Listerine brand site (www.listerine.com),US,1.0
+100393,100001,https://www.aveeno.com/products/positively-radiant-vitamin-c-serum,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100394,100001,https://www.listerine.com/products/discontinued-products/total-care-anticavity-stain-remover-mouthwash,brand,Listerine brand site (www.listerine.com),US,1.0
+100395,100001,https://www.aveeno.co.uk/kids/products/aveeno-kids-face-body-lotion-150ml,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100396,100001,https://www.aveeno.ca/products/calm-restore-skin-therapy-balm-face,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100397,100001,https://www.aveeno.com.au/hair-care/shampoo/fresh-greens-blend-shampoo,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100398,100001,https://www.aveeno.com/products/maximum-strength-12525-hydrocortisone-anti-itch-cream,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100399,100001,https://www.aveeno.co.uk/kids/products/aveeno-kids-bubble-bath-wash-400ml,brand,Aveeno brand site (www.aveeno.co.uk),GB,1.0
+100400,100001,https://www.aveeno.ca/products/scalp-soothing-oat-milk-conditioner,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100401,100001,https://www.listerine.com/products/concerns/restore-enamel,brand,Listerine brand site (www.listerine.com),US,1.0
+100402,100001,https://www.aveeno.com/products/baby-wash-shampoo,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100403,100001,https://www.aveeno.ca/products/kids-face-body-gel-cream,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100404,100001,https://www.aveeno.ca/products/skin-relief-hand-cream,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100405,100001,https://www.aveeno.com/products/baby-daily-moisture-healthy-start-newborn-balm,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100406,100001,https://www.listerine.com/products/discontinued-products/cool-mint-concentrate-mouthwash-starter-kit,brand,Listerine brand site (www.listerine.com),US,1.0
+100407,100001,https://www.aveeno.ca/products/positively-radiant-gel-moisturizer,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100408,100001,https://www.aveeno.com/products/positively-radiant-daily-face-moisturizer-broad-spectrum-spf-30,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100409,100001,https://www.listerine.com/products/discontinued-products/pocketpaks-cool-heat,brand,Listerine brand site (www.listerine.com),US,1.0
+100410,100001,https://www.aveeno.ca/products/apple-cider-vinegar-clarifying-conditioner,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100411,100001,https://www.listerine.com/products/discontinued-products/ready-tabs-clean-mint,brand,Listerine brand site (www.listerine.com),US,1.0
+100412,100001,https://www.aveeno.com/products/daily-moisture-baby-cream,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100413,100001,https://www.aveeno.ca/products/almond-blend-sulfate-free-conditioner,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100414,100001,https://www.aveeno.com.au/body-care/moisturising-lotions-creams/stress-relief-moisturising-lotion,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100415,100001,https://www.aveeno.com/products/positively-radiant-brightening-and-exfoliating-scrub,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100416,100001,https://www.aveeno.ca/products/baby-hand-face-wipes,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100417,100001,https://www.aveeno.ca/products/hair-conditioner-for-volume-fresh-greens-blend,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100418,100001,https://www.aveeno.com/products/baby-daily-moisture-lotion,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100419,100001,https://www.aveeno.ca/products/tone-texture-renewing-body-scrub,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100420,100001,https://www.aveeno.com/products/protect-hydrate,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100421,100001,https://www.aveeno.ca/products/scalp-soothing-rose-water-chamomile-conditioner,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100422,100001,https://www.aveeno.com/products/baby-daily-moisture-healthy-start-newborn-wash,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100423,100001,https://www.aveeno.ca/products/daily-moisturizing-body-scrub,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100424,100001,https://www.aveeno.ca/products/calm-restore-body-wash,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100425,100001,https://www.aveeno.com/products/baby-daily-care-set,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100426,100001,https://www.aveeno.ca/products/calm-restore-nourishing-oat-cleanser-refill-pouch,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100427,100001,https://www.aveeno.com/products/baby-bathtime-solutions-gift-set,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100428,100001,https://www.aveeno.ca/products/calm-restore-daily-gel-moisturizer,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100429,100001,https://www.aveeno.com/products/baby-welcome-little-one-set,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100430,100001,https://www.aveeno.ca/products/colour-protect-conditioner-with-blackberry-quinoa,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100431,100001,https://www.aveeno.ca/products/stress-relief-body-scrub,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100432,100001,https://www.aveeno.com/products/baby-continuous-protection-sensitive-skin-zinc-oxide-sunscreen-spf-50,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100433,100001,https://www.aveeno.ca/products/kids-shampoo-conditioner,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100434,100001,https://www.aveeno.com/products/baby-calming-comfort-bath,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100435,100001,https://www.aveeno.ca/products/calm-restore-age-renewal-eye-gel,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100436,100001,https://www.aveeno.com/products/calm-restore-skin-therapy-balm-sensitive-skin,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100437,100001,https://www.aveeno.ca/products/calm-restore-daily-moisturizer-mineral-spf-30,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100438,100001,https://www.aveeno.com/products/aveeno-calm-restore-daily-moisturizer-mineral-sunscreen-broad-spectrum,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100439,100001,https://www.aveeno.com/products/aveeno-calm-restore-oat-repairing-lotion-sensitive-skin-dry-skin,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100440,100001,https://www.aveeno.com/products/aveeno-calm-restore-age-renewal-serum-sensitive-skin-fragrance-free,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100441,100001,https://www.aveeno.com.au/baby-skin-care/moisturising-lotions-creams/daily-moisturising-lotion,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100442,100001,https://www.aveeno.com/products/aveeno-calm-restore-age-renewal-eye-gel-skin-sensitive-skin-fragrance-free,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100443,100001,https://www.aveeno.ca/products/calm-restore-age-renewal-serum,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100444,100001,https://www.aveeno.com.au/body-care/cleansing-body-wash-scrubs/stress-relief-body-wash,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100445,100001,https://www.aveeno.com/products/calm-restore,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100446,100001,https://www.aveeno.ca/products/plant-protein-blend-hair-shampoo,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100447,100001,https://www.aveeno.com.au/baby-skin-care/body-wash/baby-body-wash-shampoo,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100448,100001,https://www.aveeno.com/products/discontinued-products/calm-restore-nourishing-pha-facial-exfoliator,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100449,100001,https://www.aveeno.ca/products/plant-protein-blend-hair-conditioner,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100450,100001,https://www.aveeno.com.au/hair-care/conditioner/blackberry-quinoa-protein-blend-conditioner,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100451,100001,https://www.aveeno.com/products/calm-restore-foaming-cleanser,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100452,100001,https://www.aveeno.ca/products/calm-restore-oat-gel-moisturizer-48g,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100453,100001,https://www.aveeno.com.au/body-care/moisturising-lotions-creams/skin-relief-moisture-repair-cream,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100454,100001,https://www.aveeno.com/products/discontinued-products/aveeno-calm-restore-gel-moisturizer,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100455,100001,https://www.aveeno.ca/products/eczema-care-rescue-relief-gel,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100456,100001,https://www.aveeno.com.au/body-care/moisturising-lotions-creams/intense-relief-hand-cream,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100457,100001,https://www.aveeno.com/products/soothing-bath-treatment,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100458,100001,https://www.aveeno.com.au/hair-care/shampoo/blackberry-quinoa-protein-blend-shampoo,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100459,100001,https://www.aveeno.ca/products/positively-radiant-daily-moisturizer-spf-15,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100460,100001,https://www.aveeno.com/products/daily-moisture-baby-wash-shampoo,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100461,100001,https://www.aveeno.com.au/body-care/masks/skin-relief-hand-mask,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100462,100001,https://www.aveeno.com/products/hair-care/damaged,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100463,100001,https://www.aveeno.ca/products/eczema-care-itch-relief-balm,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100464,100001,https://www.aveeno.com.au/body-care/moisturising-lotions-creams/daily-moisturising-sheer-hydration-lotion,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100465,100001,https://www.aveeno.com/products/daily-moisturizing-scent-discovery-gift-set,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100466,100001,https://www.aveeno.com.au/body-care/moisturising-lotions-creams/skin-relief-moisturising-lotion-cooling-action,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100467,100001,https://www.aveeno.ca/products/positively-radiant-daily-moisturizer-spf-30,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100468,100001,https://www.aveeno.com.au/hair-care/conditioner/fresh-greens-blend-conditioner,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100469,100001,https://www.aveeno.com.au/body-care/masks/skin-relief-foot-mask,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100470,100001,https://www.aveeno.com/products/skin-relief-unscented-body-wash-for-sensitive-skin,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100471,100001,https://www.aveeno.com.au/body-care/moisturising-lotions-creams/dermexa-fast-long-lasting-balm,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100472,100001,https://www.aveeno.ca/products/sunscreen-moisturizer,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100473,100001,https://www.aveeno.com.au/body-care/moisturising-lotions-creams/daily-moisturising-cream-400ml,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100474,100001,https://www.aveeno.ca/products/sensitive-skin-sun-care,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100475,100001,https://www.aveeno.com.au/body-care/moisturising-lotions-creams/skin-relief-reparing-balm-75ml,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100476,100001,https://www.aveeno.ca/products/calm-restore-body-care-products,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100477,100001,https://www.aveeno.com.au/body-care/moisturising-lotions-creams/daily-moisturising-body-wash-354ml,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100478,100001,https://www.aveeno.com.au/,brand,Aveeno brand site (www.aveeno.com.au),AU,1.0
+100479,100001,https://www.aveeno.com/products/hair-care/shine,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100480,100001,https://www.aveeno.ca/products/sensitive-scalp,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100481,100001,https://www.aveeno.ca/products/hair-colour-protection,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100482,100001,https://www.aveeno.com/products/skincare-bundle-spf15-body-cream,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100483,100001,https://www.aveeno.ca/products/oat-milk-blend,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100484,100001,https://www.aveeno.ca/products/rose-water-chamomile,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100485,100001,https://www.aveeno.com/products/stress-relief-body-wash-oat-lavender,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100486,100001,https://www.aveeno.com/products/daily-moisturizing-lotion-spf-30,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100487,100001,https://www.aveeno.ca/products/apple-cider-vinegar,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100488,100001,https://www.aveeno.com/products/stress-relief-body-lotion-lavender-scent,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100489,100001,https://www.aveeno.com/products/daily-face-cleanser-foaming-gel,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100490,100001,https://www.aveeno.ca/products/calm-restore-nourishing-oat-cleanser-232ml,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100491,100001,https://www.aveeno.com/products/daily-moisturizing-face-lotion-for-dry-skin-oat,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100492,100001,https://www.aveeno.ca/products/calm-restore-triple-oat-serum-29ml,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100493,100001,https://www.aveeno.com/products/daily-moisturizing-body-wash-with-prebiotic-oat,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100494,100001,https://www.aveeno.ca/products/baby-eczema-care-nighttime-balm,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100495,100001,https://www.aveeno.com/products/discontinued-products/absolutely-ageless-nourishing-cleanser,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100496,100001,https://www.aveeno.ca/products/skin-relief-moisturizing-lotion,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100497,100001,https://www.aveeno.com/products/discontinued-products/skin-relief-gentle-scent-lotion,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100498,100001,https://www.aveeno.ca/products/moisturizing-bar,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100499,100001,https://www.aveeno.ca/products/clear-complexion-daily-moisturizer,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100500,100001,https://www.aveeno.com/products/discontinued-products/stress-relief-exfoliating-body-scrub,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100501,100001,https://www.aveeno.ca/products/stress-relief-moisturizing-lotion,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100502,100001,https://www.aveeno.com/products/discontinued-products/clear-complexion-daily-cleansing-pads,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100503,100001,https://www.aveeno.ca/products/tone-texture-daily-renewing-lotion,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100504,100001,https://www.aveeno.com/products/discontinued-products/ultra-calming-daily-moisturizer-spf-30,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100505,100001,https://www.aveeno.ca/products/tone-texture-renewing-night-cream,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100506,100001,https://www.aveeno.ca/products/calm-restore-wipes,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100507,100001,https://www.aveeno.com/products/discontinued-products/ultra-calming-foaming-cleanser,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100508,100001,https://www.aveeno.com/products/discontinued-products/positively-radiant-brightening-cleanser,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100509,100001,https://www.aveeno.com/products/discontinued-products/positively-mineral-sensitive-skin-sunscreen-spf-50,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100510,100001,https://www.aveeno.ca/products/sulfate-free,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100511,100001,https://www.aveeno.com/products/discontinued-products/cracked-skin-relief-cica-balm,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100512,100001,https://www.aveeno.ca/products/protect-hydrate-sunscreen-lotion-spf-50,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100513,100001,https://www.aveeno.com/products/discontinued-products/baby-soothing-hydration-creamy-wash,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100514,100001,https://www.aveeno.ca/products/daily-moisturizing-hand-cream,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100515,100001,https://www.aveeno.com/products/discontinued-products/positively-radiant-daily-moisturizer-spf-30,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100516,100001,https://www.aveeno.ca/products/daily-moisturizing-body-wash-refill-pouch,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100517,100001,https://www.aveeno.ca/products/calm-restore-age-renewal-face-cream,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100518,100001,https://www.aveeno.com/products/discontinued-products/ultra-calming-daily-moisturizer-spf-15,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100519,100001,https://www.aveeno.ca/products/absolutely-ageless-daily-moisturizer-spf-30,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100520,100001,https://www.aveeno.com/products/discontinued-products/aveeno-calm-restore-daily-body-wash-sensitive-dry-skin,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100521,100001,https://www.aveeno.com/products/discontinued-products/ultra-calming-nourishing-night-cream,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100522,100001,https://www.aveeno.ca/products/skin-relief-body-wash-coconut,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100523,100001,https://www.aveeno.com/products/daily-moisturizing-body-oil-mist-cocoa-butter-vanilla-scent,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100524,100001,https://www.aveeno.ca/products/skin-relief-moisturizing-lotion-cooling-menthol,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100525,100001,https://www.aveeno.com/products/award-winners,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100526,100001,https://www.aveeno.ca/products/clear-complexion-foaming-cleanser,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100527,100001,https://www.aveeno.com/products/daily-moisturizing-body-wash-shea-butter-berry-scent,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100528,100001,https://www.aveeno.ca/products/absolutely-ageless-restorative-night-cream,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100529,100001,https://www.aveeno.com/products/skin-relief-healing-ointment-old,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100530,100001,https://www.aveeno.ca/products/daily-moisturizing-cream,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100531,100001,https://www.aveeno.com/products/discontinued-products/moisturizing-body-yogurt-body-wash-vanilla-scent,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100532,100001,https://www.aveeno.ca/products/body-wash-shea-butter-berry-scent,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100533,100001,https://www.aveeno.com/products/discontinued-products/skin/protect-soothe-mineral-sunscreen-stick-spf-50,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100534,100001,https://www.aveeno.com/products/calm-restore-gentle-nourishing-oat-face-cleanser,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100535,100001,https://www.aveeno.ca/products/body-oil-mist-cocoa-butter,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100536,100001,https://www.aveeno.ca/products/lotion-cocoa-butter-vanilla,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100537,100001,https://www.aveeno.com/products/discontinued-products/aveeno-calm-restore-itch-relief-body-balm-sensitive-dry-skin,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100538,100001,https://www.aveeno.com/products/calm-restore-makeup-removing-wipes,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100539,100001,https://www.aveeno.ca/products/daily-moisturizing-oil-mist,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100540,100001,https://www.aveeno.ca/products/positively-radiant-make-up-removing-wipes,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100541,100001,https://www.aveeno.com/products/kids/daily-moisture-face-lotion-mineral-sunscreen-spf-30,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100542,100001,https://www.aveeno.ca/products/daily-moisturizing-facial-cleanser,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100543,100001,https://www.aveeno.ca/products/calm-restore-oat-repairing-lotion,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100544,100001,https://www.aveeno.com/products/calm-restore-oat-gel-moisturizer-sensitive-skin,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100545,100001,https://www.aveeno.ca/products/eczema-care-moisturizing-cream,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100546,100001,https://www.aveeno.ca/products/positively-radiant-skin-brightening-daily-scrub,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100547,100001,https://www.aveeno.com/products/daily-moisturizing-body-oil-mist-with-oat-oil,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100548,100001,https://www.aveeno.ca/products/positively-radiant-night-cream,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100549,100001,https://www.aveeno.com/products/skin-relief-moisturizing-lotion-for-very-dry-skin,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100550,100001,https://www.aveeno.ca/products/positively-radiant-brightening-cleanser,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100551,100001,https://www.aveeno.com/products/daily-moisturizing-cream-normal-dry-sensitive,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100552,100001,https://www.aveeno.com/products/protect-hydrate-face-lotion-sunscreen-spf-60,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100553,100001,https://www.aveeno.ca/products/calm-restore-nourishing-pha-exfoliator,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100554,100001,https://www.aveeno.ca/products/kids-hydrating-detangling-spray,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100555,100001,https://www.aveeno.com/products/skin-relief-healing-ointment,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100556,100001,https://www.aveeno.ca/products/skin-relief-gentle-scent-chamomile-body-wash,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100557,100001,https://www.aveeno.com/products/daily-moisturizing-body-wash-cocoa-butter-vanilla-scent,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100558,100001,https://www.aveeno.ca/products/daily-moisturizing-face-lotion-ultra-lightweight,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100559,100001,https://www.aveeno.ca/products/daily-face-cleanser-foaming-gel,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100560,100001,https://www.aveeno.com/products/daily-moisturizing-body-lotion-cocoa-butter-vanilla-scent,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100561,100001,https://www.aveeno.com/products/calm-restore-triple-oat-serum-for-sensitive-skin,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100562,100001,https://www.aveeno.ca/products/body-wash-cocoa-butter-vanilla,brand,Aveeno brand site (www.aveeno.ca),CA,1.0
+100563,100001,https://www.aveeno.com/products/daily-moisturizing-lotion-with-soothing-oat,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100564,100001,https://www.aveeno.com/products/stress-relief,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100565,100001,https://www.aveeno.com/products/eczema-therapy-nighttime-itch-relief-balm,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100566,100001,https://www.aveeno.com/products/skin-relief,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100567,100001,https://www.aveeno.com/products/baby-daily-moisture-face-lotion-mineral-sunscreen-spf-30,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100568,100001,https://www.aveeno.com/products/kids/daily-moisture-face-cream,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100569,100001,https://www.aveeno.com/products/daily-moisturizing,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100570,100001,https://www.aveeno.com/products/positively-radiant,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100571,100001,https://www.aveeno.com/products/calm-restore-redness-relief-moisturizing-cream,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100572,100001,https://www.aveeno.com/products/calm-restore-redness-relief-foaming-cleanser,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100573,100001,https://www.aveeno.com/products/daily-moisturizing-sheer-hydration-dry-skin-lotion,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100574,100001,https://www.aveeno.com/products/baby-continuous-protection-sensitive-skin-face-stick-sunscreen-spf-50,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100575,100001,https://www.aveeno.com/products/positively-radiant-daily-face-moisturizer-broad-spectrum-spf-15,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100576,100001,https://www.aveeno.com/products/skin-relief-intense-moisture-hand-cream-with-prebiotic-oat,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100577,100001,https://www.aveeno.com/products/skin-care/dry-skin,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100578,100001,https://www.aveeno.com/products/skin-relief-overnight-cream,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100579,100001,https://www.aveeno.com/products/anti-itch-concentrated-lotion,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100580,100001,https://www.aveeno.com/products/skin-relief-intense-moisture-cream-extra-dry-skin,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100581,100001,https://www.aveeno.com/products/skin-relief-oat-body-wash-with-coconut-scent,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100582,100001,https://www.aveeno.com/products/skin-relief-fragrance-free-body-wash-refill,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100583,100001,https://www.aveeno.com/products/eczema-therapy-daily-moisturizing-cream,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100584,100001,https://www.aveeno.com/products/eczema-therapy-rescue-relief-treatment-gel-cream,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100585,100001,https://www.aveeno.com/products/protect-hydrate-body-lotion-sunscreen-spf-60,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100586,100001,https://www.aveeno.com/products/protect-hydrate-body-lotion-sunscreen-spf-30,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100587,100001,https://www.aveeno.com/products/skin-relief-repairing-hand-mask,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100588,100001,https://www.aveeno.com/products/skin-relief-repairing-foot-mask,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100589,100001,https://www.aveeno.com/products/positively-radiant-clear-complexion-foaming-facial-cleanser-oil-free,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100590,100001,https://www.aveeno.com/products/positively-radiant-makeup-removing-wipes,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100591,100001,https://www.aveeno.com/products/positively-radiant-moisturizing-night-face-cream,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100592,100001,https://www.aveeno.com/products/positively-radiant-brightening-facial-cleanser,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100593,100001,https://www.aveeno.com/products/positively-radiant-clear-complexion-daily-acne-facial-moisturizer,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100594,100001,https://www.aveeno.com/products/discontinued-products/absolutely-ageless-daily-moisturizer-spf-30,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100595,100001,https://www.aveeno.com/products/discontinued-products/creamy-oil-body-moisturizer-for-dry-skin,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100596,100001,https://www.aveeno.com/products/blackberry-quinoa-blend,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100597,100001,https://www.aveeno.com/products/hair-care/fine-hair,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100598,100001,https://www.aveeno.com/products/skin-care/cracked-skin,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100599,100001,https://www.aveeno.com/products/skin-care/aging,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100600,100001,https://www.aveeno.com/products/skin-care/dark-spots,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100601,100001,https://www.aveeno.com/products/skin-care/redness,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100602,100001,https://www.aveeno.com/products/apple-cider-vinegar-blend,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100603,100001,https://www.aveeno.com/products/fresh-greens-blend,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100604,100001,https://www.aveeno.com/products/rose-water-chamomile-blend,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100605,100001,https://www.aveeno.com/products/oat-milk-blend,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100606,100001,https://www.aveeno.com/products/skin-care/uneven-skin-tone,brand,Aveeno brand site (www.aveeno.com),US,1.0
+100607,100001,https://world.openbeautyfacts.org/product/0062600061065,open_facts,openbeautyfacts.org,CA,1.0
+100608,100001,https://world.openbeautyfacts.org/product/0062600061515,open_facts,openbeautyfacts.org,CA,1.0
+100609,100001,https://world.openbeautyfacts.org/product/3401345609540,open_facts,openbeautyfacts.org,FR,1.0
+100610,100001,https://world.openbeautyfacts.org/product/3574660623574,open_facts,openbeautyfacts.org,FR,1.0
+100611,100001,https://world.openbeautyfacts.org/product/3574660623604,open_facts,openbeautyfacts.org,FR,1.0
+100612,100001,https://world.openbeautyfacts.org/product/3574661107455,open_facts,openbeautyfacts.org,,1.0
+100613,100001,https://world.openbeautyfacts.org/product/3574661269818,open_facts,openbeautyfacts.org,FR,1.0
+100614,100001,https://world.openbeautyfacts.org/product/3574661310343,open_facts,openbeautyfacts.org,DE,1.0
+100615,100001,https://world.openbeautyfacts.org/product/9300607760026,open_facts,openbeautyfacts.org,,1.0
+100616,100001,https://world.openbeautyfacts.org/product/3574661204550,open_facts,openbeautyfacts.org,,1.0
+100617,100001,https://world.openbeautyfacts.org/product/3574660557428,open_facts,openbeautyfacts.org,,1.0
+100618,100001,https://world.openbeautyfacts.org/product/3574661069005,open_facts,openbeautyfacts.org,CH,1.0
+100619,100001,https://world.openbeautyfacts.org/product/3574660695403,open_facts,openbeautyfacts.org,DE,1.0
+100620,100001,https://world.openbeautyfacts.org/product/3574661491721,open_facts,openbeautyfacts.org,FR,1.0
+100621,100001,https://world.openbeautyfacts.org/product/8540661404028,open_facts,openbeautyfacts.org,FR,1.0
+100622,100001,https://world.openbeautyfacts.org/product/3574661317472,open_facts,openbeautyfacts.org,FR,1.0
+100623,100001,https://world.openbeautyfacts.org/product/3010407186457,open_facts,openbeautyfacts.org,FR,1.0
+100624,100001,https://world.openbeautyfacts.org/product/3574661310350,open_facts,openbeautyfacts.org,FR,1.0
+100625,100001,https://world.openbeautyfacts.org/product/6114691403461,open_facts,openbeautyfacts.org,FR,1.0
+100626,100001,https://world.openbeautyfacts.org/product/3774661043166,open_facts,openbeautyfacts.org,FR,1.0
+100627,100001,https://world.openbeautyfacts.org/product/8511661401751,open_facts,openbeautyfacts.org,FR,1.0
+100628,100001,https://world.openbeautyfacts.org/product/3574661403465,open_facts,openbeautyfacts.org,FR,1.0
+100629,100001,https://world.openbeautyfacts.org/product/8511661404042,open_facts,openbeautyfacts.org,FR,1.0
+100630,100001,https://world.openbeautyfacts.org/product/0381371172405,open_facts,openbeautyfacts.org,US,1.0
+100631,100001,https://world.openbeautyfacts.org/product/0880917938852,open_facts,openbeautyfacts.org,US,1.0
+100632,100001,https://world.openbeautyfacts.org/product/3086794766411,open_facts,openbeautyfacts.org,FR,1.0
+100633,100001,https://world.openbeautyfacts.org/product/5010123703431,open_facts,openbeautyfacts.org,FR,1.0
+100634,100001,https://world.openbeautyfacts.org/product/7702035430090,open_facts,openbeautyfacts.org,,1.0
+100635,100001,https://world.openbeautyfacts.org/product/0062600961648,open_facts,openbeautyfacts.org,CA,1.0
+100636,100001,https://world.openbeautyfacts.org/product/0062600946355,open_facts,openbeautyfacts.org,CA,1.0
+100637,100001,https://world.openbeautyfacts.org/product/3606000535114,open_facts,openbeautyfacts.org,US,1.0
+100638,100001,https://world.openbeautyfacts.org/product/38526225,open_facts,openbeautyfacts.org,,1.0
+100639,100001,https://world.openbeautyfacts.org/product/0381371196944,open_facts,openbeautyfacts.org,US,1.0
+100640,100001,https://world.openbeautyfacts.org/product/3574661634951,open_facts,openbeautyfacts.org,,1.0
+100641,100001,https://world.openbeautyfacts.org/product/0062600063731,open_facts,openbeautyfacts.org,,1.0
+100642,100001,https://world.openbeautyfacts.org/product/3574661730936,open_facts,openbeautyfacts.org,DE,1.0
+100643,100001,https://world.openbeautyfacts.org/product/3574661608327,open_facts,openbeautyfacts.org,DE,1.0
+100644,100001,https://world.openbeautyfacts.org/product/0381370039211,open_facts,openbeautyfacts.org,US,1.0
+100645,100001,https://world.openbeautyfacts.org/product/5010123726621,open_facts,openbeautyfacts.org,GB,1.0
+100646,100001,https://world.openbeautyfacts.org/product/0062600062925,open_facts,openbeautyfacts.org,CA,1.0
+100647,100001,https://world.openbeautyfacts.org/product/3574660530278,open_facts,openbeautyfacts.org,ES,1.0
+100648,100001,https://world.openbeautyfacts.org/product/3574661731100,open_facts,openbeautyfacts.org,,1.0
+100649,100001,https://world.openbeautyfacts.org/product/3574661636665,open_facts,openbeautyfacts.org,,1.0
+100650,100001,https://world.openbeautyfacts.org/product/3574661025971,open_facts,openbeautyfacts.org,DE,1.0
+100651,100001,https://world.openbeautyfacts.org/product/0312547701525,open_facts,openbeautyfacts.org,US,1.0
+100652,100001,https://world.openbeautyfacts.org/product/0012547433203,open_facts,openbeautyfacts.org,US,1.0
+100653,100001,https://world.openbeautyfacts.org/product/5010123714383,open_facts,openbeautyfacts.org,GB,1.0
+100654,100001,https://world.openbeautyfacts.org/product/3574661608440,open_facts,openbeautyfacts.org,DE,1.0
+100655,100001,https://world.openbeautyfacts.org/product/4891080912200,open_facts,openbeautyfacts.org,,1.0
+100656,100001,https://world.openbeautyfacts.org/product/3574661606828,open_facts,openbeautyfacts.org,,1.0
+100657,100001,https://world.openbeautyfacts.org/product/7702035433299,open_facts,openbeautyfacts.org,ES,1.0
+100658,100001,https://world.openbeautyfacts.org/product/3574660123425,open_facts,openbeautyfacts.org,GB,1.0
+100659,100001,https://world.openbeautyfacts.org/product/0381370015314,open_facts,openbeautyfacts.org,US,1.0
+100660,100001,https://world.openbeautyfacts.org/product/8412101254008,open_facts,openbeautyfacts.org,,1.0
+100661,100001,https://world.openbeautyfacts.org/product/3574661352275,open_facts,openbeautyfacts.org,,1.0
+100662,100001,https://world.openbeautyfacts.org/product/3574661730967,open_facts,openbeautyfacts.org,DE,1.0
+100663,100001,https://world.openbeautyfacts.org/product/3574661647579,open_facts,openbeautyfacts.org,ES,1.0
+100664,100001,https://world.openbeautyfacts.org/product/0063793705217,open_facts,openbeautyfacts.org,CA,1.0
+100665,100001,https://world.openbeautyfacts.org/product/3574661617589,open_facts,openbeautyfacts.org,DE,1.0
+100666,100001,https://world.openbeautyfacts.org/product/3574661491844,open_facts,openbeautyfacts.org,BE,1.0
+100667,100001,https://world.openbeautyfacts.org/product/3574661617510,open_facts,openbeautyfacts.org,BE,1.0
+100668,100001,https://world.openbeautyfacts.org/product/3574661705248,open_facts,openbeautyfacts.org,FR,1.0
+100669,100001,https://world.openbeautyfacts.org/product/3574661493633,open_facts,openbeautyfacts.org,,1.0
+100670,100001,https://world.openbeautyfacts.org/product/0381370015840,open_facts,openbeautyfacts.org,BR,1.0
+100671,100001,https://world.openbeautyfacts.org/product/3574661444345,open_facts,openbeautyfacts.org,,1.0
+100672,100001,https://world.openbeautyfacts.org/product/8901012132050,open_facts,openbeautyfacts.org,IN,1.0
+100673,100001,https://world.openbeautyfacts.org/product/0381371151059,open_facts,openbeautyfacts.org,US,1.0
+100674,100001,https://world.openbeautyfacts.org/product/0381371156658,open_facts,openbeautyfacts.org,US,1.0
+100675,100001,https://world.openbeautyfacts.org/product/0381371151035,open_facts,openbeautyfacts.org,US,1.0
+100676,100001,https://world.openbeautyfacts.org/product/0381371023905,open_facts,openbeautyfacts.org,,1.0
+100677,100001,https://world.openbeautyfacts.org/product/0381371192915,open_facts,openbeautyfacts.org,US,1.0
+100678,100001,https://world.openbeautyfacts.org/product/5010123703509,open_facts,openbeautyfacts.org,,1.0
+100679,100001,https://world.openbeautyfacts.org/product/3574661156392,open_facts,openbeautyfacts.org,GB,1.0
+100680,100001,https://world.openbeautyfacts.org/product/3574660541298,open_facts,openbeautyfacts.org,,1.0
+100681,100001,https://world.openbeautyfacts.org/product/3574661250984,open_facts,openbeautyfacts.org,GB,1.0
+100682,100001,https://world.openbeautyfacts.org/product/3574661593593,open_facts,openbeautyfacts.org,GB,1.0
+100683,100001,https://world.openbeautyfacts.org/product/9300607761436,open_facts,openbeautyfacts.org,,1.0
+100684,100001,https://world.openbeautyfacts.org/product/3574660200775,open_facts,openbeautyfacts.org,AU,1.0
+100685,100001,https://world.openbeautyfacts.org/product/3574661608426,open_facts,openbeautyfacts.org,DE,1.0
+100686,100001,https://world.openbeautyfacts.org/product/3574660520132,open_facts,openbeautyfacts.org,GB,1.0
+100687,100001,https://world.openbeautyfacts.org/product/0312547422666,open_facts,openbeautyfacts.org,US,1.0
+100688,100001,https://world.openbeautyfacts.org/product/5010123730222,open_facts,openbeautyfacts.org,GB,1.0
+100689,100001,https://world.openbeautyfacts.org/product/3574661404134,open_facts,openbeautyfacts.org,,1.0
+100690,100001,https://world.openbeautyfacts.org/product/0381370012979,open_facts,openbeautyfacts.org,US,1.0
+100691,100001,https://world.openbeautyfacts.org/product/7891010255237,open_facts,openbeautyfacts.org,,1.0
+100692,100001,https://world.openbeautyfacts.org/product/0062600500496,open_facts,openbeautyfacts.org,CA,1.0
+100693,100001,https://world.openbeautyfacts.org/product/3574661811345,open_facts,openbeautyfacts.org,,1.0
+100694,100001,https://world.openbeautyfacts.org/product/0062600316646,open_facts,openbeautyfacts.org,ES,1.0
+100695,100001,https://world.openbeautyfacts.org/product/0062600960450,open_facts,openbeautyfacts.org,CA,1.0
+100696,100001,https://world.openbeautyfacts.org/product/0062600946249,open_facts,openbeautyfacts.org,CA,1.0
+100697,100001,https://world.openbeautyfacts.org/product/0062600963147,open_facts,openbeautyfacts.org,CA,1.0
+100698,100001,https://world.openbeautyfacts.org/product/3574660666144,open_facts,openbeautyfacts.org,,1.0
+100699,100001,https://world.openbeautyfacts.org/product/0381371192731,open_facts,openbeautyfacts.org,,1.0
+100700,100001,https://world.openbeautyfacts.org/product/0062600650870,open_facts,openbeautyfacts.org,CA,1.0
+100701,100001,https://world.openbeautyfacts.org/product/3574661731001,open_facts,openbeautyfacts.org,DE,1.0
+100702,100001,https://world.openbeautyfacts.org/product/3574661411545,open_facts,openbeautyfacts.org,IN,1.0
+100703,100001,https://world.openbeautyfacts.org/product/4801010652106,open_facts,openbeautyfacts.org,IN,1.0
+100704,100001,https://world.openbeautyfacts.org/product/0062600629487,open_facts,openbeautyfacts.org,CA,1.0
+100705,100001,https://world.openbeautyfacts.org/product/8412101026001,open_facts,openbeautyfacts.org,,1.0
+100706,100001,https://world.openbeautyfacts.org/product/3574661118437,open_facts,openbeautyfacts.org,ES,1.0
+100707,100001,https://world.openbeautyfacts.org/product/3574660721959,open_facts,openbeautyfacts.org,,1.0
+100708,100001,https://world.openbeautyfacts.org/product/3574661337265,open_facts,openbeautyfacts.org,ES,1.0
+100709,100001,https://world.openbeautyfacts.org/product/9300607090109,open_facts,openbeautyfacts.org,,1.0
+100710,100001,https://world.openbeautyfacts.org/product/3574660438512,open_facts,openbeautyfacts.org,,1.0
+100711,100001,https://world.openbeautyfacts.org/product/77275271,open_facts,openbeautyfacts.org,US,1.0
+100712,100001,https://world.openbeautyfacts.org/product/0381370036456,open_facts,openbeautyfacts.org,US,1.0
+100713,100001,https://world.openbeautyfacts.org/product/0381371187607,open_facts,openbeautyfacts.org,US,1.0
+100714,100001,https://world.openbeautyfacts.org/product/0381370042297,open_facts,openbeautyfacts.org,US,1.0
+100715,100001,https://world.openbeautyfacts.org/product/3574661684321,open_facts,openbeautyfacts.org,GB,1.0
+100716,100001,https://world.openbeautyfacts.org/product/3574660490466,open_facts,openbeautyfacts.org,DE,1.0
+100717,100001,https://world.openbeautyfacts.org/product/76898525,open_facts,openbeautyfacts.org,US,1.0
+100718,100001,https://world.openbeautyfacts.org/product/3574661091020,open_facts,openbeautyfacts.org,GB,1.0
+100719,100001,https://world.openbeautyfacts.org/product/0052800673007,open_facts,openbeautyfacts.org,,1.0
+100720,100001,https://world.openbeautyfacts.org/product/3574661596143,open_facts,openbeautyfacts.org,GB,1.0
+100721,100001,https://world.openbeautyfacts.org/product/3574661286167,open_facts,openbeautyfacts.org,GB,1.0
+100722,100001,https://world.openbeautyfacts.org/product/3574661169651,open_facts,openbeautyfacts.org,GB,1.0
+100723,100001,https://world.openbeautyfacts.org/product/3574661646992,open_facts,openbeautyfacts.org,GB,1.0
+100724,100001,https://world.openbeautyfacts.org/product/6001135009436,open_facts,openbeautyfacts.org,,1.0
+100725,100001,https://world.openbeautyfacts.org/product/3574661684284,open_facts,openbeautyfacts.org,GB,1.0
+100726,100001,https://world.openbeautyfacts.org/product/3574661626680,open_facts,openbeautyfacts.org,GB,1.0
+100727,100001,https://world.openbeautyfacts.org/product/3574661177144,open_facts,openbeautyfacts.org,GB,1.0
+100728,100001,https://world.openbeautyfacts.org/product/3574660455076,open_facts,openbeautyfacts.org,GB,1.0
+100729,100001,https://world.openbeautyfacts.org/product/0381370036623,open_facts,openbeautyfacts.org,CA,1.0
+100730,100001,https://world.openbeautyfacts.org/product/3574661566535,open_facts,openbeautyfacts.org,GB,1.0
+100731,100001,https://world.openbeautyfacts.org/product/3574661177137,open_facts,openbeautyfacts.org,GB,1.0
+100732,100001,https://world.openbeautyfacts.org/product/3574661594231,open_facts,openbeautyfacts.org,GB,1.0
+100733,100001,https://world.openbeautyfacts.org/product/3574661401737,open_facts,openbeautyfacts.org,GB,1.0
+100734,100001,https://world.openbeautyfacts.org/product/3574661084442,open_facts,openbeautyfacts.org,ES,1.0
+100735,100001,https://world.openbeautyfacts.org/product/3574661276496,open_facts,openbeautyfacts.org,GB,1.0
+100736,100001,https://world.openbeautyfacts.org/product/0312547306713,open_facts,openbeautyfacts.org,,1.0
+100737,100001,https://world.openbeautyfacts.org/product/7891010974336,open_facts,openbeautyfacts.org,ES,1.0
+100738,100001,https://world.openbeautyfacts.org/product/3574661412672,open_facts,openbeautyfacts.org,GB,1.0
+100739,100001,https://world.openbeautyfacts.org/product/3574661203621,open_facts,openbeautyfacts.org,GB,1.0
+100740,100001,https://world.openbeautyfacts.org/product/3574661566566,open_facts,openbeautyfacts.org,GB,1.0
+100741,100001,https://world.openbeautyfacts.org/product/3574661482378,open_facts,openbeautyfacts.org,GB,1.0
+100742,100001,https://world.openbeautyfacts.org/product/3574661445311,open_facts,openbeautyfacts.org,GB,1.0
+100743,100001,https://world.openbeautyfacts.org/product/3574660541250,open_facts,openbeautyfacts.org,GB,1.0
+100744,100001,https://world.openbeautyfacts.org/product/3574661401119,open_facts,openbeautyfacts.org,US,1.0
+100745,100001,https://world.openbeautyfacts.org/product/3574661321554,open_facts,openbeautyfacts.org,US,1.0
+100746,100001,https://world.openbeautyfacts.org/product/8901012131060,open_facts,openbeautyfacts.org,IN,1.0
+100747,100001,https://world.openbeautyfacts.org/product/3574661491776,open_facts,openbeautyfacts.org,GB,1.0
+100748,100001,https://world.openbeautyfacts.org/product/3574661491950,open_facts,openbeautyfacts.org,GB,1.0
+100749,100001,https://world.openbeautyfacts.org/product/3574661107486,open_facts,openbeautyfacts.org,GB,1.0
+100750,100001,https://world.openbeautyfacts.org/product/0381370015796,open_facts,openbeautyfacts.org,,1.0
+100751,100001,https://world.openbeautyfacts.org/product/0381370039556,open_facts,openbeautyfacts.org,US,1.0
+100752,100001,https://world.openbeautyfacts.org/product/3574661738154,open_facts,openbeautyfacts.org,GB,1.0
+100753,100001,https://world.openbeautyfacts.org/product/3574661792309,open_facts,openbeautyfacts.org,GB,1.0
+100754,100001,https://world.openbeautyfacts.org/product/9300607760057,open_facts,openbeautyfacts.org,,1.0
+100755,100001,https://world.openbeautyfacts.org/product/6913351731049,open_facts,openbeautyfacts.org,DE,1.0
+100756,100001,https://world.openbeautyfacts.org/product/5010123703547,open_facts,openbeautyfacts.org,GB,1.0
+100757,100001,https://world.openbeautyfacts.org/product/0012547339017,open_facts,openbeautyfacts.org,CA,1.0
+100758,100001,https://world.openbeautyfacts.org/product/3574661699059,open_facts,openbeautyfacts.org,US,1.0
+100759,100001,https://world.openbeautyfacts.org/product/5010123730215,open_facts,openbeautyfacts.org,GB,1.0
+100760,100001,https://world.openbeautyfacts.org/product/5010123726614,open_facts,openbeautyfacts.org,GB,1.0
+100761,100001,https://world.openbeautyfacts.org/product/0381372024314,open_facts,openbeautyfacts.org,US,1.0
+100762,100001,https://world.openbeautyfacts.org/product/0312547428255,open_facts,openbeautyfacts.org,US,1.0
+100763,100001,https://world.openbeautyfacts.org/product/6001135009498,open_facts,openbeautyfacts.org,US,1.0
+100764,100001,https://world.openbeautyfacts.org/product/3574661778310,open_facts,openbeautyfacts.org,DE,1.0
+100765,100001,https://world.openbeautyfacts.org/product/8412101045002,open_facts,openbeautyfacts.org,ES,1.0
+100766,100001,https://world.openbeautyfacts.org/product/3574661747200,open_facts,openbeautyfacts.org,DE,1.0
+100767,100001,https://world.openbeautyfacts.org/product/3574661802954,open_facts,openbeautyfacts.org,DE,1.0
+100768,100001,https://world.openbeautyfacts.org/product/3574661731124,open_facts,openbeautyfacts.org,DE,1.0
+100769,100001,https://world.openbeautyfacts.org/product/3574661445229,open_facts,openbeautyfacts.org,ES,1.0
+100770,100001,https://world.openbeautyfacts.org/product/0381371191949,open_facts,openbeautyfacts.org,US,1.0
+100771,100001,https://world.openbeautyfacts.org/product/7891010255343,open_facts,openbeautyfacts.org,,1.0
+100772,100001,https://world.openbeautyfacts.org/product/3574660634174,open_facts,openbeautyfacts.org,,1.0
+100773,100001,https://world.openbeautyfacts.org/product/9300607762075,open_facts,openbeautyfacts.org,,1.0
+100774,100001,https://world.openbeautyfacts.org/product/3574661731063,open_facts,openbeautyfacts.org,DE,1.0
+100775,100001,https://world.openbeautyfacts.org/product/3574661674711,open_facts,openbeautyfacts.org,,1.0
+100776,100001,https://world.openbeautyfacts.org/product/9300607760033,open_facts,openbeautyfacts.org,AU,1.0
+100777,100001,https://world.openbeautyfacts.org/product/3574661626697,open_facts,openbeautyfacts.org,GB,1.0
+100778,100001,https://world.openbeautyfacts.org/product/3574661562063,open_facts,openbeautyfacts.org,,1.0
+100779,100001,https://world.openbeautyfacts.org/product/3574661811383,open_facts,openbeautyfacts.org,FR,1.0
+100780,100001,https://world.openbeautyfacts.org/product/3574661734545,open_facts,openbeautyfacts.org,CH,1.0
+100781,100001,https://world.openbeautyfacts.org/product/3574661734514,open_facts,openbeautyfacts.org,CH,1.0
+100782,100001,https://world.openbeautyfacts.org/product/3574661811369,open_facts,openbeautyfacts.org,,1.0
+100783,100001,https://world.openbeautyfacts.org/product/3574661203577,open_facts,openbeautyfacts.org,DE,1.0
+100784,100001,https://world.openbeautyfacts.org/product/3574661401843,open_facts,openbeautyfacts.org,,1.0
+100785,100001,https://world.openbeautyfacts.org/product/3574661404141,open_facts,openbeautyfacts.org,DE,1.0
+100786,100001,https://world.openbeautyfacts.org/product/3574661684901,open_facts,openbeautyfacts.org,,1.0
+100787,100001,https://world.openbeautyfacts.org/product/3574661731131,open_facts,openbeautyfacts.org,DE,1.0
+100788,100001,https://world.openbeautyfacts.org/product/3574661745176,open_facts,openbeautyfacts.org,DE,1.0
+100789,100001,https://world.openbeautyfacts.org/product/0357466181137,open_facts,openbeautyfacts.org,FR,1.0
+100790,100001,https://world.openbeautyfacts.org/product/7891010255350,open_facts,openbeautyfacts.org,ES,1.0
+100791,100001,https://world.openbeautyfacts.org/product/0062600959843,open_facts,openbeautyfacts.org,CA,1.0
+100792,100001,https://world.openbeautyfacts.org/product/0312547427555,open_facts,openbeautyfacts.org,US,1.0
+100793,100001,https://world.openbeautyfacts.org/product/0312547427951,open_facts,openbeautyfacts.org,US,1.0
+100794,100001,https://world.openbeautyfacts.org/product/0381370036005,open_facts,openbeautyfacts.org,US,1.0
+100795,100001,https://world.openbeautyfacts.org/product/0381370036029,open_facts,openbeautyfacts.org,US,1.0
+100796,100001,https://world.openbeautyfacts.org/product/0381370038443,open_facts,openbeautyfacts.org,,1.0
+100797,100001,https://world.openbeautyfacts.org/product/0381371018451,open_facts,openbeautyfacts.org,,1.0
+100798,100001,https://world.openbeautyfacts.org/product/3574660325492,open_facts,openbeautyfacts.org,GB,1.0
+100799,100001,https://world.openbeautyfacts.org/product/3574661226491,open_facts,openbeautyfacts.org,FR,1.0
+100800,100001,https://world.openbeautyfacts.org/product/3574661404028,open_facts,openbeautyfacts.org,FR,1.0
+100801,100001,https://world.openbeautyfacts.org/product/3574661404097,open_facts,openbeautyfacts.org,,1.0
+100802,100001,https://world.openbeautyfacts.org/product/3574661634937,open_facts,openbeautyfacts.org,,1.0
+100803,100001,https://world.openbeautyfacts.org/product/7501007531847,open_facts,openbeautyfacts.org,MX,1.0
+100804,100001,https://world.openbeautyfacts.org/product/3574661537245,open_facts,openbeautyfacts.org,IT,1.0
+100805,100001,https://world.openbeautyfacts.org/product/3574661625379,open_facts,openbeautyfacts.org,AU,1.0
+100806,100001,https://world.openbeautyfacts.org/product/0052800673014,open_facts,openbeautyfacts.org,AU,1.0
+100807,100001,https://world.openbeautyfacts.org/product/0062600060570,open_facts,openbeautyfacts.org,AU,1.0
+100808,100001,https://world.openbeautyfacts.org/product/8850007870210,open_facts,openbeautyfacts.org,AU,1.0
+100809,100001,https://world.openbeautyfacts.org/product/8850007870227,open_facts,openbeautyfacts.org,AU,1.0
+100810,100001,https://world.openbeautyfacts.org/product/9300607761139,open_facts,openbeautyfacts.org,AU,1.0
+100811,100001,https://world.openbeautyfacts.org/product/9300607761146,open_facts,openbeautyfacts.org,AU,1.0
+100812,100001,https://world.openbeautyfacts.org/product/9300607761306,open_facts,openbeautyfacts.org,AU,1.0
+100813,100001,https://world.openbeautyfacts.org/product/9300607761498,open_facts,openbeautyfacts.org,AU,1.0
+100814,100001,https://world.openbeautyfacts.org/product/9300607762303,open_facts,openbeautyfacts.org,AU,1.0
+100815,100001,https://world.openbeautyfacts.org/product/9310059200681,open_facts,openbeautyfacts.org,AU,1.0
+100816,100001,https://world.openbeautyfacts.org/product/8850007818168,open_facts,openbeautyfacts.org,AU,1.0
+100817,100001,https://world.openbeautyfacts.org/product/9300607090574,open_facts,openbeautyfacts.org,AU,1.0
+100818,100001,https://world.openbeautyfacts.org/product/9300607091267,open_facts,openbeautyfacts.org,AU,1.0
+100819,100001,https://world.openbeautyfacts.org/product/3574661833705,open_facts,openbeautyfacts.org,,1.0
+100820,100001,https://world.openbeautyfacts.org/product/9310059050217,open_facts,openbeautyfacts.org,,1.0
+100821,100001,https://world.openbeautyfacts.org/product/3574661811314,open_facts,openbeautyfacts.org,,1.0
+100822,100001,https://world.openbeautyfacts.org/product/0312547321808,open_facts,openbeautyfacts.org,,1.0
+100823,100001,https://world.openbeautyfacts.org/product/3574661397405,open_facts,openbeautyfacts.org,IT,1.0
+100824,100001,https://world.openbeautyfacts.org/product/0573001699035,open_facts,openbeautyfacts.org,DE,1.0
+100825,100001,https://world.openbeautyfacts.org/product/3574661811338,open_facts,openbeautyfacts.org,FR,1.0
+100826,100001,https://world.openbeautyfacts.org/product/9556006280065,open_facts,openbeautyfacts.org,,1.0
+100827,100001,https://world.openbeautyfacts.org/product/3574661658148,open_facts,openbeautyfacts.org,FR,1.0
+100828,100001,https://world.openbeautyfacts.org/product/8850007814320,open_facts,openbeautyfacts.org,,1.0
+100829,100001,https://world.openbeautyfacts.org/product/3574661007342,open_facts,openbeautyfacts.org,CH,1.0
+100830,100001,https://world.openbeautyfacts.org/product/8850007814382,open_facts,openbeautyfacts.org,,1.0
+100831,100001,https://world.openbeautyfacts.org/product/8850007814290,open_facts,openbeautyfacts.org,,1.0
+100832,100001,https://world.openbeautyfacts.org/product/3574661638393,open_facts,openbeautyfacts.org,,1.0
+100833,100001,https://world.openbeautyfacts.org/product/3574661527413,open_facts,openbeautyfacts.org,,1.0
+100834,100001,https://world.openbeautyfacts.org/product/0062600060402,open_facts,openbeautyfacts.org,CA,1.0
+100835,100001,https://world.openbeautyfacts.org/product/0357466181135,open_facts,openbeautyfacts.org,FR,1.0
+100836,100001,https://world.openbeautyfacts.org/product/0357466181131,open_facts,openbeautyfacts.org,FR,1.0
+100837,100001,https://world.openbeautyfacts.org/product/0357466181134,open_facts,openbeautyfacts.org,FR,1.0
+100838,100001,https://world.openbeautyfacts.org/product/0357466181138,open_facts,openbeautyfacts.org,FR,1.0
+100839,100001,https://world.openbeautyfacts.org/product/0357466181132,open_facts,openbeautyfacts.org,FR,1.0
+100840,100001,https://world.openbeautyfacts.org/product/3574661634982,open_facts,openbeautyfacts.org,,1.0
+100841,100001,https://world.openbeautyfacts.org/product/3574661811376,open_facts,openbeautyfacts.org,,1.0
+100842,100001,https://world.openbeautyfacts.org/product/0381371181919,open_facts,openbeautyfacts.org,US,1.0
+100843,100001,https://world.openbeautyfacts.org/product/9300607090895,open_facts,openbeautyfacts.org,AU,1.0
+100844,100001,https://world.openbeautyfacts.org/product/3574660650044,open_facts,openbeautyfacts.org,IT,1.0
+100845,100001,https://world.openbeautyfacts.org/product/3574661731025,open_facts,openbeautyfacts.org,DE,1.0
+100846,100001,https://world.openbeautyfacts.org/product/3574661850634,open_facts,openbeautyfacts.org,NL,1.0
+100847,100001,https://world.openbeautyfacts.org/product/3574661917405,open_facts,openbeautyfacts.org,NL,1.0
+100848,100001,https://world.openbeautyfacts.org/product/3574661860510,open_facts,openbeautyfacts.org,NL,1.0
+100849,100001,https://world.openbeautyfacts.org/product/3574661860572,open_facts,openbeautyfacts.org,NL,1.0
+100850,100001,https://world.openbeautyfacts.org/product/3574661856100,open_facts,openbeautyfacts.org,NL,1.0
+100851,100001,https://world.openbeautyfacts.org/product/3574661917627,open_facts,openbeautyfacts.org,NL,1.0
+100852,100001,https://world.openbeautyfacts.org/product/3574661850641,open_facts,openbeautyfacts.org,NL,1.0
+100853,100001,https://world.openbeautyfacts.org/product/3574661850610,open_facts,openbeautyfacts.org,NL,1.0
+100854,100001,https://world.openbeautyfacts.org/product/7891010255282,open_facts,openbeautyfacts.org,ES,1.0
+100855,100001,https://world.openbeautyfacts.org/product/7891010255411,open_facts,openbeautyfacts.org,ES,1.0
+100856,100001,https://world.openbeautyfacts.org/product/3574661731056,open_facts,openbeautyfacts.org,DE,1.0
+100857,100001,https://world.openbeautyfacts.org/product/3574661919386,open_facts,openbeautyfacts.org,FR,1.0
+100858,100001,https://world.openbeautyfacts.org/product/0381372024277,open_facts,openbeautyfacts.org,US,1.0
+100859,100001,https://world.openbeautyfacts.org/product/0381371019410,open_facts,openbeautyfacts.org,DE,1.0
+100860,100001,https://world.openbeautyfacts.org/product/0381371019427,open_facts,openbeautyfacts.org,US,1.0
+100861,100001,https://world.openbeautyfacts.org/product/0381372024529,open_facts,openbeautyfacts.org,US,1.0
+100862,100001,https://world.openbeautyfacts.org/product/0381371161058,open_facts,openbeautyfacts.org,US,1.0
+100863,100001,https://world.openbeautyfacts.org/product/0381372024284,open_facts,openbeautyfacts.org,US,1.0
+100864,100001,https://world.openbeautyfacts.org/product/3574661652238,open_facts,openbeautyfacts.org,US,1.0
+100865,100001,https://world.openbeautyfacts.org/product/6907376821762,open_facts,openbeautyfacts.org,,1.0
+100866,100001,https://world.openbeautyfacts.org/product/0570901810867,open_facts,openbeautyfacts.org,,1.0
+100867,100001,https://world.openbeautyfacts.org/product/0312547428552,open_facts,openbeautyfacts.org,US,1.0
+100868,100001,https://world.openbeautyfacts.org/product/0381372024482,open_facts,openbeautyfacts.org,US,1.0
+100869,100001,https://world.openbeautyfacts.org/product/0381371178544,open_facts,openbeautyfacts.org,US,1.0
+100870,100001,https://world.openbeautyfacts.org/product/0312547352772,open_facts,openbeautyfacts.org,US,1.0
+100871,100001,https://world.openbeautyfacts.org/product/8850007817734,open_facts,openbeautyfacts.org,IN,1.0
+100872,100001,https://world.openbeautyfacts.org/product/0062600296085,open_facts,openbeautyfacts.org,US,1.0
+100873,100001,https://world.openbeautyfacts.org/product/0062600296092,open_facts,openbeautyfacts.org,US,1.0
+100874,100001,https://world.openbeautyfacts.org/product/3574661710051,open_facts,openbeautyfacts.org,IE,1.0
+100875,100001,https://world.openbeautyfacts.org/product/8991111152097,open_facts,openbeautyfacts.org,,1.0
+100876,100001,https://world.openbeautyfacts.org/product/7702031976493,open_facts,openbeautyfacts.org,,1.0
+100877,100001,https://world.openbeautyfacts.org/product/0381371168231,open_facts,openbeautyfacts.org,US,1.0
+100878,100001,https://world.openbeautyfacts.org/product/0062600493750,open_facts,openbeautyfacts.org,CA,1.0

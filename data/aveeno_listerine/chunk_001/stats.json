@@ -1,0 +1,25 @@
+{
+ "chunk": 1,
+ "flat_rows": 1052,
+ "loadable_rows": 880,
+ "unmatched_rows": 172,
+ "rows_by_source": {
+  "brand_site": 723,
+  "open_facts": 298,
+  "wikidata": 31
+ },
+ "rows_by_brand": {
+  "Aveeno": 644,
+  "Listerine": 408
+ },
+ "products": 688,
+ "pages": 878,
+ "variants": 813,
+ "inferred_truth_rows": 688,
+ "snapshot_parts": [
+  "snapshot_part01.csv.gz",
+  "snapshot_part02.csv.gz"
+ ],
+ "captured_min": "2016-03-04T15:36:36+00:00",
+ "captured_max": "2026-11-17T05:16:33+00:00"
+}
