@@ -1,183 +1,182 @@
-# Conflict & Drift Score Agent — spec
+# Conflict & Drift Score Agent — spec (CSV mode)
 
-Status: draft, 2026-11-17. Based on `main` at `7d6e9ac`. No code changed.
+Status: draft v2, 2026-11-17. Based on `main` at `9969154`. No code changed.
 
-The agent recomputes `conflict` and `score_snapshot` rows for one SKU. Today this logic lives in
-`app/pipeline/run.py::run_for_sku`; the agent wraps it as one named, triggerable, observable job.
-It is deterministic: no LLM call happens in matching, conflict creation or scoring.
+The agent reads the exported tables as CSV files and writes `conflict.csv` and `score_snapshot.csv`.
+It uses no database, no API and no LLM. Same input folder + same `--now` = byte-identical output.
 
-## 1. Purpose
+It reuses the pure logic already in the repo: `app/pipeline/compare.py` (rules),
+`app.pipeline.truth.majority` (inferred truth) and `app.services.scoring.score` (drift). Only the
+I/O layer is new: CSV readers replace the SQLAlchemy queries in `run.py`, `truth.py`, `scoring.py`
+and `trends.py`.
 
-For one SKU: compare the latest extraction on every page against the SKU's truth, reconcile the
-findings with the stored conflicts, and append one score snapshot. Output feeds the conflicts list,
-fix board, alerts, overview and trend charts.
+## 1. Run
 
-## 2. Triggers
+```
+uv run python -m app.agents.conflict_score \
+    --in  data/export/            # input CSVs
+    --out data/agent_out/         # conflict.csv, score_snapshot.csv, run_log.csv
+    --now 2026-11-17T09:00:00Z    # run timestamp; default = current UTC time
+    [--sku 12,14]                 # only these SKUs; default = all SKUs in sku.csv
+```
 
-| Trigger | Today | Agent |
+One run processes each selected SKU in `sku.id` order. Exit code 0 when every SKU passed,
+1 when any SKU failed (see §8), 2 when an input file or column is missing.
+
+## 2. Input CSVs (`--in`)
+
+UTF-8, header row, comma-separated, column names = DB column names. JSONB columns hold one JSON
+value per cell (e.g. `["Non-comedogenic"]`). Timestamps are ISO 8601 with offset. Empty cell = null.
+
+| File | Required | Columns read |
 |---|---|---|
-| Truth sheet saved (`POST /skus/{id}/truth-sheet`) | calls `run_for_sku` | same, synchronous |
-| Claim approved / removed (`PUT`/`DELETE /skus/{id}/claims/{field}`) | calls `run_for_sku` | same, synchronous |
-| On demand (`POST /skus/{id}/run`, seed) | calls `run_for_sku` | same |
-| Scheduled (`app.worker.product_checks`) | SKUs with `last_checked_at` older than `CHECK_INTERVAL_HOURS` (24) | same |
-| New extraction stored for the SKU | **not wired**; waits for the 24 h worker | **add**: enqueue the SKU after an `Extraction` insert |
+| `organisation.csv` | yes | `id`, `name` |
+| `brand.csv` | yes | `id`, `organisation_id`, `name` |
+| `sku.csv` | yes | `id`, `organisation_id`, `brand_id`, `name` |
+| `page.csv` | yes | `id`, `url`, `retailer`, `weight` (empty = 1.0) |
+| `snapshot.csv` | yes | `id`, `page_id`, `fetched_at` (`html` ignored, can be dropped) |
+| `extraction.csv` | yes | `id`, `snapshot_id`, `sku_id`, `fields` (JSON `{field: {value, quote}}`) |
+| `approved_claim.csv` | yes (may be empty) | `id`, `sku_id`, `field`, `value` (JSON) |
+| `inferred_truth.csv` | no | ignored for computing; recomputed (§3) and only used to report a diff in `run_log.csv` |
+| `variant.csv` | no | read and validated only; not used by rules (same as DB version) |
+| `conflict.csv` | no | prior conflicts, needed to keep statuses (§5). Absent = first run, all new |
+| `score_snapshot.csv` | no | prior snapshots; copied to output, new rows appended (§6) |
 
-One run = one SKU. Batch triggers loop SKUs; one failing SKU never stops the others.
+Validation before any SKU runs: required files exist, required columns present, ids unique,
+every foreign key resolves (`sku.brand_id`, `snapshot.page_id`, `extraction.snapshot_id`,
+`extraction.sku_id`, `approved_claim.sku_id`). Any failure: exit 2, no output written.
 
-## 3. Inputs (read only)
+## 3. Truth per SKU
 
-| Table | Fields used |
-|---|---|
-| `sku` | `id`, `organisation_id`, `brand_id`, `name` |
-| `page` | `id`, `weight` (default 1.0), `retailer`, `url` |
-| `snapshot` | `page_id`, `fetched_at` |
-| `extraction` | `sku_id`, `snapshot_id`, `fields` = `{field: {value, quote}}` |
-| `approved_claim` | `sku_id`, `field`, `value` (latest row per field wins) |
-| `inferred_truth` | `sku_id`, `fields`, `agreement`, `method`, `source_hash` |
-| `conflict` | existing rows for the SKU with `status != verified` |
-| `variant` | **not used today.** Conflicts are per SKU, not per market/size/formula. See §10. |
+Latest extraction per page = newest `snapshot.fetched_at`, tie broken by highest `extraction.id`.
 
-Latest extraction per page = newest `snapshot.fetched_at`, then highest `extraction.id`.
+Compared fields (5): `name`, `ingredients`, `free_from`, `claims`, `seals`.
 
-Compared fields (`COMPARED_FIELDS`, 5): `name`, `ingredients`, `free_from`, `claims`, `seals`.
+1. **Approved.** SKU has an `approved_claim` row for any field other than `name`. Truth = value of the
+   highest `id` per field. `truth_source = approved`.
+2. **Inferred.** No such row. Truth = `majority()` over the latest extraction per page: per field, the
+   normalised value with the largest summed `page.weight` wins (ties: more pages, then first seen).
+   `truth_source = inferred`; the UI shows the **Unverified** badge for these conflicts.
+3. **None.** No extractions. No conflicts; snapshot with empty `score`.
 
-## 4. Truth resolution
+An approved `name` overrides the inferred name; with no name at all, truth `name = sku.name`.
 
-1. **Approved path.** The SKU has an `approved_claim` for any field other than `name`. Truth = latest
-   approved value per field. `truth_source = "approved"`.
-2. **Inferred path.** No truth sheet. `refresh_inferred` builds `inferred_truth`: per field, the value
-   with the largest summed page weight wins (normalised keys, so renames/wording variants group).
-   `truth_source = "inferred"`. UI shows the **Unverified** badge and an "add truth sheet"
-   recommendation with the inferred values prefilled.
-3. **None.** No truth sheet and no extractions. No conflicts; score = `None`.
+The DB version can let Claude choose among page values for inferred truth. CSV mode never does:
+it is always `majority`, so the run is fully deterministic.
 
-An approved `name` overrides the inferred name. Saving a truth sheet deletes `inferred_truth` and
-re-runs the agent, so every conflict flips to `truth_source = "approved"` or is verified away.
+## 4. Conflict rules (unchanged, `compare.py`)
 
-**LLM boundary.** With `ANTHROPIC_API_KEY` set, `_claude_pick` may choose *which existing page value*
-becomes the inferred truth for a contested field (`method = "claude"`). It cannot invent values, is
-cached by `source_hash`, and falls back to majority on any error. This is truth *selection*, upstream
-of the agent's deterministic steps. Rule: the comparison, severity and score never call a model.
-Recommendation: add `INFERRED_TRUTH_METHOD=majority|claude` (default `majority`) so the agent can
-run fully deterministic end to end.
-
-## 5. Conflict rules (`app/pipeline/compare.py`)
-
-Normalisation before matching:
-- ingredients: lowercase, collapse spaces/slashes, strip trailing dot, then `INGREDIENT_RENAMES`
-  (aqua→water, ceramide 3→ceramide np, hyaluronic acid→sodium hyaluronate, …)
-- free_from: drop stopwords (free, of, from, added, no, without), singularise
-- seals: words only, then `SEAL_ALIASES` (e.g. NEA variants)
-- claims: alphanumerics only; name: words only
+Normalisation: ingredients lowercased, spaces/slashes collapsed, trailing dot stripped, then
+`INGREDIENT_RENAMES` (aqua→water, ceramide 3→ceramide np, …); free_from drops stopwords (free, of,
+from, added, no, without) and singularises; seals use `SEAL_ALIASES`; claims keep alphanumerics;
+name keeps words.
 
 | Verdict | Severity | Fires when |
 |---|---|---|
-| `contradiction` | 10 | page `free_from` says fragrance/paraben-free but page INCI has a matching ingredient (`FREE_FROM_MARKERS`) |
+| `contradiction` | 10 | page `free_from` says fragrance/paraben-free but page INCI contains a matching ingredient |
 | `risky` | 9 | list field (free_from, claims, seals): item on page, not in truth |
-| `outdated` | 6 | ingredients: normalised set differs from truth (detail lists `not_in_truth`, `not_on_page`) |
+| `outdated` | 6 | ingredients: normalised set differs from truth |
 | `weaker` | 4 | list field: truth item not on page |
-| `missing` | 3 | field has a truth value but page value is empty |
-| `drift` | 1 | same meaning, other wording: name differs after normalising; ingredients same set but old names or other order; list item same key, other wording |
+| `missing` | 3 | truth has a value, page value empty |
+| `drift` | 1 | same meaning, other wording (name, ingredient names/order, list item wording) |
 
-One finding per (page, field, verdict, page_value, truth_value). Contradiction is checked against
-the page's own INCI, so it fires even on the inferred path.
+## 5. Reconcile with prior `conflict.csv`
 
-## 6. Reconcile (idempotency)
+Conflict key: `(sku_id, page_id, field, verdict, json(page_value), json(truth_value))`, JSON with sorted keys.
 
-Conflict identity key: `(page_id, field, verdict, json(page_value), json(truth_value))`, JSON sorted.
-
-| Stored status | Finding still present | Finding gone |
+| Prior status | Still found | Not found |
 |---|---|---|
-| none | insert `open`, log `detected` | — |
-| `open` / `accepted` | keep | → `verified` ("no longer found on re-check") |
-| `fixed` | → `open` ("still found on re-check") | → `verified` |
-| `dismissed` | keep dismissed, never re-raised | keep dismissed |
-| `verified` | history; open a **new** conflict | — |
+| none | new row, `status=open`, `detected_at=--now` | — |
+| `open` / `accepted` | keep | `verified`, `status_changed_at=--now` |
+| `fixed` | `open`, `status_changed_at=--now` | `verified`, `status_changed_at=--now` |
+| `dismissed` | keep, never re-raised | keep |
+| `verified` | keep as history; add a **new** open row | keep |
 
-Present conflicts get `truth_source` updated. Rows are never deleted; stale rows leave the active set
-by moving to `verified`. Re-running with unchanged inputs creates no new conflicts (idempotent).
+Rows for SKUs not in this run are copied through unchanged. Rows are never deleted.
+New ids: `max(prior id, 0) + 1, +2, …`, assigned in order (sku_id, page_id, -severity, field, key).
+Running twice on the same inputs (feeding run 1's `conflict.csv` back in) gives 0 new, 0 reopened,
+0 resolved.
 
-Known gap: a changed `page_value` or `truth_value` is a new key. The old conflict is verified and a
-new one opens, so owner, due date and notes do not carry over. Optional fix: match on
-`(page_id, field, verdict)` first and update values in place.
-
-## 7. Drift score (`app/services/scoring.py`)
+## 6. Drift score (unchanged formula)
 
 ```
-weighted_severity = Σ severity × page.weight   over conflicts with status in (open, accepted, fixed)
-max               = 10 × 5 fields × Σ page.weight   over pages with any extraction for the SKU
-consistency       = max(0, round(100 × (1 − weighted_severity / max)))   stored in score_snapshot.score
-drift_score       = 100 − consistency          shown in UI and API (0 = no drift, 100 = worst)
+weighted_severity = Σ severity × page.weight   over the SKU's conflicts with status open, accepted or fixed
+page_weight       = Σ page.weight              over distinct pages with any extraction for the SKU
+consistency       = max(0, round(100 × (1 − weighted_severity / (10 × 5 × page_weight))))
+drift_score       = 100 − consistency          (0 = no drift, 100 = worst)
 ```
 
-No checked pages: score and drift are `None`. `dismissed` and `verified` do not count.
+`page_weight = 0`: `score` and `drift_score` empty. `dismissed` and `verified` do not count.
 
-Roll-ups re-apply the same formula to summed parts, never average scores:
-- **Product (SKU):** its own tally.
-- **Brand / organisation / overall:** sum `weighted_severity` and `page_weight` across SKUs, then
-  score (`api/summary.py`, `Tally.add`). Weekly trends use each SKU's last snapshot before week end.
-- **Page:** **not computed today** (only an unresolved count per page in `by_source`). Add
-  `page_drift = 100 − score(Σ severity×weight on that page, 10 × 5 × weight × SKUs on that page)`.
+Roll-ups re-apply the formula to summed `weighted_severity` and `page_weight`, never average scores:
+- **Product:** the SKU row.
+- **Brand / organisation:** sum across the SKUs' rows from this run.
+- **Page:** sum over that page's conflicts; `page_weight` = page weight × SKUs extracted on that page.
 
-## 8. Outputs
+## 7. Output CSVs (`--out`)
 
-`conflict` (insert or status change): `organisation_id, sku_id, page_id, field, page_value,
-truth_value, verdict, severity, status, truth_source, detected_at, status_changed_at`. Every
-change writes an audit event (`detected` or a status transition) and one `check_run` event with
-counts `{new, reopened, resolved}`.
+Written to a temp folder and renamed into `--out` only after every SKU finished, so a crash never
+leaves half a file.
 
-`score_snapshot` (append one row per run): `organisation_id, brand_id, sku_id, taken_at, score,
-weighted_severity, page_weight, unresolved, by_verdict, by_status, mean_days_to_fix, is_demo=false`.
+**`conflict.csv`**, all prior rows plus new ones, sorted by `id`:
+`id, organisation_id, sku_id, page_id, field, page_value, truth_value, verdict, severity, status,
+truth_source, detected_at, status_changed_at, owner, due_date, dismiss_reason`
+(`page_value`, `truth_value` as JSON; `owner`, `due_date`, `dismiss_reason` copied from prior row.)
 
-Also: `sku.last_checked_at = now`, alerts via `alerts_for_run` for new conflicts and score change.
+**`score_snapshot.csv`**, prior rows plus one row per SKU in this run:
+`id, scope, organisation_id, brand_id, sku_id, page_id, taken_at, score, drift_score,
+weighted_severity, page_weight, unresolved, by_verdict, by_status, mean_days_to_fix, truth_source, is_demo`
+- `scope` = `sku` (same columns as the DB table, plus `drift_score` and `truth_source`),
+  `brand`, `organisation` or `page` for roll-up rows (unused ids empty). Only `sku` rows go back to the DB.
+- `by_verdict`, `by_status` as JSON; `mean_days_to_fix` = mean of (`status_changed_at` −
+  `detected_at`) in days over the SKU's verified conflicts; `taken_at = --now`; `is_demo=false`.
+- Dedupe: skip a SKU row when the SKU's last prior `sku` row has the same score, unresolved,
+  by_verdict and by_status and the same `taken_at` date.
 
-Snapshots are history, never replaced. Repeat runs append duplicates. Recommendation: skip the
-insert when score, `unresolved`, `by_verdict` and `by_status` equal the SKU's last snapshot from the
-same day. Demo rows (`is_demo=true`) are only replaced by `seed --demo-history`.
+**`run_log.csv`**: `sku_id, status (ok|failed|skipped), truth_source, new, reopened, resolved,
+unresolved, drift_score, error`. One row per selected SKU.
 
-All writes for one SKU happen in one transaction (single `commit` at the end of the run).
+Not produced in CSV mode: audit events, alerts, `sku.last_checked_at`. The DB import (later) derives
+them from the conflict status changes.
 
-## 9. Error handling
+## 8. Error handling
 
 | Case | Behaviour |
 |---|---|
-| Claude pick fails or times out | majority truth, run continues (already so) |
-| Extraction missing a field / malformed value | treated as empty, produces `missing` if truth has it |
-| SKU has no pages | no conflicts, snapshot with `score = None` |
-| DB error mid-run | roll back the SKU; worker logs `job_run.status = failed`, next SKU continues |
-| Two runs for one SKU at once | **not guarded today**; can insert duplicate conflicts. Add `pg_advisory_xact_lock(sku_id)` at run start |
-| Unknown field in `approved_claim` | ignored by compare (only `COMPARED_FIELDS`) |
+| Missing file / column, bad foreign key | exit 2, nothing written |
+| Cell with invalid JSON in `fields`/`value` | that SKU `failed` in `run_log.csv` with row id; its prior conflicts copied unchanged; other SKUs continue; exit 1 |
+| Extraction missing a field | field treated as empty, gives `missing` if truth has it |
+| SKU with no pages | `skipped`, snapshot row with empty score |
+| Unknown field in `approved_claim` | ignored (only the 5 compared fields) |
+| Duplicate prior conflict keys | keep lowest `id` active, log a warning in `run_log.csv` |
 
-## 10. Out of scope / open questions
+## 9. Tests (pytest, CSV fixtures, no DB)
 
-- **Variant.** `variant` (market, size, formula_version, valid_from/to) is not linked to
-  extraction or conflict. Per-variant truth needs a `variant_id` on `extraction`, `approved_claim`
-  and `conflict`. Decide before multi-market data.
-- AI answers vs truth live in `app/ai/*`, not this agent.
-- Free-from contradiction only knows fragrance and paraben. Add markers (sulfate, alcohol, …) as data.
+Fixtures in `backend/tests/fixtures/agent_csv/<case>/{in,expected}/`. Each test runs the agent on
+`in/` with a fixed `--now` and diffs `out/` against `expected/`.
 
-## 11. Tests to add
+Keep (port from DB tests): every rule in `test_compare.py` (pure, unchanged); reconcile cases from
+`test_workflow.py`; truth paths from `test_truth_paths.py`; snapshot per run from `test_trends.py`.
 
-Existing: `test_compare.py` (rules), `test_workflow.py` (reconcile), `test_truth_paths.py` (paths),
-`test_trends.py` (snapshots). Add:
+Add:
+1. Golden run: CeraVe + Aveeno pilot export, exact `conflict.csv` and `score_snapshot.csv`.
+2. Idempotency: output of run 1 fed as input to run 2 gives 0 new/reopened/resolved and no new snapshot.
+3. Score math: exact `weighted_severity`, `page_weight`, score, drift for a fixed case.
+4. Roll-up: brand drift = formula on summed parts, not mean of SKU drifts.
+5. Page weight 2 doubles a conflict's weighted severity.
+6. Dismissed stays dismissed; verified finding coming back opens a new id.
+7. Truth flip: adding `approved_claim` rows switches `truth_source` to approved.
+8. Inferred tie-break is stable across row order shuffles of the input CSVs.
+9. Bad JSON in one SKU: that SKU failed, others written, exit 1.
+10. Missing `page.csv`: exit 2, `--out` untouched.
+11. Parity: same data loaded into the test DB through `run_for_sku` gives the same conflicts and scores.
 
-1. Idempotency: two runs with no input change, second run returns `new=0, reopened=0, resolved=0`.
-2. Score math: fixed fixture, assert exact `weighted_severity`, `page_weight`, score and drift.
-3. Roll-up: brand drift equals formula on summed parts, not mean of SKU drifts.
-4. Page weight: same conflict on weight-2 page doubles its weighted severity.
-5. Dismissed conflict stays dismissed after re-run; verified one reopens as new row.
-6. Truth flip: inferred → approved switches `truth_source` on surviving conflicts, clears `inferred_truth`.
-7. No pages: snapshot written with `score = None`.
-8. New-extraction trigger enqueues and runs the SKU (once wired).
-9. Concurrency: two parallel runs leave no duplicate conflict keys (once lock added).
-10. Determinism: with `INFERRED_TRUTH_METHOD=majority`, no Anthropic client constructed.
+## 10. Build steps
 
-## 12. Build steps (when approved)
+1. `app/agents/csv_io.py`: read/validate inputs, write outputs atomically.
+2. `app/agents/conflict_score.py`: CLI from §1. Calls `compare()`, `majority()`, `score()` unchanged.
+3. Reconcile logic from `run.py` extracted into a pure function shared by DB and CSV mode.
+4. Fixtures and tests from §9.
 
-1. `app/agents/conflict_score.py`: `run(sku_id, trigger) -> RunResult`, wraps `run_for_sku`, adds
-   advisory lock and the `trigger` in the `check_run` audit detail.
-2. Hook `Extraction` insert to enqueue the SKU (worker queue, not inline).
-3. Snapshot dedupe rule from §8.
-4. Page-level drift in `api/summary.py`.
-5. `INFERRED_TRUTH_METHOD` env flag.
-6. Tests from §11.
+Open: `variant` is still unused (no `variant_id` on extraction/claim/conflict). Free-from
+contradiction only knows fragrance and paraben.
