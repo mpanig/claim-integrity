@@ -63,6 +63,7 @@ class PoliteFetcher:
 
 
 def audit_one(session: Session, row: AuditUrl, fetcher: PoliteFetcher) -> AuditResult:
+    session.commit()  # hand the DB connection back while we wait on the network
     robots = fetcher.robots(row.url)
     result = AuditResult(audit_url_id=row.id, status="ok")
     parts = urlsplit(row.url)
@@ -145,6 +146,7 @@ WEIGHTS = {"description": 10, "wikipedia": 20, "P856": 15, "P749|P127": 15, "P57
 
 def check_entity(session: Session, brand: Brand, http: httpx.Client) -> EntityCheck:
     row = EntityCheck(brand_id=brand.id, score=0)
+    session.commit()  # hand the DB connection back while we wait on the network
     try:
         res = http.get(WIKIDATA, params={"action": "wbsearchentities", "search": brand.name, "language": "en", "type": "item", "limit": 5, "format": "json"})
         hits = res.json().get("search", []) if res.status_code == 200 else []

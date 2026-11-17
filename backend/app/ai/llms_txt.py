@@ -90,6 +90,7 @@ def check_host(session: Session, host: str, brand_id: int | None = None, *, tran
     row = LlmsCheck(organisation_id=org.id, brand_id=brand_id, host=host, status="missing")
     base = f"https://{host}"
     fetcher = PoliteFetcher(transport=transport, sleep=lambda _s: None)
+    session.commit()  # hand the DB connection back while we wait on the network
     try:
         robots = fetcher.robots(base + "/llms.txt")
         if base in fetcher.refused or (robots is not None and not robots.can_fetch(USER_AGENT, base + "/llms.txt")):

@@ -127,7 +127,16 @@ await visit("/reports", "11-reports.png");
 await visit(`/products/${cerave.id}/truth`, "12-truth-sheet.png");
 await visit("/settings", "13-settings.png");
 await visit("/search?q=paraben", "14-search.png");
-await visit("/truth-sheets");
+// Open Truth sheets from the sidebar, as a user does (it must load fast with hundreds of products).
+current = "sidebar -> Truth sheets";
+await page.goto(`${BASE}/`);
+await settle();
+const t0 = Date.now();
+await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Truth sheets" }).first().click();
+await page.getByRole("heading", { name: "Truth sheets" }).waitFor({ timeout: 20_000 });
+await page.getByRole("table").waitFor({ timeout: 20_000 });
+console.log(`ok  sidebar -> Truth sheets in ${Date.now() - t0} ms`);
+await visit("/truth-sheets", "17-truth-sheets.png");
 await visit("/products/new");
 await visit(`/?brand=${cerave.brand_id}&range=4w`);
 

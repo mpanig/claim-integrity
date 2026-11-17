@@ -102,6 +102,7 @@ def grade_url(session: Session, url: str, *, brand_id: int | None = None, sku_id
     org = session.scalars(select(Organisation)).first()
     g = AnswerGrade(organisation_id=org.id, url=url, brand_id=brand_id, sku_id=sku_id, status="ok")
     fetcher = PoliteFetcher(transport=transport, sleep=lambda _s: None)
+    session.commit()  # hand the DB connection back while we wait on the network
     try:
         robots = fetcher.robots(url)
         parts = urlsplit(url)
