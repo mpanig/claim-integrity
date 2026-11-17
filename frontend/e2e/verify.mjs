@@ -17,8 +17,10 @@ const OUT = resolve(process.env.OUT_DIR ?? join(dirname(fileURLToPath(import.met
 await mkdir(OUT, { recursive: true });
 
 const skus = await (await fetch(`${BASE}/api/skus`)).json();
-const cerave = skus.find((s) => s.brand_name === "CeraVe");
-const aveeno = skus.find((s) => s.brand_name === "Aveeno");
+// Pilot products (approved truth sheets); public-data products are checked against inferred truth.
+const cerave = skus.find((s) => s.brand_name === "CeraVe" && s.truth_status === "approved");
+const aveeno = skus.find((s) => s.brand_name === "Aveeno" && s.truth_status === "approved");
+const inferred = skus.filter((s) => s.truth_status === "inferred").sort((a, b) => b.unresolved - a.unresolved)[0];
 if (!cerave || !aveeno) throw new Error("Seed the pilot first: uv run python -m app.seed --demo-history");
 
 const browser = await chromium.launch({ channel: process.env.BROWSER_CHANNEL || undefined });
@@ -47,7 +49,13 @@ async function visit(path, shot, { fullPage = true } = {}) {
   const body = await page.locator("main").innerText();
   if (/Something went wrong|Can't reach the Claim Integrity service|Page not found/.test(body))
     problems.push(`${path}: error state shown`);
-  if (shot) await page.screenshot({ path: join(OUT, shot), fullPage });
+  if (shot) {
+    // Very long pages (e.g. the fix board with hundreds of issues) are clipped to the first 6000px.
+    const height = await page.evaluate(() => document.documentElement.scrollHeight);
+    const width = page.viewportSize()?.width ?? 1440;
+    if (fullPage && height > 6000) await page.screenshot({ path: join(OUT, shot), fullPage: true, clip: { x: 0, y: 0, width, height: 6000 } });
+    else await page.screenshot({ path: join(OUT, shot), fullPage });
+  }
   console.log(`ok  ${path}${shot ? `  -> ${shot}` : ""}`);
 }
 
@@ -80,6 +88,10 @@ if (await accept.count()) {
 }
 await page.keyboard.press("Escape");
 
+if (inferred) {
+  await visit(`/products/${inferred.id}`, "03b-product-inferred-truth.png");
+  await visit(`/products/${inferred.id}/truth?prefill=inferred`, "12b-truth-sheet-prefilled.png");
+}
 await visit("/board", "05-fix-board.png");
 await visit("/conflicts", "06-conflicts.png");
 await visit("/competitors", "07-competitors.png");

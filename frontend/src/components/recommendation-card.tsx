@@ -37,14 +37,14 @@ export function RecommendationCard({ r, rank }: { r: Recommendation; rank: numbe
       </div>
       <div className="flex shrink-0 flex-row flex-wrap items-center gap-2 sm:flex-col sm:items-end">
         {r.impact_points > 0 && (
-          <span className="text-sm font-medium tabular-nums" title="Score points this product gains once done">
-            +{r.impact_points} pts
+          <span className="text-sm font-medium tabular-nums" title="Drift-score points this product loses once done">
+            −{r.impact_points} drift
           </span>
         )}
         <SeverityBadge severity={r.severity} />
         {r.link ? (
           <CarryLink href={r.link} className={buttonVariants({ size: "sm", variant: "outline" })}>
-            Open <ArrowUpRight />
+            {r.action_label ?? "Open"} <ArrowUpRight />
           </CarryLink>
         ) : r.state === "todo" ? (
           <CreateTaskDialog

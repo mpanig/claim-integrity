@@ -8,9 +8,9 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.db import get_session
-from app.models import AuditEvent, Conflict, Page, Sku
+from app.models import ApprovedClaim, AuditEvent, Conflict, InferredTruth, Page, Sku
 from app.schemas import ConflictOut, EventOut, SkuOut
-from app.services.scoring import Tally
+from app.services.scoring import Tally, drift
 
 DB = Annotated[Session, Depends(get_session)]
 
@@ -26,7 +26,8 @@ def page_label(page: Page) -> str:
     return page.retailer or urlparse(page.url).hostname or page.url
 
 
-def sku_out(sku: Sku, tally: Tally | None) -> SkuOut:
+def sku_out(sku: Sku, tally: Tally | None, truth: tuple[str, str | None] = ("approved", None)) -> SkuOut:
+    """truth: (truth_status, inferred_method), see app.pipeline.truth."""
     tally = tally or Tally()
     return SkuOut(
         id=sku.id,
@@ -38,10 +39,20 @@ def sku_out(sku: Sku, tally: Tally | None) -> SkuOut:
         line=sku.line,
         last_checked_at=sku.last_checked_at,
         score=tally.score,
+        drift_score=drift(tally.score),
         unresolved=tally.unresolved,
         by_verdict=tally.by_verdict,
         pages=tally.pages,
+        truth_status=truth[0],
+        inferred_method=truth[1],
     )
+
+
+def truth_statuses(session: Session, sku_ids: list[int]) -> dict[int, tuple[str, str | None]]:
+    """Per SKU: approved (truth sheet), inferred (provisional, unverified) or none."""
+    approved = set(session.scalars(select(ApprovedClaim.sku_id).where(ApprovedClaim.sku_id.in_(sku_ids), ApprovedClaim.field != "name")))
+    inferred = dict(session.execute(select(InferredTruth.sku_id, InferredTruth.method).where(InferredTruth.sku_id.in_(sku_ids))).all())
+    return {i: ("approved", None) if i in approved else (("inferred", inferred[i]) if i in inferred else ("none", None)) for i in sku_ids}
 
 
 def conflict_query():
@@ -72,6 +83,7 @@ def conflict_out(c: Conflict) -> ConflictOut:
         dismiss_reason=c.dismiss_reason,
         detected_at=c.detected_at,
         status_changed_at=c.status_changed_at,
+        truth_source=c.truth_source,
     )
 
 

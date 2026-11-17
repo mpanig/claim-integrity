@@ -27,7 +27,7 @@ def build_brief(session: Session, question: str, brand_id: int, sku_id: int | No
     if brand is None:
         raise ValueError("brand not found")
     sku = session.get(Sku, sku_id) if sku_id else session.scalars(select(Sku).where(Sku.brand_id == brand_id).order_by(Sku.id)).first()
-    truth = truth_for_sku(session, sku) if sku else {}
+    truth = truth_for_sku(session, sku, include_inferred=False) if sku else {}
     per = perception(session)
     cov = coverage(session)
     me = next((b for b in per["brands"] if b["name"] == brand.name), None)

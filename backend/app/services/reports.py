@@ -9,7 +9,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.models import AuditEvent, Brand, Conflict, ConflictStatus, Page, Sku
-from app.services.scoring import UNRESOLVED, Tally, sku_tallies
+from app.services.scoring import UNRESOLVED, Tally, drift, sku_tallies
 from app.services.trends import week_start, weekly_trends
 
 VERDICT_TEXT = {
@@ -96,7 +96,8 @@ def weekly_report(session: Session, brand: Brand, today: date | None = None) -> 
         t = tallies.get(s.id) or Tally()
         before = weekly_trends(session, [s], 2, today)["weeks"][0]["score"]
         products.append(
-            {"id": s.id, "name": s.name, "score": t.score, "change": _change(t.score, before), "unresolved": t.unresolved}
+            {"id": s.id, "name": s.name, "score": t.score, "change": _change(t.score, before), "unresolved": t.unresolved,
+             "drift_score": drift(t.score), "drift_change": _change(drift(t.score), drift(before))}
         )
 
     return {
@@ -104,6 +105,8 @@ def weekly_report(session: Session, brand: Brand, today: date | None = None) -> 
         "period": {"start": start.isoformat(), "end": (start + timedelta(days=6)).isoformat()},
         "demo": trend["demo"],  # last week's score may come from demo history
         "score": {"now": total.score, "last_week": last_week["score"], "change": _change(total.score, last_week["score"])},
+        # Drift score (0 = no drift): what the report shows. "score" is the older consistency value.
+        "drift": {"now": drift(total.score), "last_week": drift(last_week["score"]), "change": _change(drift(total.score), drift(last_week["score"]))},
         "unresolved": total.unresolved,
         "by_verdict": total.by_verdict,
         "new_issues": new_issues,

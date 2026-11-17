@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from app.models import Conflict, ConflictStatus, ScoreSnapshot, Sku, Verdict
 from app.pipeline.compare import COMPARED_FIELDS
-from app.services.scoring import MAX_SEVERITY, Tally, score, sku_tallies
+from app.services.scoring import MAX_SEVERITY, Tally, drift, score, sku_tallies
 
 
 def mean_days_to_fix(session: Session, sku_ids: list[int]) -> float | None:
@@ -104,11 +104,13 @@ def weekly_trends(session: Session, skus: list[Sku], weeks: int, today: date | N
             {
                 "week": start.isoformat(),
                 "score": score(ws, pw) if seen else None,
+                "drift_score": drift(score(ws, pw)) if seen else None,
                 "unresolved": unresolved if seen else None,
                 "verified": verified if seen else None,
                 "fixed": fixed,
                 "mean_days_to_fix": round(sum(fix_days) / len(fix_days), 1) if fix_days else None,
                 "brands": {str(b): score(v[0], v[1]) for b, v in brand.items()},
+                "drift_brands": {str(b): drift(score(v[0], v[1])) for b, v in brand.items()},
             }
         )
     return {

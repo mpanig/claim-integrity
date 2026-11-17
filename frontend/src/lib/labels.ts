@@ -67,6 +67,16 @@ export function severityTier(severity: number): { label: string; tone: "critical
   return { label: "Low", tone: "warning" };
 }
 
+/** Drift score: 0 = no drift (good), higher is worse. Same thresholds as the old consistency score, mirrored. */
+export function driftTone(drift: number | null): "good" | "warning" | "critical" | "none" {
+  if (drift === null) return "none";
+  if (drift <= 20) return "good";
+  if (drift <= 50) return "warning";
+  return "critical";
+}
+
+export const DRIFT_LABEL = { good: "Low drift", warning: "Drifting", critical: "High drift", none: "No data" } as const;
+
 export function scoreTone(score: number | null): "good" | "warning" | "critical" | "none" {
   if (score === null) return "none";
   if (score >= 80) return "good";

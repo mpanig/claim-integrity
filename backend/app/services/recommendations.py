@@ -1,7 +1,7 @@
 """Rule-based recommendations: turn open conflicts and gaps into ranked actions.
 
 priority = sum(severity x page weight) x ease
-expected impact = score points the product gains once the action is done
+expected impact = drift-score points the product loses once the action is done
 
 Rules (first match wins for each conflict):
   contradiction                       -> remove the contradicted claim         (e-commerce, ease 0.9)
@@ -14,6 +14,7 @@ Rules (first match wins for each conflict):
   weaker (approved claim/seal absent) -> add it to the page                    (e-commerce, ease 0.8)
   missing                             -> add the information to the page       (e-commerce, ease 0.8)
 Gaps:
+  no truth sheet (checked against inferred truth) -> add a truth sheet       (brand web, ease 1.0, high)
   truth sheet without free-from, claims or seals -> complete the truth sheet  (brand web, ease 1.0)
   AI answers stating wrong facts                 -> publish correct info       (PR / editorial, ease 0.5)
 """
@@ -26,7 +27,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
-from app.models import AiAnswer, AnswerClaim, ApprovedClaim, Conflict, ConflictStatus, Page, Sku, Verdict
+from app.models import AiAnswer, AnswerClaim, ApprovedClaim, Conflict, ConflictStatus, InferredTruth, Page, Sku, Verdict
 from app.pipeline.compare import COMPARED_FIELDS
 from app.services.scoring import MAX_SEVERITY, UNRESOLVED, Tally, sku_tallies
 
@@ -61,6 +62,7 @@ class Rec:
     severity: int = 0
     is_demo: bool = False
     link: str | None = None  # for gaps that are fixed by editing, not by a task
+    action_label: str | None = None  # button text for the link
 
     def add(self, c: Conflict, page: Page) -> None:
         self.conflicts.append(c)
@@ -147,7 +149,21 @@ def build(session: Session, brand_id: int | None = None) -> list[dict[str, Any]]
         select(ApprovedClaim.sku_id, ApprovedClaim.field).where(ApprovedClaim.sku_id.in_(skus))
     ):
         approved[sku_id].add(fld)
+    inferred = dict(session.execute(select(InferredTruth.sku_id, InferredTruth.method).where(InferredTruth.sku_id.in_(skus))).all())
     for sku in skus.values():
+        if not approved[sku.id] - {"name"}:
+            # No truth sheet: pages and AI answers are compared with an inferred, unverified truth.
+            how = "what Claude judged most likely" if inferred.get(sku.id) == "claude" else "what most of its pages agree on"
+            r = rec(f"addtruth:{sku.id}", rule="add_truth_sheet", sku=sku, owner_type="brand_web", ease=1.0,
+                    title=f"Add a truth sheet for {sku.name}",
+                    why=f"There is no approved truth sheet, so this product is checked against {how} (inferred, unverified). "
+                        "Review the inferred claims and approve or correct them; the drift score is recomputed straight away.",
+                    link=f"/products/{sku.id}/truth?prefill=inferred", action_label="Review inferred truth sheet")
+            # High: every other result depends on it. Products with more pages and more open issues first.
+            tl = tallies.get(sku.id) or Tally()
+            r.weighted = 20.0 + 3.0 * min(tl.pages, 10) + min(tl.unresolved, 30)
+            r.severity = 8
+            continue
         gaps = [f for f in ("free_from", "claims", "seals") if f not in approved[sku.id]]
         if gaps:
             r = rec(f"truth:{sku.id}", rule="complete_truth_sheet", sku=sku, owner_type="brand_web", ease=1.0,
@@ -203,6 +219,7 @@ def build(session: Session, brand_id: int | None = None) -> list[dict[str, Any]]
                 "conflict_ids": [c.id for c in r.conflicts],
                 "state": state,
                 "link": r.link,
+                "action_label": r.action_label,
                 "is_demo": r.is_demo,
             }
         )

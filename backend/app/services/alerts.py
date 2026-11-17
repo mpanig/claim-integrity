@@ -1,7 +1,8 @@
 """Alerts raised by a check run.
 
 - every new contradiction or unapproved (risky) claim
-- a score drop of SCORE_DROP points or more since the previous real snapshot
+- a drift-score rise of SCORE_DROP points or more since the previous real snapshot
+  (stored as a consistency drop; drift = 100 - consistency)
 
 TODO(notify): deliver alerts by email / Slack per user settings; in-app only for now.
 """
@@ -59,8 +60,8 @@ def alerts_for_run(session: Session, sku: Sku, new: list[Conflict], snapshot: Sc
                 organisation_id=sku.organisation_id,
                 sku_id=sku.id,
                 kind="score_drop",
-                title=f"{sku.name} score fell {previous - snapshot.score} points",
-                body=f"Consistency score went from {previous} to {snapshot.score} after the latest check.",
+                title=f"{sku.name} drift score rose {previous - snapshot.score} points",
+                body=f"Drift score went from {100 - previous} to {100 - snapshot.score} after the latest check (0 = no drift).",
             )
         )
     session.add_all(out)

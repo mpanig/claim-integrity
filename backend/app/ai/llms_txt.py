@@ -131,7 +131,7 @@ def generate(session: Session, brand: Brand) -> str:
     lines += [f"> {summary}. Product facts below come from approved product information.", ""]
     lines += ["Use the product pages for current ingredients and claims; retailer listings can be out of date.", "", "## Products", ""]
     for s in skus:
-        truth = truth_for_sku(session, s)
+        truth = truth_for_sku(session, s, include_inferred=False)
         url = session.scalar(select(ApprovedClaim.evidence_url).where(ApprovedClaim.sku_id == s.id, ApprovedClaim.evidence_url.is_not(None)).limit(1))
         notes = [", ".join(truth[k]) for k in ("claims", "free_from", "seals") if truth.get(k)]
         if truth.get("ingredients"):

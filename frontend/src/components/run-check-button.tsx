@@ -12,7 +12,7 @@ export async function runCheck(skuId: number): Promise<RunResult> {
   const r = await api<RunResult>(`/skus/${skuId}/run`, { method: "POST" });
   const parts = [`${r.new} new`, `${r.resolved} resolved`, `${r.reopened} reopened`];
   toast.success("Check finished", {
-    description: `${parts.join(" · ")}. Score now ${r.score ?? "–"}.`,
+    description: `${parts.join(" · ")}. Drift score now ${r.drift_score ?? "–"}${r.truth_status === "inferred" ? " (against inferred truth, unverified)" : ""}.`,
   });
   return r;
 }

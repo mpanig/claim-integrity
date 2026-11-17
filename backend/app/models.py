@@ -182,6 +182,7 @@ class Conflict(Base):
     owner: Mapped[str | None] = mapped_column(String(200))
     due_date: Mapped[date | None] = mapped_column(Date)
     dismiss_reason: Mapped[str | None] = mapped_column(Text)
+    truth_source: Mapped[str] = mapped_column(String(20), default="approved", server_default="approved")  # approved | inferred
 
     sku: Mapped[Sku] = relationship()
     page: Mapped[Page] = relationship()
@@ -486,7 +487,7 @@ class ReportBranding(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     organisation_id: Mapped[int] = mapped_column(ForeignKey("organisation.id", ondelete="CASCADE"), unique=True)
     agency_name: Mapped[str | None] = mapped_column(String(200))
-    report_title: Mapped[str] = mapped_column(String(200), default="Weekly claim consistency report", server_default="Weekly claim consistency report")
+    report_title: Mapped[str] = mapped_column(String(200), default="Weekly claim drift report", server_default="Weekly claim drift report")
     primary_color: Mapped[str] = mapped_column(String(7), default="#1f2937", server_default="#1f2937")
     accent_color: Mapped[str] = mapped_column(String(7), default="#2a78d6", server_default="#2a78d6")
     logo_data_url: Mapped[str | None] = mapped_column(Text)  # data:image/png;base64,...
@@ -634,3 +635,20 @@ class Outreach(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     is_demo: Mapped[bool] = mapped_column(default=False, server_default="false")
+
+
+class InferredTruth(Base):
+    """Provisional truth for a SKU with no approved truth sheet: what its sources agree on
+    (majority, or Claude choosing among the values the pages show). Unverified; replaced as
+    soon as a truth sheet is approved."""
+
+    __tablename__ = "inferred_truth"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    sku_id: Mapped[int] = mapped_column(ForeignKey("sku.id", ondelete="CASCADE"), unique=True, index=True)
+    fields: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}")
+    agreement: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}")  # field -> share of page weight
+    method: Mapped[str] = mapped_column(String(20), default="majority", server_default="majority")  # majority | claude
+    sources: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    source_hash: Mapped[str | None] = mapped_column(String(64))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

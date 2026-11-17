@@ -114,7 +114,7 @@ uv run python -m app.seed --demo-history      # pilot data + sample history (see
 
 - `uv run python -m app.seed` loads the pilot products, retailer pages and a sample team, and runs a check.
   Re-running it resets the pilot organisation.
-- `--demo-history` also adds 12 weeks of score history and about 8,700 demo AI-assistant answers
+- `--demo-history` also adds 12 weeks of drift-score history and about 8,700 demo AI-assistant answers
   (4 engines with 2 models each, search on and off, US / India (English and Hindi) / UK, 4 personas,
   12 weekly runs). These rows are flagged as demo in the database and every chart or card that uses them
   shows a **Demo data** badge. Leave the flag out to see only real results.
@@ -222,17 +222,17 @@ docs/screenshots/        screenshots from the last end-to-end run
 
 | Screen | What it does |
 |---|---|
-| Overview | Consistency score, open / in-progress issues, next best actions, score trend by brand, open vs fixed by week, issues by type and by source, mean time to fix, top 5 to fix, activity |
-| Products | Search and brand filter, score, open issues, last checked, Run check |
+| Overview | Drift score (0 = no drift), open / in-progress issues, next best actions, drift trend by brand, open vs fixed by week, issues by type and by source, mean time to fix, top 5 to fix, activity |
+| Products | Search and brand filter, drift score, inferred-truth badge, open issues, last checked, Run check |
 | Product | Matrix of claim types × sources (brand site = truth); cells are green / amber / red; click opens the conflict |
 | Conflict panel | Approved vs page value with differences highlighted, evidence quote, source links, plain-English explanation; Accept, Dismiss (reason), owner, due date, notes, Mark fixed / verified, Re-check; full history |
 | Conflicts | All issues with status / type / owner filters in the URL; bulk accept, dismiss, assign |
 | Fix board | To review → Accepted → Fixed → Verified, drag or buttons, owner and due date on cards |
-| Competitors | Brand cards, score and issues-per-product charts, claim-type × brand heatmap, claims coverage (approved vs unapproved), insights |
+| Competitors | Brand cards, drift score and issues-per-product charts, claim-type × brand heatmap, claims coverage (approved vs unapproved), insights |
 | AEO / GEO | Answer / generative engine optimisation, a sidebar group with 10 subsections (see [AEO / GEO](#aeo--geo) below): Overview, Prompts, Answers, Citations & sources, Brand perception, Content & pages, Crawlers & traffic, Coverage, Alerts. Old `/ai-visibility/*` and `/audit` links redirect. |
 | Recommendations | Ranked actions (risk × page weight × ease) with why, impact, owner team, Create task |
-| Alerts | New high-risk issues and score drops (5+ points), read / unread, bell in the top bar |
-| Reports | Weekly per brand: score change, new issues, fixes verified, top issues, products; CSV export; white-label PDF download (logo, colours, title, footer set in Settings › Report branding); print |
+| Alerts | New high-risk issues and drift-score rises (5+ points), AEO alerts, read / unread, bell in the top bar |
+| Reports | Weekly per brand: drift score and change, new issues, fixes verified, top issues, products; CSV export; white-label PDF download (logo, colours, title, footer set in Settings › Report branding); print |
 | Truth sheets | Approved claims per product; edit them or add a product |
 | Settings | Team members and roles (owner menus use them), connection status |
 | Search | Products, pages and issues (Ctrl/Cmd+K) |
@@ -259,8 +259,24 @@ Workflow: open → accepted | dismissed (reason required); accepted → fixed; f
 A re-check verifies conflicts no longer found, reopens fixed ones still found, never re-raises
 dismissed ones, and opens a new conflict if a verified one comes back.
 
-Consistency score = 100 × (1 − Σ severity × page weight of unresolved issues ÷ (10 × 5 claim types × Σ page weights)).
-Unresolved = open, accepted, fixed.
+**Drift score** = 100 × Σ severity × page weight of unresolved issues ÷ (10 × 5 claim types × Σ page weights).
+0 means every page matches the truth; higher means more drift. Unresolved = open, accepted, fixed.
+(It replaces the earlier "consistency score", which was 100 − drift. APIs return `drift_score`
+alongside the old `score` field, kept for older clients.)
+
+## Truth sheets and inferred truth
+
+- **Product with a truth sheet** (approved claims for at least one field besides the name): every
+  page, the drift score and AI answer checks use the approved claims.
+- **Product without one**: a provisional truth is built from what its pages agree on (per field, the
+  value with the most page weight behind it; with `ANTHROPIC_API_KEY` set, Claude may instead pick
+  among the values the pages show, never inventing one). It is shown everywhere as
+  "Inferred truth, unverified" (product, claim matrix, drift score, conflicts), and an
+  **"Add a truth sheet for <product>"** recommendation appears on Recommendations, the product page and
+  Truth sheets. Its button opens the truth sheet editor pre-filled with the inferred claims.
+- **Approving a truth sheet** (or saving any claim) re-checks the product straight away: conflicts and
+  the drift score are recomputed, the inferred truth is removed and the recommendation resolves.
+- Content briefs and the llms.txt draft only ever use approved facts, never inferred ones.
 
 Recommendations, alert and AI rules are documented at the top of
 `backend/app/services/recommendations.py`, `alerts.py` and `ai_visibility.py`.
@@ -330,10 +346,10 @@ cite. The worker re-audits weekly.
 ## Pilot data
 
 - CeraVe Hydrating Facial Cleanser (truth: cerave.com) vs a Rite Aid page with the old formula:
-  outdated ingredient list (parabens) and free-from wording drift. Score 86.
+  outdated ingredient list (parabens) and free-from wording drift. Drift score 14.
 - Aveeno Calm + Restore Nourishing Oat Cleanser (truth: aveeno.com, 16 ingredients, no free-from
   claims) vs Hannaford (name drift, five unapproved free-from claims, "tested on sensitive skin")
-  and Kenvue Pro (hypoallergenic, sulfate-free, colloidal oatmeal skin protectant). Score 13.
+  and Kenvue Pro (hypoallergenic, sulfate-free, colloidal oatmeal skin protectant). Drift score 87.
 
 The retailer pages are **hand-written stand-ins** (`backend/fixtures/`), not scraped copies, and
 the GTINs are empty. The sample team in Settings uses fictional names.
@@ -342,7 +358,7 @@ the GTINs are empty. The sample team in Settings uses fictional names.
 
 `--demo-history` adds, all flagged `is_demo` in the database and shown with a **Demo data** badge:
 
-- 12 weeks of score history (Overview trend charts, last-week score in Reports)
+- 12 weeks of drift-score history (Overview trend charts, last week in Reports)
 - About 8,750 template-generated AI answers across all four engines (2 models each), US, India
   (English and Hindi) and UK, every persona, 12 weekly runs (AEO / GEO, and the "Correct what AI
   assistants say" recommendation). For each engine they are hidden as soon as its API key is set.

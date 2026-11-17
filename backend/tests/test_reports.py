@@ -7,10 +7,12 @@ def test_weekly_report(checked, client):
     assert list(reports) == ["Aveeno", "CeraVe"]
     r = reports["CeraVe"]
     assert (r["score"]["now"], r["score"]["last_week"], r["score"]["change"]) == (86, None, None)
+    assert (r["drift"]["now"], r["drift"]["last_week"], r["drift"]["change"]) == (14, None, None)
     assert (r["unresolved"], r["new_issues"], r["fixes_verified"], r["in_progress"]) == (2, 2, 0, 0)
     assert [i["verdict"] for i in r["top_issues"]] == ["outdated", "drift"]
     assert r["products"] == [
-        {"id": checked["CeraVe"], "name": "CeraVe Hydrating Facial Cleanser", "score": 86, "change": None, "unresolved": 2}
+        {"id": checked["CeraVe"], "name": "CeraVe Hydrating Facial Cleanser", "score": 86, "change": None, "unresolved": 2,
+         "drift_score": 14, "drift_change": None}
     ]
     assert r["demo"] is False
 

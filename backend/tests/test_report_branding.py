@@ -14,7 +14,7 @@ def png_data_url(size=(40, 20), color=(42, 120, 214)) -> str:
 
 def test_branding_defaults_and_update(checked, client):
     b = client.get("/reports/branding").json()
-    assert b["report_title"] == "Weekly claim consistency report" and b["logo_data_url"] is None
+    assert b["report_title"] == "Weekly claim drift report" and b["logo_data_url"] is None
 
     body = {
         "agency_name": "Brightside Agency",

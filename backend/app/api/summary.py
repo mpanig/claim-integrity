@@ -7,7 +7,7 @@ from sqlalchemy.orm import selectinload
 from app.api.common import DB, conflict_out, conflict_query, events_out
 from app.models import AuditEvent, Conflict, ConflictStatus, Page, Sku
 from app.services.competitors import compare_brands
-from app.services.scoring import UNRESOLVED, Tally, sku_tallies
+from app.services.scoring import UNRESOLVED, Tally, drift, sku_tallies
 from app.services.trends import mean_days_to_fix, weekly_trends
 
 router = APIRouter()
@@ -66,6 +66,7 @@ def summary(session: DB, brand_id: int | None = None) -> dict[str, Any]:
     return {
         "overall": {
             "score": overall.score,
+            "drift_score": drift(overall.score),
             "unresolved": overall.unresolved,
             "by_verdict": overall.by_verdict,
             "by_status": by_status,
@@ -77,7 +78,7 @@ def summary(session: DB, brand_id: int | None = None) -> dict[str, Any]:
             {"page_id": pid, "label": retailer or url, "unresolved": n} for pid, retailer, url, n in by_source
         ],
         "brands": [
-            {"id": b["id"], "name": b["name"], "score": b["tally"].score, "unresolved": b["tally"].unresolved, "skus": b["skus"]}
+            {"id": b["id"], "name": b["name"], "score": b["tally"].score, "drift_score": drift(b["tally"].score), "unresolved": b["tally"].unresolved, "skus": b["skus"]}
             for b in sorted(brands.values(), key=lambda b: b["name"])
         ],
         "top": [conflict_out(c).model_dump(mode="json") for c in top],

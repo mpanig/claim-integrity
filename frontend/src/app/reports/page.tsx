@@ -5,7 +5,7 @@ import type { Branding } from "@/components/branding-form";
 import { CarryLink, DemoBadge, EmptyState, LoadingBlock } from "@/components/common";
 import { PageHeader } from "@/components/page-header";
 import { PrintButton } from "@/components/print-button";
-import { ScoreBadge, SeverityBadge, StatusBadge, VerdictBadge } from "@/components/status";
+import { DriftBadge, SeverityBadge, StatusBadge, VerdictBadge } from "@/components/status";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { serverGet } from "@/lib/api";
@@ -21,12 +21,14 @@ interface Report {
   period: { start: string; end: string };
   demo: boolean;
   score: { now: number | null; last_week: number | null; change: number | null };
+  /** Drift score (0 = no drift): what the report shows. */
+  drift: { now: number | null; last_week: number | null; change: number | null };
   unresolved: number;
   new_issues: number;
   fixes_verified: number;
   in_progress: number;
   top_issues: { id: number; sku_name: string; page: string; field: Field; verdict: Verdict; severity: number; status: Status; value: string }[];
-  products: { id: number; name: string; score: number | null; change: number | null; unresolved: number }[];
+  products: { id: number; name: string; score: number | null; change: number | null; unresolved: number; drift_score: number | null; drift_change: number | null }[];
 }
 
 export default function ReportsPage({ searchParams }: PageProps<"/reports">) {
@@ -37,20 +39,21 @@ export default function ReportsPage({ searchParams }: PageProps<"/reports">) {
   );
 }
 
+/** Change in drift: up is worse (red), down is better (green). */
 function Change({ value }: { value: number | null }) {
   if (value === null) return <span className="text-xs text-muted-foreground">no data for last week</span>;
   const Icon = value > 0 ? ArrowUpRight : value < 0 ? ArrowDownRight : Minus;
   return (
     <span className="inline-flex items-center gap-0.5 text-xs text-muted-foreground">
-      <Icon className={value > 0 ? "size-3.5 text-good" : value < 0 ? "size-3.5 text-critical" : "size-3.5"} />
+      <Icon className={value > 0 ? "size-3.5 text-critical" : value < 0 ? "size-3.5 text-good" : "size-3.5"} />
       {value > 0 ? `+${value}` : value} vs last week
     </span>
   );
 }
 
 function Headline({ r }: { r: Report }) {
-  const parts = [`Score ${r.score.now ?? "–"}/100`];
-  const c = r.score.change;
+  const parts = [`Drift score ${r.drift.now ?? "–"}/100 (0 = no drift)`];
+  const c = r.drift.change;
   if (c !== null) parts[0] += c > 0 ? ` (up ${c})` : c < 0 ? ` (down ${-c})` : " (unchanged)";
   parts.push(`${r.new_issues} new issue${r.new_issues === 1 ? "" : "s"} found`);
   parts.push(`${r.fixes_verified} fix${r.fixes_verified === 1 ? "" : "es"} verified`);
@@ -114,11 +117,11 @@ async function Reports({ searchParams }: { searchParams: Promise<SP> }) {
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
             <Card className="break-inside-avoid">
               <CardHeader>
-                <CardDescription>Consistency score</CardDescription>
-                <CardTitle className="text-3xl">{r.score.now ?? "–"}</CardTitle>
+                <CardDescription>Drift score (0 = no drift)</CardDescription>
+                <CardTitle className="text-3xl">{r.drift.now ?? "–"}</CardTitle>
               </CardHeader>
               <CardContent>
-                <Change value={r.score.change} />
+                <Change value={r.drift.change} />
               </CardContent>
             </Card>
             <Metric label="Open issues" value={r.unresolved} />
@@ -164,7 +167,7 @@ async function Reports({ searchParams }: { searchParams: Promise<SP> }) {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Product</TableHead>
-                      <TableHead>Score</TableHead>
+                      <TableHead>Drift</TableHead>
                       <TableHead className="text-right">Open</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -174,8 +177,8 @@ async function Reports({ searchParams }: { searchParams: Promise<SP> }) {
                         <TableCell className="max-w-56 truncate">{p.name}</TableCell>
                         <TableCell>
                           <div className="flex flex-col items-start gap-0.5">
-                            <ScoreBadge score={p.score} />
-                            <Change value={p.change} />
+                            <DriftBadge drift={p.drift_score} />
+                            <Change value={p.drift_change} />
                           </div>
                         </TableCell>
                         <TableCell className="text-right tabular-nums">{p.unresolved}</TableCell>

@@ -6,7 +6,7 @@ import { OpenVsFixedChart, ScoreTrendChart } from "@/components/charts/trend-cha
 import { brandColorMap } from "@/lib/chart-colors";
 import { CarryLink, ConflictLink, DemoBadge, EmptyState, LoadingBlock, TimeAgo } from "@/components/common";
 import { PageHeader } from "@/components/page-header";
-import { ScoreBadge, ScoreHero, SeverityBadge, VerdictBadge } from "@/components/status";
+import { DriftBadge, DriftHero, SeverityBadge, VerdictBadge } from "@/components/status";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { serverGet } from "@/lib/api";
 import { describeEvent, FIELD_LABEL, snippet, VERDICT_LABEL, VERDICT_ORDER } from "@/lib/labels";
@@ -68,10 +68,10 @@ async function Overview({ searchParams }: { searchParams: Promise<SP> }) {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Card>
           <CardHeader>
-            <CardDescription>Consistency score</CardDescription>
+            <CardDescription>Drift score</CardDescription>
           </CardHeader>
           <CardContent>
-            <ScoreHero score={o.score} label="All selected products" />
+            <DriftHero drift={o.drift_score} label="All selected products" />
           </CardContent>
         </Card>
         <Kpi label="Open issues" value={o.unresolved} sub={`${highRisk} high risk (unapproved or contradictory claims)`} />
@@ -110,9 +110,9 @@ async function Overview({ searchParams }: { searchParams: Promise<SP> }) {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="flex flex-wrap items-center gap-2">Score over time {t.demo && <DemoBadge />}</CardTitle>
+            <CardTitle className="flex flex-wrap items-center gap-2">Drift over time {t.demo && <DemoBadge />}</CardTitle>
             <CardDescription>
-              Weekly consistency score{t.brands.length > 1 ? " by brand" : ""}, last {weeks} weeks.
+              Weekly drift score{t.brands.length > 1 ? " by brand" : ""}, last {weeks} weeks. Lower is better: 0 means every page matches the truth.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -153,7 +153,7 @@ async function Overview({ searchParams }: { searchParams: Promise<SP> }) {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <ScoreBadge score={b.score} />
+                    <DriftBadge drift={b.drift_score} />
                   </CardContent>
                 </Card>
               </CarryLink>

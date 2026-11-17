@@ -4,6 +4,7 @@ import { CircleCheck, CircleMinus, OctagonAlert, TriangleAlert } from "lucide-re
 import { useUrlState } from "@/hooks/use-url-state";
 import { FIELD_LABEL, SOURCE_TYPE_LABEL, VERDICT_LABEL } from "@/lib/labels";
 import type { Matrix, MatrixCell } from "@/lib/types";
+import { TruthBadge } from "@/components/status";
 import { cn } from "@/lib/utils";
 
 function summarise(value: unknown): string {
@@ -64,8 +65,17 @@ export function MatrixTable({ matrix }: { matrix: Matrix }) {
               Claim
             </th>
             <th className="min-w-48 text-left align-bottom" scope="col">
-              <span className="block text-sm font-medium">Brand site</span>
-              <span className="block text-xs font-normal text-muted-foreground">Approved truth</span>
+              {matrix.truth.status === "approved" ? (
+                <>
+                  <span className="block text-sm font-medium">Brand site</span>
+                  <span className="block text-xs font-normal text-muted-foreground">Approved truth</span>
+                </>
+              ) : (
+                <>
+                  <span className="block text-sm font-medium">No truth sheet</span>
+                  <TruthBadge status={matrix.truth.status} method={matrix.truth.method} className="mt-1" />
+                </>
+              )}
             </th>
             {matrix.sources.map((s) => (
               <th key={s.page_id} className="min-w-48 text-left align-bottom" scope="col">
@@ -87,8 +97,14 @@ export function MatrixTable({ matrix }: { matrix: Matrix }) {
                 {FIELD_LABEL[f]}
               </th>
               <td className="align-top">
-                <div className="flex min-h-16 flex-col gap-1 rounded-lg bg-muted/50 p-2">
-                  <span className="text-xs font-medium">Approved</span>
+                <div className={matrix.truth.status === "approved" ? "flex min-h-16 flex-col gap-1 rounded-lg bg-muted/50 p-2" : "flex min-h-16 flex-col gap-1 rounded-lg border border-dashed border-warning/60 bg-warning/5 p-2"}>
+                  <span className="text-xs font-medium">
+                    {matrix.truth.status === "approved"
+                      ? "Approved"
+                      : matrix.truth.agreement[f] !== undefined
+                        ? `Inferred · ${Math.round((matrix.truth.agreement[f] ?? 0) * 100)}% of page weight agrees`
+                        : "Inferred"}
+                  </span>
                   <span className="line-clamp-2 text-xs text-muted-foreground">{summarise(matrix.truth.values[f])}</span>
                 </div>
               </td>

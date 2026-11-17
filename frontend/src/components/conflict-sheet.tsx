@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { CarryLink, TimeAgo } from "@/components/common";
 import { OwnerPicker } from "@/components/owner-picker";
 import { runCheck } from "@/components/run-check-button";
-import { SeverityBadge, StatusBadge, VerdictBadge } from "@/components/status";
+import { SeverityBadge, StatusBadge, TruthBadge, VerdictBadge } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -115,6 +115,7 @@ function ConflictPanel({ id }: { id: number }) {
           <VerdictBadge verdict={d.verdict} />
           <SeverityBadge severity={d.severity} />
           <StatusBadge status={d.status} />
+          {d.truth_source === "inferred" && <TruthBadge status="inferred" />}
         </div>
         <SheetTitle className="text-lg leading-snug">
           {VERDICT_LABEL[d.verdict]}: {FIELD_LABEL[d.field].toLowerCase()} on {d.page_label}
@@ -132,7 +133,9 @@ function ConflictPanel({ id }: { id: number }) {
 
         <div className="grid gap-3 sm:grid-cols-2">
           <section className="flex flex-col gap-2 rounded-xl border p-3">
-            <h3 className="text-xs font-medium text-muted-foreground">Approved by the brand</h3>
+            <h3 className="text-xs font-medium text-muted-foreground">
+              {d.truth_source === "inferred" ? "Inferred truth (unverified: no truth sheet yet)" : "Approved by the brand"}
+            </h3>
             <ValueView
               value={d.truth_value}
               highlight={pv.not_on_page}

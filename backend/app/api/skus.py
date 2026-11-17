@@ -1,16 +1,18 @@
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Response
+from pydantic import BaseModel
 from sqlalchemy import delete, func, or_, select
 from sqlalchemy.orm import selectinload
 
-from app.api.common import DB, conflict_out, conflict_query, get_or_404, page_label, sku_out
+from app.api.common import DB, conflict_out, conflict_query, get_or_404, page_label, sku_out, truth_statuses
 from app.config import PLACEHOLDER_USER
 from app.models import ApprovedClaim, Brand, Conflict, ConflictStatus, Organisation, Page, Sku
 from app.pipeline.compare import COMPARED_FIELDS, LIST_FIELDS
 from app.pipeline.run import latest_extractions, run_for_sku, truth_for_sku
 from app.schemas import BrandOut, ClaimIn, ClaimOut, ConflictOut, RunOut, SkuIn, SkuOut, SkuPatch
-from app.services.scoring import UNRESOLVED, sku_tallies
+from app.pipeline.truth import inferred_claims, inferred_for
+from app.services.scoring import UNRESOLVED, drift, sku_tallies
 from app.services.workflow import log
 
 router = APIRouter()
@@ -62,7 +64,8 @@ def list_skus(session: DB, q: str | None = None, brand_id: int | None = None) ->
         stmt = stmt.join(Brand).where(or_(Sku.name.ilike(like), Sku.gtin.ilike(like), Brand.name.ilike(like)))
     skus = session.scalars(stmt).all()
     tallies = sku_tallies(session, [s.id for s in skus])
-    return [sku_out(s, tallies.get(s.id)) for s in skus]
+    truth = truth_statuses(session, [s.id for s in skus])
+    return [sku_out(s, tallies.get(s.id), truth[s.id]) for s in skus]
 
 
 @router.post("/skus", response_model=SkuOut, status_code=201)
@@ -108,13 +111,22 @@ def create_sku(body: SkuIn, session: DB) -> SkuOut:
     log(session, organisation_id=sku.organisation_id, sku_id=sku.id, action="sku_created", detail={"name": sku.name})
     session.commit()
     session.refresh(sku)
-    return sku_out(sku, None)
+    return sku_out(sku, None, truth_statuses(session, [sku.id])[sku.id])
+
+
+@router.get("/truth-sheets")
+def truth_sheet_summary(session: DB, brand_id: int | None = None) -> list[dict[str, Any]]:
+    """Per SKU: which fields have approved claims and when the last was approved (one query, for the list page)."""
+    stmt = select(ApprovedClaim.sku_id, func.array_agg(func.distinct(ApprovedClaim.field)), func.max(ApprovedClaim.created_at)).group_by(ApprovedClaim.sku_id)
+    if brand_id is not None:
+        stmt = stmt.where(ApprovedClaim.sku_id.in_(select(Sku.id).where(Sku.brand_id == brand_id)))
+    return [{"sku_id": sku_id, "fields": sorted(fields), "last_approved": last} for sku_id, fields, last in session.execute(stmt)]
 
 
 @router.get("/skus/{sku_id}", response_model=SkuOut)
 def get_sku(sku_id: int, session: DB) -> SkuOut:
     sku = get_or_404(session, Sku, sku_id, "SKU")
-    return sku_out(sku, sku_tallies(session, [sku.id]).get(sku.id))
+    return sku_out(sku, sku_tallies(session, [sku.id]).get(sku.id), truth_statuses(session, [sku.id])[sku.id])
 
 
 @router.patch("/skus/{sku_id}", response_model=SkuOut)
@@ -160,6 +172,8 @@ def set_claim(sku_id: int, field: str, body: ClaimIn, session: DB) -> ApprovedCl
         sku.name = value
     log(session, organisation_id=sku.organisation_id, sku_id=sku.id, action="claim_approved", detail={"field": field})
     session.commit()
+    run_for_sku(session, sku, actor=PLACEHOLDER_USER)  # recompute conflicts and score straight away
+    session.refresh(claim)
     return claim
 
 
@@ -175,6 +189,7 @@ def delete_claim(sku_id: int, field: str, session: DB) -> Response:
         raise HTTPException(404, "no approved claim for that field")
     log(session, organisation_id=sku.organisation_id, sku_id=sku.id, action="claim_removed", detail={"field": field})
     session.commit()
+    run_for_sku(session, sku, actor=PLACEHOLDER_USER)  # recompute (may fall back to inferred truth)
     return Response(status_code=204)
 
 
@@ -199,7 +214,46 @@ def run_sku(sku_id: int, session: DB) -> RunOut:
         resolved=len(result.resolved),
         unresolved=tally.unresolved if tally else 0,
         score=tally.score if tally else None,
+        drift_score=drift(tally.score) if tally else None,
+        truth_status=truth_statuses(session, [sku.id])[sku.id][0],
     )
+
+
+class TruthSheetIn(BaseModel):
+    claims: dict[str, Any]
+    evidence_url: str | None = None
+
+
+@router.get("/skus/{sku_id}/inferred-truth")
+def get_inferred_truth(sku_id: int, session: DB) -> dict[str, Any]:
+    """The provisional truth for a SKU without a truth sheet: values, how much of the page weight
+    agrees with each, and how it was inferred. Empty once a truth sheet is approved."""
+    get_or_404(session, Sku, sku_id, "SKU")
+    row = inferred_for(session, sku_id)
+    status = truth_statuses(session, [sku_id])[sku_id][0]
+    if row is None:
+        return {"status": status, "method": None, "sources": 0, "fields": {}, "agreement": {}}
+    return {"status": status, "method": row.method, "sources": row.sources, "fields": inferred_claims(session, sku_id),
+            "agreement": row.agreement, "updated_at": row.updated_at}
+
+
+@router.post("/skus/{sku_id}/truth-sheet", response_model=SkuOut)
+def save_truth_sheet(sku_id: int, body: TruthSheetIn, session: DB) -> SkuOut:
+    """Approve several fields at once (e.g. the inferred values, as reviewed), then recompute
+    conflicts and score immediately. The inferred truth is cleared and its recommendation resolves."""
+    sku = get_or_404(session, Sku, sku_id, "SKU")
+    claims = {f: validate_claim(f, v) for f, v in body.claims.items() if v not in (None, "", [])}
+    if not any(f != "name" for f in claims):
+        raise HTTPException(422, "approve at least one field besides the name")
+    for field, value in claims.items():
+        session.add(ApprovedClaim(organisation_id=sku.organisation_id, sku_id=sku.id, field=field, value=value,
+                                  evidence_url=body.evidence_url, approved_by=PLACEHOLDER_USER))
+        if field == "name":
+            sku.name = value
+    log(session, organisation_id=sku.organisation_id, sku_id=sku.id, action="truth_sheet_approved", detail={"fields": sorted(claims)})
+    session.commit()
+    run_for_sku(session, sku, actor=PLACEHOLDER_USER)
+    return get_sku(sku_id, session)
 
 
 @router.get("/skus/{sku_id}/matrix")
@@ -208,6 +262,8 @@ def sku_matrix(sku_id: int, session: DB) -> dict[str, Any]:
     sku = get_or_404(session, Sku, sku_id, "SKU")
     claims = current_claims(session, sku_id)
     truth = truth_for_sku(session, sku)
+    status = truth_statuses(session, [sku.id])[sku.id]
+    inferred = inferred_for(session, sku.id)
     evidence = next((c.evidence_url for c in claims if c.evidence_url), None)
 
     conflicts = session.scalars(
@@ -258,13 +314,16 @@ def sku_matrix(sku_id: int, session: DB) -> dict[str, Any]:
         )
 
     return {
-        "sku": sku_out(sku, sku_tallies(session, [sku.id]).get(sku.id)).model_dump(),
+        "sku": sku_out(sku, sku_tallies(session, [sku.id]).get(sku.id), status).model_dump(),
         "fields": list(COMPARED_FIELDS),
         "list_fields": list(LIST_FIELDS),
         "truth": {
-            "label": f"{sku.brand.name} site (approved)",
+            "label": f"{sku.brand.name} site (approved)" if status[0] == "approved" else "Inferred truth, unverified",
             "url": evidence,
             "values": {f: truth.get(f) for f in COMPARED_FIELDS},
+            "status": status[0],
+            "method": status[1],
+            "agreement": inferred.agreement if inferred else {},
         },
         "sources": sources,
     }

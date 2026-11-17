@@ -18,7 +18,7 @@ export default function RecommendationsPage({ searchParams }: PageProps<"/recomm
     <>
       <PageHeader
         title="Recommendations"
-        description="The actions that improve consistency the most, ranked by risk × page importance × ease. Create a task to put one on the fix board."
+        description="The actions that cut drift the most, ranked by risk × page importance × ease. Create a task to put one on the fix board."
       />
       <Suspense fallback={<LoadingBlock rows={4} />}>
         <RecommendationList searchParams={searchParams} />
@@ -66,8 +66,8 @@ async function RecommendationList({ searchParams }: { searchParams: Promise<SP> 
             <CardTitle className="text-3xl">{todo.length}</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            Across {products} product{products === 1 ? "" : "s"}; the biggest single action adds{" "}
-            <span className="font-medium text-foreground">+{best} points</span> to its product&apos;s score.{" "}
+            Across {products} product{products === 1 ? "" : "s"}; the biggest single action cuts its product&apos;s drift
+            score by <span className="font-medium text-foreground">{best} points</span>.{" "}
             {data.items.length - todo.length} already {data.items.length - todo.length === 1 ? "has a task" : "have tasks"}.
           </CardContent>
         </Card>
@@ -90,7 +90,8 @@ async function RecommendationList({ searchParams }: { searchParams: Promise<SP> 
           </CardHeader>
           <CardContent className="flex flex-col gap-2 text-sm text-muted-foreground">
             <p>Priority = risk of each issue × how much the page matters × how easy the fix is.</p>
-            <p>“+pts” is how much the product&apos;s consistency score rises once the action is done.</p>
+            <p>“−N drift” is how much the product&apos;s drift score falls once the action is done (0 = no drift).</p>
+            <p>“Add a truth sheet” comes first for products checked against an inferred, unverified truth.</p>
           </CardContent>
         </Card>
       </div>

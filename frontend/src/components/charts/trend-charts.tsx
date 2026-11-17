@@ -16,11 +16,11 @@ export function ScoreTrendChart({ trends, brandColors }: { trends: Trends; brand
   const multi = trends.brands.length > 1;
   const data = trends.weeks.map((w) => ({
     week: weekLabel(w.week),
-    overall: w.score,
-    ...Object.fromEntries(trends.brands.map((b) => [`b${b.id}`, w.brands[String(b.id)] ?? null])),
+    overall: w.drift_score,
+    ...Object.fromEntries(trends.brands.map((b) => [`b${b.id}`, w.drift_brands?.[String(b.id)] ?? null])),
   }));
   return (
-    <div className="h-64" role="img" aria-label="Consistency score by week">
+    <div className="h-64" role="img" aria-label="Drift score by week (0 = no drift)">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 8, right: 16, bottom: 0, left: -12 }}>
           <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
@@ -46,7 +46,7 @@ export function ScoreTrendChart({ trends, brandColors }: { trends: Trends; brand
             <Line
               type="monotone"
               dataKey="overall"
-              name="Score"
+              name="Drift"
               stroke="var(--series-1)"
               strokeWidth={2}
               dot={false}

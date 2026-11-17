@@ -59,11 +59,11 @@ def test_fixed_but_still_found_is_reopened_on_recheck(checked, client):
 def test_conflict_no_longer_found_is_verified_on_recheck(checked, client):
     sku_id = checked["CeraVe"]
     cid = _conflict(client, sku_id, "free_from")["id"]
-    # Approve the retailer's wording, so the drift disappears.
+    # Approve the retailer's wording, so the drift disappears: saving re-checks straight away.
     client.put(f"/skus/{sku_id}/claims/free_from", json={"value": ["Fragrance Free"]})
-    run = client.post(f"/skus/{sku_id}/run").json()
-    assert (run["resolved"], run["unresolved"]) == (1, 1)
     assert client.get(f"/conflicts/{cid}").json()["status"] == "verified"
+    run = client.post(f"/skus/{sku_id}/run").json()
+    assert (run["resolved"], run["unresolved"]) == (0, 1)
 
 
 def test_owner_due_date_notes_and_history(checked, client):

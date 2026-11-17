@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { BarListChart } from "@/components/charts/bar-list-chart";
 import { CarryLink, EmptyState, LoadingBlock } from "@/components/common";
 import { PageHeader } from "@/components/page-header";
-import { ScoreBadge } from "@/components/status";
+import { DriftBadge } from "@/components/status";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { serverGet } from "@/lib/api";
 import { FIELD_LABEL } from "@/lib/labels";
@@ -19,6 +19,7 @@ interface BrandCompare {
   skus: number;
   pages: number;
   score: number | null;
+  drift_score: number | null;
   unresolved: number;
   issues_per_product: number;
   approved: Record<Category, string[]>;
@@ -36,7 +37,7 @@ export default function CompetitorsPage() {
     <>
       <PageHeader
         title="Competitors"
-        description="How the brands in your workspace compare: consistency, issues per product and which claims each one makes."
+        description="How the brands in your workspace compare: drift, issues per product and which claims each one makes."
       />
       <Suspense fallback={<LoadingBlock rows={3} />}>
         <Competitors />
@@ -46,12 +47,12 @@ export default function CompetitorsPage() {
 }
 
 function insights(brands: BrandCompare[]): string[] {
-  const scored = brands.filter((b) => b.score !== null).sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+  const scored = brands.filter((b) => b.drift_score !== null).sort((a, b) => (a.drift_score ?? 0) - (b.drift_score ?? 0));
   const out: string[] = [];
   if (scored.length >= 2) {
     const [best, worst] = [scored[0], scored[scored.length - 1]];
     out.push(
-      `${best.name} is the most consistent (${best.score}/100). ${worst.name} trails at ${worst.score}/100 with ${worst.issues_per_product} open issues per product.`,
+      `${best.name} drifts least (drift score ${best.drift_score}/100). ${worst.name} drifts most at ${worst.drift_score}/100, with ${worst.issues_per_product} open issues per product.`,
     );
   }
   for (const b of brands) {
@@ -121,7 +122,7 @@ async function Competitors() {
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
-              <ScoreBadge score={b.score} />
+              <DriftBadge drift={b.drift_score} />
               <dl className="grid grid-cols-2 gap-2 text-sm">
                 <dt className="text-muted-foreground">Open issues</dt>
                 <dd className="text-right tabular-nums">{b.unresolved}</dd>
@@ -136,11 +137,11 @@ async function Competitors() {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Consistency score</CardTitle>
-            <CardDescription>Out of 100. Higher means pages match the approved claims.</CardDescription>
+            <CardTitle>Drift score</CardTitle>
+            <CardDescription>Out of 100. Lower is better: 0 means every page matches the truth.</CardDescription>
           </CardHeader>
           <CardContent>
-            <BarListChart data={c.brands.map((b) => ({ label: b.name, value: b.score ?? 0 }))} valueName="Score" labelWidth={90} />
+            <BarListChart data={c.brands.map((b) => ({ label: b.name, value: b.drift_score ?? 0 }))} valueName="Drift score" labelWidth={90} />
           </CardContent>
         </Card>
         <Card>

@@ -1,4 +1,4 @@
-import { ExternalLink, ShieldCheck } from "lucide-react";
+import { ExternalLink, ShieldCheck, TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -6,7 +6,8 @@ import { CarryLink, LoadingBlock, TimeAgo } from "@/components/common";
 import { MatrixTable } from "@/components/matrix-table";
 import { PageHeader } from "@/components/page-header";
 import { RunCheckButton } from "@/components/run-check-button";
-import { ScoreBadge } from "@/components/status";
+import { DriftBadge, TruthBadge } from "@/components/status";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
 import { ApiError, serverGet } from "@/lib/api";
 import type { Matrix } from "@/lib/types";
@@ -44,7 +45,8 @@ async function Product({ params }: { params: Promise<{ id: string }> }) {
         }
         actions={
           <>
-            <ScoreBadge score={s.score} />
+            <TruthBadge status={s.truth_status} method={s.inferred_method} />
+            <DriftBadge drift={s.drift_score} inferred={s.truth_status === "inferred"} />
             <CarryLink href={`/products/${s.id}/truth`} className={buttonVariants({ variant: "outline" })}>
               <ShieldCheck /> Truth sheet
             </CarryLink>
@@ -52,6 +54,22 @@ async function Product({ params }: { params: Promise<{ id: string }> }) {
           </>
         }
       />
+      {s.truth_status !== "approved" && (
+        <Alert>
+          <TriangleAlert />
+          <AlertTitle>Add a truth sheet for {s.name}</AlertTitle>
+          <AlertDescription className="flex flex-col items-start gap-2">
+            <span>
+              {s.truth_status === "inferred"
+                ? `There is no approved truth sheet, so pages and AI answers are compared with ${s.inferred_method === "claude" ? "values Claude chose from what the pages show" : "what most of the pages agree on"}. That truth is unverified, and so is the drift score. Review the inferred claims and approve or correct them; the score is recomputed straight away.`
+                : "There is no approved truth sheet and no captured pages to infer one from. Add the approved claims to start checking pages."}
+            </span>
+            <CarryLink href={`/products/${s.id}/truth${s.truth_status === "inferred" ? "?prefill=inferred" : ""}`} className={buttonVariants({ size: "sm" })}>
+              <ShieldCheck /> {s.truth_status === "inferred" ? "Review inferred truth sheet" : "Add truth sheet"}
+            </CarryLink>
+          </AlertDescription>
+        </Alert>
+      )}
       <section className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>

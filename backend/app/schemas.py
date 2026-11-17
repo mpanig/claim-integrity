@@ -21,10 +21,13 @@ class SkuOut(BaseModel):
     name: str
     line: str | None
     last_checked_at: datetime | None
-    score: int | None
+    score: int | None  # consistency (100 = no drift); kept for older clients, use drift_score
+    drift_score: int | None = None  # 0 = no drift, higher = pages drift further from the truth
     unresolved: int
     by_verdict: dict[str, int]
     pages: int
+    truth_status: str = "approved"  # approved | inferred (no truth sheet, unverified) | none
+    inferred_method: str | None = None  # majority | claude
 
 
 class SkuIn(BaseModel):
@@ -74,6 +77,7 @@ class ConflictOut(BaseModel):
     severity: int
     status: ConflictStatus
     owner: str | None
+    truth_source: str = "approved"
     due_date: date | None
     dismiss_reason: str | None
     detected_at: datetime
@@ -117,3 +121,5 @@ class RunOut(BaseModel):
     resolved: int
     unresolved: int
     score: int | None
+    drift_score: int | None = None
+    truth_status: str = "approved"

@@ -59,7 +59,7 @@ def issues_export(session: DB, brand_id: int | None = None) -> Response:
 
 class BrandingIn(BaseModel):
     agency_name: str | None = Field(default=None, max_length=200)
-    report_title: str = Field(default="Weekly claim consistency report", min_length=1, max_length=200)
+    report_title: str = Field(default="Weekly claim drift report", min_length=1, max_length=200)
     primary_color: str = Field(default="#1f2937", pattern=HEX)
     accent_color: str = Field(default="#2a78d6", pattern=HEX)
     logo_data_url: str | None = None

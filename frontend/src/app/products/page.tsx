@@ -5,7 +5,7 @@ import { CarryLink, EmptyState, LoadingBlock, TimeAgo } from "@/components/commo
 import { PageHeader } from "@/components/page-header";
 import { RunCheckButton } from "@/components/run-check-button";
 import { SearchBox } from "@/components/search-box";
-import { ScoreBadge } from "@/components/status";
+import { DriftBadge, TruthBadge } from "@/components/status";
 import { buttonVariants } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { serverGet } from "@/lib/api";
@@ -19,7 +19,7 @@ export default function ProductsPage({ searchParams }: PageProps<"/products">) {
     <>
       <PageHeader
         title="Products"
-        description="Every product you monitor, with its consistency score across the pages that sell it."
+        description="Every product you monitor, with its drift score across the pages that sell it (0 = no drift)."
         actions={
           <CarryLink href="/products/new" className={buttonVariants()}>
             <Plus /> Add product
@@ -55,7 +55,7 @@ async function ProductTable({ searchParams }: { searchParams: Promise<SP> }) {
         <TableHeader>
           <TableRow>
             <TableHead>Product</TableHead>
-            <TableHead>Score</TableHead>
+            <TableHead>Drift</TableHead>
             <TableHead className="text-right">Open issues</TableHead>
             <TableHead className="text-right">Pages</TableHead>
             <TableHead>Last checked</TableHead>
@@ -76,7 +76,10 @@ async function ProductTable({ searchParams }: { searchParams: Promise<SP> }) {
                 </span>
               </TableCell>
               <TableCell>
-                <ScoreBadge score={s.score} />
+                <div className="flex flex-col items-start gap-1">
+                  <DriftBadge drift={s.drift_score} inferred={s.truth_status === "inferred"} />
+                  <TruthBadge status={s.truth_status} method={s.inferred_method} />
+                </div>
               </TableCell>
               <TableCell className="text-right tabular-nums">{s.unresolved}</TableCell>
               <TableCell className="text-right tabular-nums">{s.pages}</TableCell>

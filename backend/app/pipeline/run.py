@@ -19,11 +19,19 @@ from app.services.workflow import log, log_conflict, set_status
 S = ConflictStatus
 
 
-def truth_for_sku(session: Session, sku: Sku) -> dict[str, Any]:
+def truth_for_sku(session: Session, sku: Sku, *, include_inferred: bool = True) -> dict[str, Any]:
+    """The approved truth sheet; for a SKU without one, the stored inferred truth (unverified),
+    unless include_inferred is False (places that must only state approved facts)."""
     claims = session.scalars(
         select(ApprovedClaim).where(ApprovedClaim.sku_id == sku.id).order_by(ApprovedClaim.id)
     )
     truth = {c.field: c.value for c in claims}  # later approvals of a field win
+    if include_inferred and not any(f != "name" for f in truth):
+        from app.pipeline.truth import inferred_for
+
+        row = inferred_for(session, sku.id)
+        if row:
+            truth = {**row.fields, **truth}  # an approved name still wins
     truth.setdefault("name", sku.name)
     return truth
 
@@ -68,6 +76,10 @@ def run_for_sku(session: Session, sku: Sku, actor: str = SYSTEM_USER) -> RunResu
     - dismissed conflicts stay dismissed and are not raised again
     - verified conflicts are history: if the finding comes back, a new conflict is opened
     """
+    from app.pipeline.truth import has_truth_sheet, refresh_inferred
+
+    refresh_inferred(session, sku)  # no truth sheet: build the provisional truth from the sources
+    source = "approved" if has_truth_sheet(session, sku.id) else "inferred"
     truth = truth_for_sku(session, sku)
     findings: dict[tuple, tuple[int, Finding]] = {}
     for page_id, extraction in latest_extractions(session, sku.id).items():
@@ -83,6 +95,8 @@ def run_for_sku(session: Session, sku: Sku, actor: str = SYSTEM_USER) -> RunResu
         key = _key(conflict.page_id, conflict)
         present = key in findings
         seen.add(key)
+        if present:
+            conflict.truth_source = source
         if conflict.status is S.dismissed:
             continue
         if conflict.status is S.fixed and present:
@@ -105,6 +119,7 @@ def run_for_sku(session: Session, sku: Sku, actor: str = SYSTEM_USER) -> RunResu
             verdict=finding.verdict,
             severity=finding.severity,
             status=S.open,
+            truth_source=source,
         )
         session.add(conflict)
         session.flush()

@@ -9,6 +9,8 @@ export interface Recommendation {
   severity: number;
   priority: number;
   impact_points: number;
+  /** Button text when the action is fixed by editing (link), e.g. reviewing an inferred truth sheet. */
+  action_label?: string | null;
   sku_id: number;
   sku_name: string;
   brand_name: string;

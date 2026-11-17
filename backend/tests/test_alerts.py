@@ -20,8 +20,8 @@ def test_score_drop_alert(checked, client):
     client.put(f"/skus/{sku}/claims/seals", json={"value": ["NEA Seal of Acceptance", "Vegan Society"]})
     assert client.post(f"/skus/{sku}/run").json()["score"] == 78  # (6 + 1 + 4) / 50 -> 78
     drops = [x for x in client.get("/alerts").json()["items"] if x["kind"] == "score_drop"]
-    assert [d["title"] for d in drops] == ["CeraVe Hydrating Facial Cleanser score fell 8 points"]
-    assert drops[0]["body"] == "Consistency score went from 86 to 78 after the latest check."
+    assert [d["title"] for d in drops] == ["CeraVe Hydrating Facial Cleanser drift score rose 8 points"]
+    assert drops[0]["body"] == "Drift score went from 14 to 22 after the latest check (0 = no drift)."
 
     # Small moves (under 5 points) don't alert: removing the extra seal raises the score back.
     client.put(f"/skus/{sku}/claims/seals", json={"value": ["NEA Seal of Acceptance"]})

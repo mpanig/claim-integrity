@@ -1,7 +1,7 @@
 import { CircleAlert, CircleCheck, CircleDashed, CircleMinus, OctagonAlert, TriangleAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { scoreTone, severityTier, STATUS_LABEL, VERDICT_LABEL, VERDICT_TONE } from "@/lib/labels";
-import type { Status, Verdict } from "@/lib/types";
+import { DRIFT_LABEL, driftTone, scoreTone, severityTier, STATUS_LABEL, VERDICT_LABEL, VERDICT_TONE } from "@/lib/labels";
+import type { Status, TruthStatus, Verdict } from "@/lib/types";
 
 type Tone = "good" | "warning" | "serious" | "critical" | "neutral";
 
@@ -120,5 +120,62 @@ export function ScoreHero({ score, label }: { score: number | null; label: strin
         {label} · {SCORE_LABEL[tone]}
       </span>
     </div>
+  );
+}
+
+/** Drift score badge: 0 = no drift (good), higher is worse. */
+export function DriftBadge({ drift, inferred, className }: { drift: number | null; inferred?: boolean; className?: string }) {
+  const tone = driftTone(drift);
+  const icon = tone === "good" ? CircleCheck : tone === "warning" ? TriangleAlert : tone === "critical" ? OctagonAlert : CircleDashed;
+  return (
+    <Pill
+      tone={tone === "none" ? "neutral" : tone}
+      icon={icon}
+      className={className}
+      title={`Drift score ${drift ?? "–"} (0 = no drift)${inferred ? ", measured against an inferred, unverified truth" : ""}`}
+    >
+      <span className="tabular-nums">{drift ?? "–"}</span>
+      <span className="text-muted-foreground">
+        {DRIFT_LABEL[tone]}
+        {inferred && drift !== null && " · unverified"}
+      </span>
+    </Pill>
+  );
+}
+
+/** Hero figure for a drift score: the bar fills as drift grows. */
+export function DriftHero({ drift, label }: { drift: number | null; label: string }) {
+  const tone = driftTone(drift);
+  const bar = { good: "bg-good", warning: "bg-warning", critical: "bg-critical", none: "bg-muted" }[tone];
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex items-baseline gap-2">
+        <span className="text-4xl font-semibold tracking-tight">{drift ?? "–"}</span>
+        <span className="text-sm text-muted-foreground">/ 100 · 0 = no drift</span>
+      </div>
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted" role="presentation">
+        <div className={cn("h-full rounded-full", bar)} style={{ width: `${Math.max(drift ?? 0, drift ? 2 : 0)}%` }} />
+      </div>
+      <span className="text-xs text-muted-foreground">
+        {label} · {DRIFT_LABEL[tone]}
+      </span>
+    </div>
+  );
+}
+
+/** Shown wherever a product is judged against an inferred truth instead of a truth sheet. */
+export function TruthBadge({ status, method, className }: { status: TruthStatus; method?: string | null; className?: string }) {
+  if (status === "approved") return null;
+  if (status === "none")
+    return (
+      <Pill tone="neutral" icon={CircleDashed} className={className} title="No truth sheet and no pages to infer one from">
+        No truth sheet
+      </Pill>
+    );
+  const how = method === "claude" ? "chosen by Claude from the values the pages show" : "what most of the product's pages agree on";
+  return (
+    <Pill tone="warning" icon={TriangleAlert} className={className} title={`No truth sheet yet: compared with ${how}. Approve a truth sheet to verify.`}>
+      {method === "claude" ? "LLM-inferred truth, unverified" : "Inferred truth, unverified"}
+    </Pill>
   );
 }

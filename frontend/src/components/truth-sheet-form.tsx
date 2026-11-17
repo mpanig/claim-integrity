@@ -1,10 +1,9 @@
 "use client";
 
-import { Save, Trash2 } from "lucide-react";
+import { Save, Sparkles, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { runCheck } from "@/components/run-check-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,7 +13,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useUrlState } from "@/hooks/use-url-state";
 import { api } from "@/lib/api";
 import { FIELD_LABEL } from "@/lib/labels";
-import type { Brand, Claim, Field, Sku } from "@/lib/types";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import type { Brand, Claim, Field, InferredTruth, Sku } from "@/lib/types";
 
 const LIST_FIELDS: { field: Exclude<Field, "name">; help: string; placeholder: string }[] = [
   {
@@ -40,11 +40,16 @@ function fromLines(text: string): string[] {
 
 const NEW_BRAND = "__new__";
 
-export function TruthSheetForm({ sku, claims, brands }: { sku?: Sku; claims?: Claim[]; brands?: Brand[] }) {
+export function TruthSheetForm({ sku, claims, brands, inferred }: { sku?: Sku; claims?: Claim[]; brands?: Brand[]; inferred?: InferredTruth | null }) {
   const router = useRouter();
   const { carry } = useUrlState();
+  // No truth sheet yet: start from the inferred values so the reviewer only approves or edits them.
+  const prefilled = !!sku && sku.truth_status !== "approved" && !!inferred && Object.keys(inferred.fields).length > 0;
   const initial = useMemo(() => {
-    const byField = Object.fromEntries((claims ?? []).map((c) => [c.field, c.value])) as Partial<Record<Field, unknown>>;
+    const byField = {
+      ...(prefilled ? inferred?.fields : {}),
+      ...Object.fromEntries((claims ?? []).map((c) => [c.field, c.value])),
+    } as Partial<Record<Field, unknown>>;
     return {
       name: (byField.name as string | undefined) ?? sku?.name ?? "",
       ingredients: toLines(byField.ingredients),
@@ -52,7 +57,7 @@ export function TruthSheetForm({ sku, claims, brands }: { sku?: Sku; claims?: Cl
       claims: toLines(byField.claims),
       seals: toLines(byField.seals),
     } as Record<Field, string>;
-  }, [claims, sku]);
+  }, [claims, sku, inferred, prefilled]);
   const approved = useMemo(() => new Set((claims ?? []).map((c) => c.field)), [claims]);
 
   const [values, setValues] = useState(initial);
@@ -66,8 +71,30 @@ export function TruthSheetForm({ sku, claims, brands }: { sku?: Sku; claims?: Cl
   const dirty = (Object.keys(values) as Field[]).filter((f) => values[f].trim() !== initial[f].trim());
   const isNew = !sku;
 
+  async function approveInferred() {
+    if (!sku) return;
+    setBusy(true);
+    try {
+      const body: Record<string, unknown> = {};
+      for (const f of Object.keys(values) as Field[]) {
+        const text = values[f].trim();
+        if (text) body[f] = f === "name" ? text : fromLines(values[f]);
+      }
+      const out = await api<Sku>(`/skus/${sku.id}/truth-sheet`, { method: "POST", body: { claims: body, evidence_url: evidence || null } });
+      if (gtin !== (sku.gtin ?? "") || line !== (sku.line ?? "")) {
+        await api(`/skus/${sku.id}`, { method: "PATCH", body: { gtin: gtin || null, line: line || null } });
+      }
+      toast.success("Truth sheet approved", { description: `Pages re-checked against it. Drift score now ${out.drift_score ?? "–"}.` });
+      router.push(carry(`/products/${sku.id}`));
+    } catch (e) {
+      toast.error("Couldn't approve", { description: (e as Error).message });
+      setBusy(false);
+    }
+  }
+
   async function saveExisting() {
     if (!sku) return;
+    if (prefilled) return approveInferred();
     setBusy(true);
     try {
       for (const f of dirty) {
@@ -84,10 +111,7 @@ export function TruthSheetForm({ sku, claims, brands }: { sku?: Sku; claims?: Cl
       if (gtin !== (sku.gtin ?? "") || line !== (sku.line ?? "")) {
         await api(`/skus/${sku.id}`, { method: "PATCH", body: { gtin: gtin || null, line: line || null } });
       }
-      toast.success("Truth sheet saved", {
-        description: "Re-check the product to compare its pages against the new claims.",
-        action: { label: "Run check", onClick: () => runCheck(sku.id).then(() => router.refresh()) },
-      });
+      toast.success("Truth sheet saved", { description: "Pages were re-checked against it and the drift score updated." });
       router.refresh();
     } catch (e) {
       toast.error("Couldn't save", { description: (e as Error).message });
@@ -136,6 +160,19 @@ export function TruthSheetForm({ sku, claims, brands }: { sku?: Sku; claims?: Cl
         else saveExisting();
       }}
     >
+      {prefilled && inferred && (
+        <Alert>
+          <Sparkles />
+          <AlertTitle>Pre-filled from the inferred truth: review before approving</AlertTitle>
+          <AlertDescription>
+            {inferred.method === "claude"
+              ? `Claude chose these values from what the product's ${inferred.sources} pages show.`
+              : `These are the values most of the product's ${inferred.sources} pages agree on.`}{" "}
+            They are unverified until you approve them. Correct anything that isn&apos;t the manufacturer&apos;s current
+            information, add the source URL, then approve. Pages and the drift score are recomputed straight away.
+          </AlertDescription>
+        </Alert>
+      )}
       <Card>
         <CardHeader>
           <CardTitle>Product</CardTitle>
@@ -195,7 +232,10 @@ export function TruthSheetForm({ sku, claims, brands }: { sku?: Sku; claims?: Cl
                 <Label htmlFor={field} className="text-base">
                   {FIELD_LABEL[field]}
                 </Label>
-                <span className="text-xs font-normal text-muted-foreground">{fromLines(values[field]).length} items</span>
+                <span className="text-xs font-normal text-muted-foreground">
+                  {fromLines(values[field]).length} {fromLines(values[field]).length === 1 ? "item" : "items"}
+                  {prefilled && inferred?.agreement[field] !== undefined && ` · inferred, ${Math.round((inferred.agreement[field] ?? 0) * 100)}% of page weight agrees`}
+                </span>
               </CardTitle>
               <CardDescription>{help}</CardDescription>
             </CardHeader>
@@ -224,10 +264,18 @@ export function TruthSheetForm({ sku, claims, brands }: { sku?: Sku; claims?: Cl
       </div>
 
       <div className="sticky bottom-4 flex flex-wrap items-center justify-end gap-3 rounded-xl border bg-background/95 p-3 shadow-sm backdrop-blur">
-        {!isNew && <span className="mr-auto text-sm text-muted-foreground">{dirty.length ? `${dirty.length} unsaved change${dirty.length === 1 ? "" : "s"}` : "No unsaved changes"}</span>}
+        {!isNew && (
+          <span className="mr-auto text-sm text-muted-foreground">
+            {prefilled
+              ? "Pre-filled from the inferred truth: review, then approve"
+              : dirty.length
+                ? `${dirty.length} unsaved change${dirty.length === 1 ? "" : "s"}`
+                : "No unsaved changes"}
+          </span>
+        )}
         {isNew && <span className="mr-auto text-sm text-muted-foreground">A name, brand and ingredient list are required.</span>}
-        <Button type="submit" disabled={busy || (isNew ? !canCreate : dirty.length === 0 && gtin === (sku?.gtin ?? "") && line === (sku?.line ?? ""))}>
-          <Save /> {isNew ? "Add product" : "Save truth sheet"}
+        <Button type="submit" disabled={busy || (isNew ? !canCreate : !prefilled && dirty.length === 0 && gtin === (sku?.gtin ?? "") && line === (sku?.line ?? ""))}>
+          <Save /> {isNew ? "Add product" : prefilled ? "Approve truth sheet" : "Save truth sheet"}
         </Button>
       </div>
     </form>

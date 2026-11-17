@@ -17,7 +17,7 @@ from app.services.reports import FIELD_TEXT, VERDICT_TEXT
 
 DEFAULTS = {
     "agency_name": None,
-    "report_title": "Weekly claim consistency report",
+    "report_title": "Weekly claim drift report",
     "primary_color": "#1f2937",
     "accent_color": "#2a78d6",
     "logo_data_url": None,
@@ -84,18 +84,18 @@ def build_pdf(reports: list[dict[str, Any]], brand: dict[str, Any]) -> bytes:
         story.append(Paragraph(escape(brand["report_title"]), title))
         story.append(Paragraph(escape(f"{r['brand']['name']} · week of {r['period']['start']} to {r['period']['end']}"), body))
         story.append(Spacer(1, 5 * mm))
-        s = r["score"]
+        s = r["drift"]
         story.append(
             table(
                 [
-                    ["Consistency score", "Change vs last week", "Open issues", "New this week", "Fixes verified", "Being fixed"],
+                    ["Drift score (0 = none)", "Change vs last week", "Open issues", "New this week", "Fixes verified", "Being fixed"],
                     [str(s["now"] if s["now"] is not None else "–"), _change(s["change"]), str(r["unresolved"]), str(r["new_issues"]), str(r["fixes_verified"]), str(r["in_progress"])],
                 ],
                 [30 * mm, 32 * mm, 26 * mm, 26 * mm, 26 * mm, 24 * mm],
             )
         )
         if r.get("demo"):
-            story.append(Paragraph("Last week's score comes from demo history (sample data), not real checks.", small))
+            story.append(Paragraph("Last week's drift score comes from demo history (sample data), not real checks.", small))
         story.append(Paragraph("Top issues", h2))
         if r["top_issues"]:
             rows = [["Issue", "Where", "What the page shows", "Risk", "Status"]]
@@ -113,9 +113,9 @@ def build_pdf(reports: list[dict[str, Any]], brand: dict[str, Any]) -> bytes:
         else:
             story.append(Paragraph("No open issues.", body))
         story.append(Paragraph("Products", h2))
-        rows = [["Product", "Score", "Change", "Open issues"]]
+        rows = [["Product", "Drift", "Change", "Open issues"]]
         for p in r["products"]:
-            rows.append([Paragraph(escape(p["name"]), body), str(p["score"] if p["score"] is not None else "–"), _change(p["change"]), str(p["unresolved"])])
+            rows.append([Paragraph(escape(p["name"]), body), str(p["drift_score"] if p["drift_score"] is not None else "–"), _change(p["drift_change"]), str(p["unresolved"])])
         story.append(table(rows, [100 * mm, 22 * mm, 22 * mm, 24 * mm]))
 
     footer = brand.get("footer_text") or (f"Prepared by {brand['agency_name']}" if brand.get("agency_name") else "Claim Integrity")

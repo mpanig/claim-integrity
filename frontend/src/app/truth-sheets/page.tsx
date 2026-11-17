@@ -1,14 +1,16 @@
-import { Plus } from "lucide-react";
+import { Plus, ShieldCheck, TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { CarryLink, EmptyState, LoadingBlock, TimeAgo } from "@/components/common";
 import { PageHeader } from "@/components/page-header";
+import { TruthBadge } from "@/components/status";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { serverGet } from "@/lib/api";
 import { FIELD_LABEL } from "@/lib/labels";
 import { brandParam, type SP } from "@/lib/params";
-import type { Claim, Field, Sku } from "@/lib/types";
+import type { Field, Sku } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Truth sheets" };
 
@@ -37,9 +39,36 @@ async function Sheets({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
   const skus = await serverGet<Sku[]>("/skus", { brand_id: brandParam(sp) });
   if (!skus.length) return <EmptyState title="No truth sheets yet">Add a product to create its truth sheet.</EmptyState>;
-  const claims = await Promise.all(skus.map((s) => serverGet<Claim[]>(`/skus/${s.id}/claims`)));
+  const summary = await serverGet<{ sku_id: number; fields: Field[]; last_approved: string | null }[]>("/truth-sheets", { brand_id: brandParam(sp) });
+  const bySku = new Map(summary.map((r) => [r.sku_id, r]));
+  const missing = skus.filter((s) => s.truth_status !== "approved");
 
   return (
+    <div className="flex flex-col gap-4">
+      {missing.length > 0 && (
+        <Alert>
+          <TriangleAlert />
+          <AlertTitle>
+            {missing.length} product{missing.length === 1 ? " has" : "s have"} no truth sheet
+          </AlertTitle>
+          <AlertDescription className="flex flex-col gap-2">
+            <span>
+              They are checked against an inferred truth (what their pages agree on), which is unverified. Review and approve
+              each one; its drift score is recomputed straight away.
+            </span>
+            <ul className="flex flex-col gap-1.5">
+              {missing.map((s) => (
+                <li key={s.id} className="flex flex-wrap items-center gap-2">
+                  <span className="font-medium text-foreground">Add a truth sheet for {s.name}</span>
+                  <CarryLink href={`/products/${s.id}/truth?prefill=inferred`} className={buttonVariants({ size: "sm", variant: "outline" })}>
+                    <ShieldCheck /> {s.truth_status === "inferred" ? "Review inferred truth sheet" : "Add truth sheet"}
+                  </CarryLink>
+                </li>
+              ))}
+            </ul>
+          </AlertDescription>
+        </Alert>
+      )}
     <div className="overflow-x-auto rounded-xl border">
       <Table>
         <TableHeader>
@@ -50,10 +79,10 @@ async function Sheets({ searchParams }: { searchParams: Promise<SP> }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {skus.map((s, i) => {
-            const fields = new Set(claims[i].map((c) => c.field));
-            fields.add("name");
-            const last = claims[i].map((c) => c.created_at).sort().at(-1) ?? null;
+          {skus.map((s) => {
+            const fields = new Set<Field>(bySku.get(s.id)?.fields ?? []);
+            if (s.truth_status === "approved") fields.add("name");
+            const last = bySku.get(s.id)?.last_approved ?? null;
             return (
               <TableRow key={s.id}>
                 <TableCell>
@@ -61,6 +90,7 @@ async function Sheets({ searchParams }: { searchParams: Promise<SP> }) {
                     {s.name}
                   </CarryLink>
                   <div className="text-xs text-muted-foreground">{s.brand_name}</div>
+                  <TruthBadge status={s.truth_status} method={s.inferred_method} className="mt-1" />
                 </TableCell>
                 <TableCell>
                   <ul className="flex flex-wrap gap-1.5">
@@ -87,6 +117,7 @@ async function Sheets({ searchParams }: { searchParams: Promise<SP> }) {
           })}
         </TableBody>
       </Table>
+    </div>
     </div>
   );
 }

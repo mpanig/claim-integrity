@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session, selectinload
 from app.models import Conflict, Sku
 from app.pipeline.compare import COMPARED_FIELDS, claim_key, free_from_key, seal_key
 from app.pipeline.run import latest_extractions, page_fields, truth_for_sku
-from app.services.scoring import UNRESOLVED, Tally, sku_tallies
+from app.services.scoring import UNRESOLVED, Tally, drift, sku_tallies
 
 # Performance / testing claims that usually need clinical substantiation.
 CLINICAL = re.compile(r"clinic|dermatolog|tested|proven|hypoallergenic|protectant|%|hours?\b", re.I)
@@ -98,6 +98,7 @@ def compare_brands(session: Session) -> dict[str, Any]:
             {
                 **b,
                 "score": t.score,
+                "drift_score": drift(t.score),
                 "unresolved": t.unresolved,
                 "pages": t.pages,
                 "issues_per_product": round(t.unresolved / b["skus"], 1) if b["skus"] else 0,

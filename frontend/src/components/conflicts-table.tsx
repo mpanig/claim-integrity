@@ -6,7 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { TimeAgo } from "@/components/common";
 import { OwnerPicker } from "@/components/owner-picker";
-import { SeverityBadge, StatusBadge, VerdictBadge } from "@/components/status";
+import { SeverityBadge, StatusBadge, TruthBadge, VerdictBadge } from "@/components/status";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -130,7 +130,10 @@ export function ConflictsTable({ conflicts }: { conflicts: Conflict[] }) {
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-col items-start gap-1">
-                    <VerdictBadge verdict={c.verdict} />
+                    <div className="flex flex-wrap gap-1">
+                      <VerdictBadge verdict={c.verdict} />
+                      {c.truth_source === "inferred" && <TruthBadge status="inferred" />}
+                    </div>
                     <span className="text-sm font-medium">
                       {FIELD_LABEL[c.field]} on {c.page_label}
                     </span>

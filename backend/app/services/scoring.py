@@ -1,6 +1,7 @@
-"""Consistency score.
+"""Drift score (shown to users) and the consistency value it is derived from.
 
-score = 100 * (1 - weighted_severity / max_weighted_severity)
+score = 100 * (1 - weighted_severity / max_weighted_severity)    stored and computed (100 = no drift)
+drift = 100 - score                                                shown everywhere (0 = no drift)
 
 weighted_severity      sum of severity x page weight over unresolved conflicts
                        (open, accepted, fixed; dismissed and verified do not count)
@@ -42,6 +43,11 @@ class Tally:
     @property
     def score(self) -> int | None:
         return score(self.weighted_severity, self.page_weight)
+
+
+def drift(consistency: int | None) -> int | None:
+    """Drift score shown to users: 0 = every page matches the truth, 100 = worst possible."""
+    return None if consistency is None else 100 - consistency
 
 
 def score(weighted_severity: float, page_weight: float) -> int | None:
