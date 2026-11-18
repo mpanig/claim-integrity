@@ -81,3 +81,21 @@ page_weight, sku_id, sku_name, gtin, line, sku_aliases, brand_id, brand_name, br
 truth_sheet (latest approved value per field), has_truth_sheet, evidence_url`.
 
 The page -> SKU link is the new `page.sku_id` column (filled from existing extractions by the migration).
+
+## After each load (follow-up step)
+
+A load fills the agent tables and `conflict`. The app's own check run also writes history, alerts,
+the inferred truth and the "last checked" date; run the follow-up so agent runs do the same
+(`backend/app/agent_sync.py`, reuses the app's functions, safe to run twice):
+
+```bash
+uv run python -m app.agent_sync drift --run <agent_run_id>   # after a drift_score + conflict load
+uv run python -m app.agent_sync aeo                           # after an aeo_response load
+```
+
+`drift` relies on the drift agent stamping `conflict.detected_at` / `status_changed_at` and
+`drift_score.taken_at` with the same `run_at` (conflict-score-agent.md §2 and §6).
+
+Once the drift agent is the source of truth, set `DRIFT_SOURCE=agent` for the worker
+(`app.worker`), so its scheduled product checks stop writing `conflict` and `score_snapshot` too.
+The manual Run check button and truth-sheet save still run the app's own check.
