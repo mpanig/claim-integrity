@@ -2,6 +2,10 @@
 
 Status: draft v2, 2026-11-17. Based on `main` at `1963935`. No code changed.
 v2: built as a Glean agent instead of a backend Python module. Field rules unchanged from v1.
+v3 (2026-11-18, migration 0019): input is the `web_snapshot` table, which already carries `url`,
+`retailer` and `sku_id`, so `page.csv` and `page_sku.csv` are no longer needed. Output rows go to
+`page_extraction` (natural key `(snapshot_id, sku_id)`; `id` may be left out, so `id = snapshot_id`
+is no longer required). Field rules unchanged. Table contract: `docs/agents/tables.md`.
 
 The agent takes page snapshots (raw HTML) as CSV files and returns `extraction.csv`: one row per
 snapshot, with the fields the conflict agent compares (`name`, `ingredients`, `free_from`, `claims`,

@@ -2,6 +2,11 @@
 
 Status: draft v4, 2026-11-17. Logic taken from claim-integrity `main` (`compare.py`, `truth.py`,
 `run.py`, `scoring.py`). No code changed.
+v5 (2026-11-18, migration 0019): inputs are `page_extraction` (already joined to page and snapshot:
+`page_id`, `fetched_at`, `page_weight` are on the row), `agent_catalog` (sku, brand, page weight,
+truth sheet) and `conflict`. The score output goes to `drift_score` instead of `score_snapshot`: same
+13 columns first, plus `truth`, `findings` and run counts. Ids can be left out. Rules, reconcile and
+formulas unchanged. Table contract: `docs/agents/tables.md`.
 
 The agent runs in **Glean Agent Builder**. It takes CSV files in and gives CSV files out. Every CSV,
 in and out, has exactly the structure of its Postgres table: same file name as the table, same
