@@ -2,7 +2,8 @@
 
 Every few minutes it
   1. re-checks each product not checked in the last CHECK_INTERVAL_HOURS (default 24).
-     Skipped when DRIFT_SOURCE=agent (the Glean drift agent does it; see app.agent_sync).
+     Skipped when DRIFT_SOURCE=agent, set in the shell or in backend/.env (the Glean drift agent
+     does it; see app.agent_sync).
      Every check writes a score snapshot, which is what the trend charts plot.
   2. runs saved AI test plans whose daily/weekly schedule is due (engines with keys only).
 
@@ -20,11 +21,18 @@ from typing import Any
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
-from app.config import SYSTEM_USER
+from app.config import BACKEND_DIR, SYSTEM_USER
 from app.models import JobRun, Sku
 from app.pipeline.run import run_for_sku
 
 TICK_SECONDS = 300
+
+
+def drift_source() -> str:
+    """"agent" when the Glean drift agent checks products. The shell wins, then backend/.env."""
+    from dotenv import dotenv_values
+
+    return os.environ.get("DRIFT_SOURCE") or dotenv_values(BACKEND_DIR / ".env").get("DRIFT_SOURCE") or "app"
 
 
 def check_interval() -> timedelta:
@@ -48,7 +56,7 @@ def _job(session: Session, name: str, fn) -> JobRun:
 
 
 def product_checks(session: Session, now: datetime | None = None) -> dict[str, Any]:
-    if os.environ.get("DRIFT_SOURCE", "app") == "agent":  # the Glean drift agent writes conflicts and scores
+    if drift_source() == "agent":  # the Glean drift agent writes conflicts and scores
         return {"checked": 0, "skipped": "DRIFT_SOURCE=agent: the Glean drift agent checks products"}
     now = now or datetime.now(UTC)
     cutoff = now - check_interval()

@@ -53,6 +53,18 @@ def test_drift_follow_up_writes_history_alerts_and_last_checked(seeded, session)
     assert len(session.scalars(select(AuditEvent).where(AuditEvent.sku_id == sku_id)).all()) == len(events)
 
 
+def test_drift_source_from_env_file(tmp_path, monkeypatch):
+    import app.worker as worker
+
+    monkeypatch.delenv("DRIFT_SOURCE", raising=False)
+    monkeypatch.setattr(worker, "BACKEND_DIR", tmp_path)
+    assert worker.drift_source() == "app"
+    (tmp_path / ".env").write_text("DRIFT_SOURCE=agent\n")
+    assert worker.drift_source() == "agent"
+    monkeypatch.setenv("DRIFT_SOURCE", "app")  # the shell wins
+    assert worker.drift_source() == "app"
+
+
 def test_worker_leaves_checks_to_the_drift_agent(seeded, session, monkeypatch):
     monkeypatch.setenv("DRIFT_SOURCE", "agent")
     assert product_checks(session) == {"checked": 0, "skipped": "DRIFT_SOURCE=agent: the Glean drift agent checks products"}
