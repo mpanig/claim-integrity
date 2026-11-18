@@ -99,3 +99,52 @@ uv run python -m app.agent_sync aeo                           # after an aeo_res
 Once the drift agent is the source of truth, set `DRIFT_SOURCE=agent` for the worker
 (`app.worker`), so its scheduled product checks stop writing `conflict` and `score_snapshot` too.
 The manual Run check button and truth-sheet save still run the app's own check.
+
+## All tables after migration 0026
+
+17 base tables. Every old table name is still there as a view (28 of them) plus `agent_catalog`,
+so the app code is unchanged. Writers: **Glean** = the four agents, **Backend** = the app (screens,
+worker, `agent_sync`).
+
+| Table | Holds | Writes | Reads |
+|---|---|---|---|
+| `web_snapshot` | raw page fetches | Glean web agent | Glean extraction agent |
+| `page_extraction` | fields read off each snapshot | Glean extraction agent | Glean drift agent, Backend |
+| `drift_score` | drift score per product per run | Glean drift agent | Backend |
+| `aeo_response` | LLM answers with mentions, claims, citations | Glean AEO/GEO agent | Backend |
+| `organisation`, `brand`, `sku` (+ `variants` JSON), `page` (+ `sku_id`), `approved_claim` | products and truth sheets | Backend (UI) | Glean (via `agent_catalog`), Backend |
+| `inferred_truth` | provisional truth, no truth sheet | Backend (`agent_sync`, check run) | Backend |
+| `conflict` | issues | Glean drift agent + Backend (owner, status, notes) | Glean drift agent, Backend |
+| `event` | `alert`, `audit_event` | Backend | Backend |
+| `run_log` | `ai_run`, `job_run` | Backend | Backend |
+| `site_check` | `audit_url`, `audit_result`, `entity_check`, `answer_grade`, `llms_check` | Backend | Backend |
+| `traffic` | `log_upload`, `crawler_hit`, `referral_visit` | Backend | Backend |
+| `workspace_item` | `team_member`, `report_branding`, `outreach` | Backend | Backend |
+| `aeo_setup` | `ai_prompt`, `prompt_variant`, `persona`, `competitor`, `run_config` | Backend (UI) | Glean AEO/GEO agent, Backend |
+
+The six folded tables (`event` ... `aeo_setup`) have `row_type` (which old table the row is) and the
+old `id`; primary key `(row_type, id)`. Read one kind with `WHERE row_type = 'persona'`, or just read
+the old name (`persona`). A column shared by several old tables is one column; where types or links
+differ it is `<old table>_<column>`. Links to these rows use `(<col>_type, <col>)`.
+`variant` is a view over `sku.variants`. Details: `backend/app/db_flatten.py`.
+
+## Migrate the main database
+
+0019-0026 are tested on a copy of the real data: every old table name returns the same rows, and 38
+API pages return the same output (two AI pages list tied rows in a different order; those queries
+have no ORDER BY). 0020-0026 have no downgrade: the backup is the way back.
+
+```bash
+pg_dump -Fc -U postgres -d claim_integrity -f claim_integrity_before_0019.dump
+```
+```bash
+uv run alembic upgrade head
+```
+Rollback: `pg_restore -c -U postgres -d claim_integrity claim_integrity_before_0019.dump`.
+
+`data_collect` chunk loads keep working: they insert into `variant`, `snapshot`, `extraction`
+(views now) with `ON CONFLICT DO NOTHING`, which Postgres accepts on these views.
+
+Folded tables have no id default on the base table: write a new row through its old name (for
+example an agent run as a row in the `ai_run` view), which takes the next id from the old sequence.
+Agent tables move their id counter past any ids a load brings (trigger `bump_id_sequence`).

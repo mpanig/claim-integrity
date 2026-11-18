@@ -62,14 +62,15 @@ CHILDREN = {
 
 def upgrade() -> None:
     # Page -> SKU link (spec gap 3). The app does not map it; agents and agent_catalog use it.
-    op.execute("ALTER TABLE page ADD COLUMN sku_id integer REFERENCES sku(id) ON DELETE SET NULL")
-    op.execute("CREATE INDEX ix_page_sku_id ON page (sku_id)")
+    # Filled by a table rewrite (ALTER ... USING), not an UPDATE, so page rows keep their physical order.
     op.execute("""
-        UPDATE page p SET sku_id = x.sku_id
-        FROM (SELECT DISTINCT ON (s.page_id) s.page_id, e.sku_id
-              FROM extraction e JOIN snapshot s ON s.id = e.snapshot_id
-              ORDER BY s.page_id, s.fetched_at DESC, e.id DESC) x
-        WHERE x.page_id = p.id""")
+        CREATE FUNCTION pg_temp.page_sku(p integer) RETURNS integer LANGUAGE sql STABLE AS $$
+            SELECT e.sku_id FROM extraction e JOIN snapshot s ON s.id = e.snapshot_id
+            WHERE s.page_id = p ORDER BY s.fetched_at DESC, e.id DESC LIMIT 1 $$""")
+    op.execute("ALTER TABLE page ADD COLUMN sku_id integer")
+    op.execute("ALTER TABLE page ALTER COLUMN sku_id TYPE integer USING pg_temp.page_sku(id)")
+    op.execute("ALTER TABLE page ADD FOREIGN KEY (sku_id) REFERENCES sku(id) ON DELETE SET NULL")
+    op.execute("CREATE INDEX ix_page_sku_id ON page (sku_id)")
 
     # 1. web_snapshot (web intelligence agent)
     op.execute("""
@@ -106,7 +107,8 @@ def upgrade() -> None:
         SELECT s.id, s.organisation_id, s.page_id, s.fetched_at, s.content_hash, s.html, p.url, p.retailer,
             p.source_type, p.country, p.weight, k.id, b.id, k.name, b.name, k.gtin
         FROM snapshot s JOIN page p ON p.id = s.page_id
-        LEFT JOIN sku k ON k.id = p.sku_id LEFT JOIN brand b ON b.id = k.brand_id""")
+        LEFT JOIN sku k ON k.id = p.sku_id LEFT JOIN brand b ON b.id = k.brand_id
+        ORDER BY s.ctid""")
     op.execute("""
         DO $$ BEGIN
           IF NOT EXISTS (SELECT 1 FROM web_snapshot GROUP BY page_id, content_hash HAVING count(*) > 1) THEN
@@ -146,7 +148,8 @@ def upgrade() -> None:
         SELECT e.id, e.organisation_id, e.snapshot_id, e.sku_id, e.fields, e.created_at, s.page_id,
             s.fetched_at, p.url, p.retailer, p.weight, k.brand_id
         FROM extraction e JOIN snapshot s ON s.id = e.snapshot_id JOIN page p ON p.id = s.page_id
-        JOIN sku k ON k.id = e.sku_id""")
+        JOIN sku k ON k.id = e.sku_id
+        ORDER BY e.ctid""")
     # Natural key for agent upserts. Older data can hold repeats (save_extraction added one per rerun);
     # add the key only when it holds.
     op.execute("""
@@ -189,7 +192,8 @@ def upgrade() -> None:
     op.execute(f"""
         INSERT INTO drift_score ({SCORE_COLS}, sku_name, brand_name)
         SELECT {', '.join('s.' + c.strip() for c in SCORE_COLS.split(','))}, k.name, b.name
-        FROM score_snapshot s JOIN sku k ON k.id = s.sku_id JOIN brand b ON b.id = s.brand_id""")
+        FROM score_snapshot s JOIN sku k ON k.id = s.sku_id JOIN brand b ON b.id = s.brand_id
+        ORDER BY s.ctid""")
     op.execute("CREATE INDEX ix_drift_score_sku_taken ON drift_score (sku_id, taken_at)")
     op.execute("CREATE INDEX ix_drift_score_organisation_id ON drift_score (organisation_id)")
     op.execute("CREATE INDEX ix_drift_score_brand_id ON drift_score (brand_id)")
@@ -261,13 +265,32 @@ def upgrade() -> None:
         FROM ai_answer a JOIN ai_prompt p ON p.id = a.prompt_id
         LEFT JOIN sku k ON k.id = a.sku_id
         LEFT JOIN brand b ON b.id = coalesce(k.brand_id, p.brand_id)
-        LEFT JOIN persona pe ON pe.id = a.persona_id""")
+        LEFT JOIN persona pe ON pe.id = a.persona_id
+        ORDER BY a.ctid""")
     for col in ("organisation_id", "prompt_id", "sku_id", "run_id"):
         op.execute(f"CREATE INDEX ix_aeo_response_{col} ON aeo_response ({col})")
 
     # Move identity counters past the copied ids.
     for table in ("web_snapshot", "page_extraction", "drift_score", "aeo_response"):
         op.execute(f"SELECT setval(pg_get_serial_sequence('{table}', 'id'), coalesce((SELECT max(id) FROM {table}), 0) + 1, false)")
+
+    # A load that brings its own ids (agent CSV, data_collect chunk through the old view names) moves the
+    # id counter past them, so later inserts that leave id out never clash.
+    op.execute("""
+        CREATE FUNCTION bump_id_sequence() RETURNS trigger LANGUAGE plpgsql AS $$
+        DECLARE
+            seq text := pg_get_serial_sequence(quote_ident(TG_TABLE_NAME), 'id');
+            top integer;
+        BEGIN
+            SELECT max(id) INTO top FROM new_rows;
+            IF top IS NOT NULL AND top > coalesce(pg_sequence_last_value(seq::regclass), 0) THEN
+                PERFORM setval(seq, top);
+            END IF;
+            RETURN NULL;
+        END $$""")
+    for table in ("web_snapshot", "page_extraction", "drift_score", "aeo_response"):
+        op.execute(f"""CREATE TRIGGER {table}_bump_id AFTER INSERT ON {table} REFERENCING NEW TABLE AS new_rows
+            FOR EACH STATEMENT EXECUTE FUNCTION bump_id_sequence()""")
 
     # Old tables out, views in under the same names.
     for table in ("answer_citation", "answer_claim", "answer_mention", "ai_answer", "extraction", "snapshot", "score_snapshot"):
@@ -343,6 +366,9 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.execute("DROP VIEW agent_catalog")
+    for table in ("web_snapshot", "page_extraction", "drift_score", "aeo_response"):
+        op.execute(f"DROP TRIGGER {table}_bump_id ON {table}")
+    op.execute("DROP FUNCTION bump_id_sequence()")
     for view in CHILDREN:
         op.execute(f"DROP VIEW {view}")
         op.execute(f"DROP FUNCTION {view}_insert()")
