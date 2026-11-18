@@ -2,6 +2,7 @@
 
 Every few minutes it
   1. re-checks each product not checked in the last CHECK_INTERVAL_HOURS (default 24).
+     Skipped when DRIFT_SOURCE=agent (the Glean drift agent does it; see app.agent_sync).
      Every check writes a score snapshot, which is what the trend charts plot.
   2. runs saved AI test plans whose daily/weekly schedule is due (engines with keys only).
 
@@ -47,6 +48,8 @@ def _job(session: Session, name: str, fn) -> JobRun:
 
 
 def product_checks(session: Session, now: datetime | None = None) -> dict[str, Any]:
+    if os.environ.get("DRIFT_SOURCE", "app") == "agent":  # the Glean drift agent writes conflicts and scores
+        return {"checked": 0, "skipped": "DRIFT_SOURCE=agent: the Glean drift agent checks products"}
     now = now or datetime.now(UTC)
     cutoff = now - check_interval()
     due = session.scalars(select(Sku).where(or_(Sku.last_checked_at.is_(None), Sku.last_checked_at < cutoff)).order_by(Sku.id)).all()
